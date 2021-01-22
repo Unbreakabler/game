@@ -1,0 +1,21 @@
+{
+  "name": "svelte_snowpack",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "start rollup -w -c rollup.config.js && web-dev-server --node-resolve",
+    "start:watch": "start rollup -w -c rollup.config.js && web-dev-server --node-resolve --watch",
+    "test": "web-test-runner test/**/*.test.jsx",
+    "test:watch": "web-test-runner test/**/*.test.jsx --watch"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@web/dev-server": "^0.1.5",
+    "@web/dev-server-esbuild": "^0.2.11",
+    "@web/rollup-plugin-html": "^1.4.0",
+    "rollup-plugin-svelte": "^7.1.0",
+    "svelte": "^3.31.2"
+  }
+}
