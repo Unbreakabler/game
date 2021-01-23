@@ -5,7 +5,9 @@ import resolve from '@rollup/plugin-node-resolve';
 export default {
   input: 'src/index.js',
   output: {
-    file: 'public/bundle.js',
+		name: 'app',
+		sourcemap: true,
+    file: 'public/build/bundle.js',
   },
   plugins: [
     svelte({
@@ -53,9 +55,9 @@ export default {
         // your components to custom elements (aka web elements)
         customElement: false
       }
-    }),
+		}),
     // see NOTICE below
-    resolve({ browser: true }),
+    resolve({ browser: true, dedupe: ['svelte'] }),
     // ...
   ]
 }
