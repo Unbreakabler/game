@@ -324,13 +324,17 @@ function create_fragment(ctx) {
 	let t0;
 	let input1;
 	let t1;
-	let p;
+	let input2;
 	let t2;
+	let p;
 	let t3;
 	let t4;
 	let t5;
-	let t6_value = /*a*/ ctx[0] + /*b*/ ctx[1] + "";
 	let t6;
+	let t7;
+	let t8;
+	let t9_value = /*a*/ ctx[0] + /*b*/ ctx[1] + /*c*/ ctx[2] + "";
+	let t9;
 	let mounted;
 	let dispose;
 
@@ -340,12 +344,16 @@ function create_fragment(ctx) {
 			t0 = space();
 			input1 = element("input");
 			t1 = space();
+			input2 = element("input");
+			t2 = space();
 			p = element("p");
-			t2 = text(/*a*/ ctx[0]);
-			t3 = text(" + ");
-			t4 = text(/*b*/ ctx[1]);
-			t5 = text(" = ");
-			t6 = text(t6_value);
+			t3 = text(/*a*/ ctx[0]);
+			t4 = text(" + ");
+			t5 = text(/*b*/ ctx[1]);
+			t6 = text(" + ");
+			t7 = text(/*c*/ ctx[2]);
+			t8 = text(" = ");
+			t9 = text(t9_value);
 			this.h();
 		},
 		l(nodes) {
@@ -353,19 +361,24 @@ function create_fragment(ctx) {
 			t0 = claim_space(nodes);
 			input1 = claim_element(nodes, "INPUT", { type: true });
 			t1 = claim_space(nodes);
+			input2 = claim_element(nodes, "INPUT", { type: true });
+			t2 = claim_space(nodes);
 			p = claim_element(nodes, "P", {});
 			var p_nodes = children(p);
-			t2 = claim_text(p_nodes, /*a*/ ctx[0]);
-			t3 = claim_text(p_nodes, " + ");
-			t4 = claim_text(p_nodes, /*b*/ ctx[1]);
-			t5 = claim_text(p_nodes, " = ");
-			t6 = claim_text(p_nodes, t6_value);
+			t3 = claim_text(p_nodes, /*a*/ ctx[0]);
+			t4 = claim_text(p_nodes, " + ");
+			t5 = claim_text(p_nodes, /*b*/ ctx[1]);
+			t6 = claim_text(p_nodes, " + ");
+			t7 = claim_text(p_nodes, /*c*/ ctx[2]);
+			t8 = claim_text(p_nodes, " = ");
+			t9 = claim_text(p_nodes, t9_value);
 			p_nodes.forEach(detach);
 			this.h();
 		},
 		h() {
 			attr(input0, "type", "number");
 			attr(input1, "type", "number");
+			attr(input2, "type", "text");
 		},
 		m(target, anchor) {
 			insert(target, input0, anchor);
@@ -374,17 +387,23 @@ function create_fragment(ctx) {
 			insert(target, input1, anchor);
 			set_input_value(input1, /*b*/ ctx[1]);
 			insert(target, t1, anchor);
+			insert(target, input2, anchor);
+			set_input_value(input2, /*c*/ ctx[2]);
+			insert(target, t2, anchor);
 			insert(target, p, anchor);
-			append(p, t2);
 			append(p, t3);
 			append(p, t4);
 			append(p, t5);
 			append(p, t6);
+			append(p, t7);
+			append(p, t8);
+			append(p, t9);
 
 			if (!mounted) {
 				dispose = [
-					listen(input0, "input", /*input0_input_handler*/ ctx[2]),
-					listen(input1, "input", /*input1_input_handler*/ ctx[3])
+					listen(input0, "input", /*input0_input_handler*/ ctx[3]),
+					listen(input1, "input", /*input1_input_handler*/ ctx[4]),
+					listen(input2, "input", /*input2_input_handler*/ ctx[5])
 				];
 
 				mounted = true;
@@ -399,9 +418,14 @@ function create_fragment(ctx) {
 				set_input_value(input1, /*b*/ ctx[1]);
 			}
 
-			if (dirty & /*a*/ 1) set_data(t2, /*a*/ ctx[0]);
-			if (dirty & /*b*/ 2) set_data(t4, /*b*/ ctx[1]);
-			if (dirty & /*a, b*/ 3 && t6_value !== (t6_value = /*a*/ ctx[0] + /*b*/ ctx[1] + "")) set_data(t6, t6_value);
+			if (dirty & /*c*/ 4 && input2.value !== /*c*/ ctx[2]) {
+				set_input_value(input2, /*c*/ ctx[2]);
+			}
+
+			if (dirty & /*a*/ 1) set_data(t3, /*a*/ ctx[0]);
+			if (dirty & /*b*/ 2) set_data(t5, /*b*/ ctx[1]);
+			if (dirty & /*c*/ 4) set_data(t7, /*c*/ ctx[2]);
+			if (dirty & /*a, b, c*/ 7 && t9_value !== (t9_value = /*a*/ ctx[0] + /*b*/ ctx[1] + /*c*/ ctx[2] + "")) set_data(t9, t9_value);
 		},
 		i: noop,
 		o: noop,
@@ -410,6 +434,8 @@ function create_fragment(ctx) {
 			if (detaching) detach(t0);
 			if (detaching) detach(input1);
 			if (detaching) detach(t1);
+			if (detaching) detach(input2);
+			if (detaching) detach(t2);
 			if (detaching) detach(p);
 			mounted = false;
 			run_all(dispose);
@@ -420,6 +446,7 @@ function create_fragment(ctx) {
 function instance($$self, $$props, $$invalidate) {
 	let a = 1;
 	let b = 3;
+	let c = "cows";
 
 	function input0_input_handler() {
 		a = to_number(this.value);
@@ -431,7 +458,12 @@ function instance($$self, $$props, $$invalidate) {
 		$$invalidate(1, b);
 	}
 
-	return [a, b, input0_input_handler, input1_input_handler];
+	function input2_input_handler() {
+		c = this.value;
+		$$invalidate(2, c);
+	}
+
+	return [a, b, c, input0_input_handler, input1_input_handler, input2_input_handler];
 }
 
 class Add_two_numbers extends SvelteComponent {
