@@ -454,14 +454,14 @@ function create_fragment$1(ctx) {
 	return {
 		c() {
 			h1 = element("h1");
-			t0 = text("esbuild svelte plugin example");
+			t0 = text("esbuild svelte plugin example - test");
 			t1 = space();
 			create_component(addtwonumbers.$$.fragment);
 		},
 		l(nodes) {
 			h1 = claim_element(nodes, "H1", {});
 			var h1_nodes = children(h1);
-			t0 = claim_text(h1_nodes, "esbuild svelte plugin example");
+			t0 = claim_text(h1_nodes, "esbuild svelte plugin example - test");
 			h1_nodes.forEach(detach);
 			t1 = claim_space(nodes);
 			claim_component(addtwonumbers.$$.fragment, nodes);
