@@ -501,3 +501,4 @@ class App extends SvelteComponent {
 new App({
   target: document.body
 });
+//# sourceMappingURL=bundle.js.map
