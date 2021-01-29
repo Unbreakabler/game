@@ -1,10 +1,13 @@
 
 <script>
-  import 'phaser'
-import { onMount } from 'svelte';
-  let canvas, game;
+  import 'phaser';
+  import { onMount, onDestroy } from 'svelte';
+  import { count } from '../store.ts';
 
-  $: game, console.log('test', Phaser, canvas, game)
+  let canvas, game, unsubscribe_store;
+
+  // $: game, console.log('test', Phaser, canvas, game, count)
+  $: game, console.log($count)
 
   onMount(() => {
     config = {
@@ -24,41 +27,39 @@ import { onMount } from 'svelte';
         }
     };
   
-    function preload ()
-      {
-          this.load.setBaseURL('http://labs.phaser.io');
+    function preload () {
+        this.load.setBaseURL('http://labs.phaser.io');
+
+        this.load.image('sky', 'assets/skies/space3.png');
+        this.load.image('logo', 'assets/sprites/phaser3-logo.png');
+        this.load.image('red', 'assets/particles/red.png');
+    }
   
-          this.load.image('sky', 'assets/skies/space3.png');
-          this.load.image('logo', 'assets/sprites/phaser3-logo.png');
-          this.load.image('red', 'assets/particles/red.png');
-      }
-  
-      function create ()
-      {
-        this.add.image(400, 300, 'sky');
+    function create () {
+      const bg = this.add.image(400, 300, 'sky');
+      
+      let text = this.add.text(100, 100, '', { font: '64px Courier', fill: '#00ff00' });
+      
+      bg.setDataEnabled();
+      bg.data.set('count', $count)
 
-        var particles = this.add.particles('red');
+      bg.on('changedata', (game_object, key, value) => {
+        text.setText([
+          'Count: ' + bg.data.get('count'),
+        ]);
+      })
 
-        var emitter = particles.createEmitter({
-            speed: 100,
-            scale: { start: 1, end: 0 },
-            blendMode: 'ADD'
-        });
+      unsubscribe_store = count.subscribe(c => {
+        bg.data.set('count', c)
+      })
 
-        var logo = this.physics.add.image(400, 100, 'logo');
-
-        logo.setVelocity(100, 200);
-        logo.setBounce(1, 1);
-        logo.setCollideWorldBounds(true);
-
-        emitter.startFollow(logo);
-
-        // Bind event emitters here?
-      }
+    }
   
     game = new Phaser.Game(config);
   })
 
+  onDestroy(unsubscribe_store)
 </script>
 
 <canvas bind:this={canvas} id="game-container"></canvas>
+<button on:click={count.increment}>Increment</button>
