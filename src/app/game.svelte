@@ -12,7 +12,7 @@
     create(): void {
       const scoreboard: Phaser.GameObjects.Text = this.add.text(100, 100, "", {
         font: "64px Courier",
-        fill: "#00ff00",
+        backgroundColor: "#00ff00",
       });
 
       scoreboard.setDataEnabled();
@@ -22,7 +22,7 @@
       });
       const inc_button = this.add.text(200, 200, "", {
         font: "64px Courier",
-        fill: "#00ff00",
+        backgroundColor: "#00ff00",
       });
       inc_button.setInteractive();
       inc_button.setText(["Increment"]);
