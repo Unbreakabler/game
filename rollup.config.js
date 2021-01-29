@@ -1,7 +1,7 @@
 // rollup.config.js
 import svelte from "rollup-plugin-svelte";
 import resolve from "@rollup/plugin-node-resolve";
-import typescript from '@rollup/plugin-typescript';
+import typescript from "@rollup/plugin-typescript";
 import sveltePreprocess from "svelte-preprocess";
 
 export default {
@@ -56,6 +56,6 @@ export default {
     // see NOTICE below
     resolve({ browser: true, dedupe: ["svelte"] }),
     // ...
-    typescript({ sourceMap: true })
+    typescript({ sourceMap: true }),
   ],
 };
