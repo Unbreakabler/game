@@ -19,7 +19,6 @@
     "@web/dev-server-esbuild": "^0.2.11",
     "@web/rollup-plugin-html": "^1.4.0",
     "eslint": "^7.18.0",
-    "husky": "^4.3.8",
     "prettier": "^2.2.1",
     "prettier-plugin-svelte": "^2.1.1",
     "pretty-quick": "^3.1.0",
@@ -31,10 +30,5 @@
   },
   "dependencies": {
     "phaser": "^3.52.0"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "pretty-quick --staged"
-    }
   }
 }
