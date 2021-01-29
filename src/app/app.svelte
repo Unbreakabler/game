@@ -1,7 +1,6 @@
-
 <script>
-  import Game from './game.svelte';
-  import JobManager from './job_manager.svelte';
+  import Game from "./game.svelte";
+  import JobManager from "./job_manager.svelte";
 </script>
 
 <Game />
