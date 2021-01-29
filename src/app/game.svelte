@@ -38,7 +38,7 @@
     function create () {
       const bg = this.add.image(400, 300, 'sky');
       
-      let text = this.add.text(100, 100, '', { font: '64px Courier', fill: '#00ff00' });
+      const text = this.add.text(100, 100, '', { font: '64px Courier', fill: '#00ff00' });
       
       bg.setDataEnabled();
       bg.data.set('count', $count)
@@ -47,6 +47,13 @@
         text.setText([
           'Count: ' + bg.data.get('count'),
         ]);
+      })
+
+      const inc_button = this.add.text(200, 200, '', { font: '64px Courier', fill: '#00ff00' });
+      inc_button.setInteractive();
+      inc_button.setText(['Increment'])
+      inc_button.on('pointerup', pointer => {
+        count.increment()
       })
 
       unsubscribe_store = count.subscribe(c => {
@@ -63,3 +70,4 @@
 
 <canvas bind:this={canvas} id="game-container"></canvas>
 <button on:click={count.increment}>Increment</button>
+<div>count: {$count}</div>
