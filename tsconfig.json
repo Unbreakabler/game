@@ -6,13 +6,9 @@
     "strict": true,
     "noImplicitReturns": true,
     "strictNullChecks": true,
-    "strictPropertyInitialization" : true
+    "strictPropertyInitialization": true
   },
-  "typedef":[
-    true,
-    "call-signature",
-    "property-declaration"
-  ],
-  "include": ["src/**/*", "src/node_modules/**/*"],
+  "typedef": [true, "call-signature", "property-declaration"],
+  "include": ["src/*"],
   "exclude": ["node_modules/*"]
 }
