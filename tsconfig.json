@@ -3,7 +3,16 @@
   "compilerOptions": {
     "lib": ["DOM", "ES2017", "WebWorker"],
     "esModuleInterop": true,
+    "strict": true,
+    "noImplicitReturns": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization" : true
   },
+  "typedef":[
+    true,
+    "call-signature",
+    "property-declaration"
+  ],
   "include": ["src/**/*", "src/node_modules/**/*"],
   "exclude": ["node_modules/*"]
 }
