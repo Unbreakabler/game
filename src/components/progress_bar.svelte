@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   export let total = 100;
   export let current = 0;
 
