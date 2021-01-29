@@ -17,6 +17,10 @@
     "@web/dev-server-esbuild": "^0.2.11",
     "@web/rollup-plugin-html": "^1.4.0",
     "rollup-plugin-svelte": "^7.1.0",
-    "svelte": "^3.31.2"
+    "svelte": "^3.31.2",
+    "svelte-preprocess": "^4.6.3"
+  },
+  "dependencies": {
+    "phaser": "^3.52.0"
   }
 }

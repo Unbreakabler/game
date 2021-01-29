@@ -1,6 +1,7 @@
 // rollup.config.js
 import svelte from 'rollup-plugin-svelte';
 import resolve from '@rollup/plugin-node-resolve';
+import sveltePreprocess from 'svelte-preprocess';
 
 export default {
   input: 'src/index.js',
@@ -20,11 +21,7 @@ export default {
 
       // Optionally, preprocess components with svelte.preprocess:
       // https://svelte.dev/docs#svelte_preprocess
-      preprocess: {
-        style: ({ content }) => {
-          return transformStyles(content);
-        }
-      },
+      preprocess: sveltePreprocess(),
 
       // Emit CSS as "files" for other plugins to process. default is true
       emitCss: false,
