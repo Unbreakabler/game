@@ -13,6 +13,13 @@
   },
   "author": "",
   "license": "ISC",
+  "prettier": {
+    "tabWidth": 2,
+    "useTabs": false,
+    "printWidth": 140,
+    "semi": true,
+    "trailingComma": "es5"
+  },
   "devDependencies": {
     "@rollup/plugin-typescript": "^8.1.1",
     "@tsconfig/svelte": "^1.0.10",
