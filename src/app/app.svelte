@@ -1,8 +1,9 @@
 
 <script>
-  import AddTwoNumbers from './add-two-numbers.svelte'
+  import Game from './game.svelte';
+  import JobManager from './job_manager.svelte';
 </script>
 
-<h1>esbuild svelte plugin example - test</h1>
+<Game />
 
-<AddTwoNumbers />
+<JobManager />
