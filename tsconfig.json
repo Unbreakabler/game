@@ -8,7 +8,11 @@
     "strictNullChecks": true,
     "strictPropertyInitialization": true
   },
-  "typedef": [true, "call-signature", "property-declaration"],
+  "typedef":[
+    true,
+    "call-signature",
+    "property-declaration"
+  ],
   "include": ["src/*"],
-  "exclude": ["node_modules/*"]
+  "exclude": ["node_modules"]
 }
