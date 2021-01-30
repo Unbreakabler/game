@@ -1,6 +1,7 @@
 <script>
   import { count } from "../gamelogic/store";
   import ProgressBar from "../components/progress_bar.svelte";
+  import Job1 from "../components/job_1.svelte";
 </script>
 
-<ProgressBar current={$count} />
+<Job1 active={true} />
