@@ -7,7 +7,6 @@ export default class Demo extends Phaser.Scene {
   }
 
   create(): void {
-    Phaser.GameObjects.Text
     const scoreboard: Phaser.GameObjects.Text = this.add.text(100, 100, "", {
       font: "64px Courier",
       backgroundColor: "#00ff00",
@@ -17,6 +16,13 @@ export default class Demo extends Phaser.Scene {
     scoreboard.on("changedata", (game_object: any, key: any, value: any) => {
       scoreboard.setText(["Count: " + scoreboard.data.get("count")]);
     });
+    scoreboard.data.set('count', 0)
+
+    // This is a memory leak, we need to destroy this subscription when the scene unmounts
+    const unsubscribe_store = count.subscribe((c) => {
+      scoreboard.data.set("count", c);
+    });
+
     const inc_button = this.add.text(200, 200, "", {
       font: "64px Courier",
       backgroundColor: "#00ff00",
@@ -25,11 +31,6 @@ export default class Demo extends Phaser.Scene {
     inc_button.setText(["Increment"]);
     inc_button.on("pointerup", (pointer: any) => {
       count.increment();
-    });
-
-    // This is a memory leak, we need to destroy this subscription when the scene unmounts
-    const unsubscribe_store = count.subscribe((c) => {
-      scoreboard.data.set("count", c);
     });
   }
 
