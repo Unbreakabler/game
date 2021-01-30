@@ -22,4 +22,3 @@
 
 <canvas bind:this={canvas} id="game-container" />
 <button on:click={count.increment}>Increment</button>
-<div>count: {$count}</div>
