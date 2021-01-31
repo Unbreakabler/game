@@ -58,7 +58,7 @@ module.exports = {
       },
     ],
     "@typescript-eslint/no-magic-numbers": [
-      "error",
+      "warn",
       { ignoreEnums: true, ignoreNumericLiteralTypes: true, ignoreArrayIndexes: true, ignore: [0, 1] },
     ],
     "@typescript-eslint/prefer-for-of": ["error"],
