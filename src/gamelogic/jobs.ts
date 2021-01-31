@@ -63,6 +63,7 @@ export class Job {
     const current_level = this.getCurrentLevel();
     if (current_level > 0) {
       const exp_per_second = this.getCurrentExpRate();
+      const income_per_second = this.getCurrentIncome();
       let current_exp = this.getCurrentExp()
       current_exp += exp_per_second * delta_t;
       const exp_for_level = this.getTotalExpForLevel(this.base_exp, this.multiplier, current_level);
@@ -72,6 +73,7 @@ export class Job {
         saveSaveGame(gameModelInstance.saveData);
       }
       gameModelInstance.saveData.jobs[this.id].current_exp = current_exp
+      gameModelInstance.addMoney(income_per_second * delta_t)
       updateGameModel();
     }
   }
