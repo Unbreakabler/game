@@ -1,97 +1,66 @@
-const error = "error";
-const readonly = "readonly";
-const always = "always";
-const never = "never";
+/* eslint-disable */
+const eslintSveltePreprocess = require("eslint-svelte3-preprocess");
+const sveltePreprocess = require("svelte-preprocess");
 
 module.exports = {
-  extends: "eslint:recommended",
-
-  env: {
-    browser: true,
-    es2021: true,
-  },
-
+  parser: "@typescript-eslint/parser",
+  extends: ["eslint:recommended"],
+  plugins: ["svelte3"],
   parserOptions: {
-    ecmaVersion: 12,
+    ecmaVersion: 2020,
+    // Allows for the parsing of modern ECMAScript features
     sourceType: "module",
+    // Allows for the use of imports
+  },
+  env: {
+    es2020: true,
+    browser: true,
+    node: true,
   },
 
-  globals: {
-    describe: readonly,
-    it: readonly,
-    beforeEach: readonly,
-    afterEach: readonly,
+  overrides: [
+    {
+      files: ["*.svelte"],
+      processor: "svelte3/svelte3",
+    },
+    {
+      files: ["*.ts", "*.json"],
+      extends: [
+        "plugin:@typescript-eslint/recommended",
+        // Uses the recommended rules from the @typescript-eslint/eslint-plugin
+        "prettier/@typescript-eslint",
+        // Uses eslint-config-prettier to disable ESLint rules from @typescript-eslint/eslint-plugin that would conflict with prettier
+        "plugin:prettier/recommended",
+        // Enables eslint-plugin-prettier and displays prettier errors as ESLint errors. Make sure this is always the last configuration in the extends array.
+      ],
+    },
+  ],
+  settings: {
+    "svelte3/preprocess": eslintSveltePreprocess(sveltePreprocess),
   },
-
   rules: {
-    indent: [error, 2],
-    "linebreak-style": [error, "unix"],
-    quotes: [error, "single"],
-    semi: [error, never],
-
-    "block-scoped-var": [error],
-    complexity: [error, 4],
-    "dot-location": [error, "object"],
-    eqeqeq: [error, always],
-    "no-else-return": [error],
-    "no-multi-spaces": [error, { ignoreEOLComments: true }],
-    "no-octal": [error],
-    "no-octal-escape": [error],
-    "no-return-assign": [error, always],
-    "no-sequences": [error],
-    "no-useless-concat": [error],
-    "no-useless-return": [error],
-    radix: [error],
-    yoda: [error],
-
-    "no-label-var": [error],
-    "brace-style": [error, "1tbs", { allowSingleLine: true }],
-    "comma-spacing": [error, { before: false, after: true }],
-    "comma-style": [error, "last"],
-    "func-call-spacing": [error, never],
-    "key-spacing": [error, { beforeColon: false, afterColon: true }],
-    "keyword-spacing": [error],
-    "max-depth": [error, 4],
-    "max-len": [error, { code: 100, comments: 100, ignoreUrls: true }],
-    "max-lines": [
-      error,
-      { max: 200, skipBlankLines: true, skipComments: false },
+    // Place to specify ESLint rules. Can be used to overwrite rules specified from the extended configs
+    // e.g. "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/naming-convention": [
+      "error",
+      { selector: "default", format: ["snake_case"] },
+      { selector: "typeLike", format: ["PascalCase"] },
+      { selector: "enum", format: ["UPPER_CASE"] },
+      { selector: "enumMember", format: ["UPPER_CASE"] },
     ],
-    "max-lines-per-function": [
-      error,
-      { max: 200, skipBlankLines: true, skipComments: true, IIFEs: false },
+    "@typescript-eslint/no-inferrable-types": "off",
+    "@typescript-eslint/explicit-function-return-type": [
+      "error",
+      {
+        allowExpressions: true,
+      },
     ],
-    "max-nested-callbacks": [error, 4],
-    "max-params": [error, 4],
-    "max-statements": [error, 10],
-    "max-statements-per-line": [error, { max: 2 }],
-    "new-cap": [error],
-    "new-parens": [error, always],
-    "no-array-constructor": [error],
-    "no-bitwise": [error],
-    "no-lonely-if": [error],
-    "no-multi-assign": [error],
-    "no-multiple-empty-lines": [error, { max: 3, maxBOF: 1, maxEOF: 1 }],
-    "no-nested-ternary": [error],
-    "no-new-object": [error],
-    "no-tabs": [error],
-    "no-trailing-spaces": [error],
-    "no-unneeded-ternary": [error],
-    "no-whitespace-before-property": [error],
-    "nonblock-statement-body-position": [error, "beside"],
-    "prefer-exponentiation-operator": [error],
-    "quote-props": [error, "as-needed"],
-    "semi-spacing": [error],
-    "semi-style": [error],
-    "space-before-function-paren": [error, never],
-    "space-infix-ops": [error],
-    "spaced-comment": [error, always],
-    "switch-colon-spacing": [error],
-    "no-duplicate-imports": [error],
-    "no-useless-computed-key": [error],
-    "no-useless-constructor": [error],
-    "no-var": [error],
-    "prefer-const": [error],
-    "prefer-rest-params": [error],
+    "@typescript-eslint/no-magic-numbers": [
+      "error",
+      { ignoreEnums: true, ignoreNumericLiteralTypes: true, ignoreArrayIndexes: true, ignore: [0, 1] },
+    ],
+    "@typescript-eslint/prefer-for-of": ["error"],
+    "@typescript-eslint/no-namespace": "off",
+    "@typescript-eslint/explicit-member-accessibility": ["error"],
   },
 };
