@@ -3,7 +3,7 @@
   import { onMount, onDestroy } from "svelte";
   import { count } from "../gamelogic/store";
   import Demo from "../scenes/demo";
-  let canvas: HTMLCanvasElement, game, unsubscribe_store: unknown;
+  let canvas: HTMLCanvasElement, game;
 
   onMount(() => {
     const config: Phaser.Types.Core.GameConfig = {
@@ -17,7 +17,6 @@
     game = new Phaser.Game(config);
   });
 
-  onDestroy(unsubscribe_store);
 </script>
 
 <canvas bind:this={canvas} id="game-container" />
