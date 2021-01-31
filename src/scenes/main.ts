@@ -1,13 +1,14 @@
 import "phaser";
 import { count } from "../gamelogic/store";
+import { svelte_game_loop } from '../gamelogic/gameloop'
 
-export default class Demo extends Phaser.Scene {
+export default class Main extends Phaser.Scene {
   constructor (){
-    super('demo');
+    super('main');
   }
 
   create(): void {
-    const scoreboard: Phaser.GameObjects.Text = this.add.text(100, 100, "", {
+    const scoreboard: Phaser.GameObjects.Text = this.add.text(10, 10, "", {
       font: "64px Courier",
       backgroundColor: "#00ff00",
     });
@@ -23,7 +24,7 @@ export default class Demo extends Phaser.Scene {
       scoreboard.data.set("count", c);
     });
 
-    const inc_button = this.add.text(200, 200, "", {
+    const inc_button = this.add.text(10, 110, "", {
       font: "64px Courier",
       backgroundColor: "#00ff00",
     });
@@ -32,6 +33,14 @@ export default class Demo extends Phaser.Scene {
     inc_button.on("pointerup", (pointer: any) => {
       count.increment();
     });
+
+
+    // GAME LOOP INTEGRATION TO SVELTE
+    this.game.events.on('step', function(time: number, delta_t: number) {
+      svelte_game_loop(time, delta_t)
+      // console.log(time, delta)
+      // call update in svelte land
+    })
   }
 
 }

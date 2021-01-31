@@ -2,7 +2,7 @@
   import "phaser";
   import { onMount, onDestroy } from "svelte";
   import { count } from "../gamelogic/store";
-  import Demo from "../scenes/demo";
+  import Main from "../scenes/main";
   let canvas: any, game, unsubscribe_store: any;
 
   onMount(() => {
@@ -11,7 +11,7 @@
       width: 800,
       height: 600,
       canvas: canvas,
-      scene: Demo,
+      scene: Main,
     };
 
     game = new Phaser.Game(config);

@@ -16,7 +16,6 @@
     position: absolute;
     padding: 2px 10px;
     color: white;
-    font-family: 'Verdana', sans-serif;
   }
   .container {
     height: 1.5em;

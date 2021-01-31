@@ -1,0 +1,4 @@
+1/30/2021
+
+- broadcast event from phaser game loop to svelte
+- run svelte game loop in sync with phaser
