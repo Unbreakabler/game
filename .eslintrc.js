@@ -1,11 +1,13 @@
 /* eslint-disable */
 const eslintSveltePreprocess = require("eslint-svelte3-preprocess");
 const sveltePreprocess = require("svelte-preprocess");
+const preprocess = sveltePreprocess();
 
 module.exports = {
+  root: true,
   parser: "@typescript-eslint/parser",
   extends: ["eslint:recommended"],
-  plugins: ["svelte3"],
+  plugins: ["svelte3", "@typescript-eslint", "prettier"],
   parserOptions: {
     ecmaVersion: 2020,
     // Allows for the parsing of modern ECMAScript features
@@ -17,7 +19,6 @@ module.exports = {
     browser: true,
     node: true,
   },
-
   overrides: [
     {
       files: ["*.svelte"],
@@ -36,7 +37,7 @@ module.exports = {
     },
   ],
   settings: {
-    "svelte3/preprocess": eslintSveltePreprocess(sveltePreprocess),
+    "svelte3/preprocess": eslintSveltePreprocess(preprocess),
   },
   rules: {
     // Place to specify ESLint rules. Can be used to overwrite rules specified from the extended configs
@@ -45,6 +46,7 @@ module.exports = {
       "error",
       { selector: "default", format: ["snake_case"] },
       { selector: "typeLike", format: ["PascalCase"] },
+      { selector: "property", format: ["snake_case","camelCase"] },
       { selector: "enum", format: ["UPPER_CASE"] },
       { selector: "enumMember", format: ["UPPER_CASE"] },
     ],

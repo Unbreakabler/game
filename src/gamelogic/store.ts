@@ -1,6 +1,12 @@
-import { writable } from "svelte/store";
+import { writable, Readable } from "svelte/store";
 
-const create_count = (): Record<string, unknown> => {
+interface Incrementable<T> extends Readable<T> {
+  increment: () => void;
+  decrement: () => void;
+  reset: () => void;
+}
+
+const create_count = (): Incrementable<number> => {
   const { subscribe, set, update } = writable(0);
 
   return {
@@ -8,7 +14,7 @@ const create_count = (): Record<string, unknown> => {
     increment: () => update((n) => n + 1),
     decrement: () => update((n) => n - 1),
     reset: () => set(0),
-  } as Record<string, unknown>;
+  };
 };
 
 export const count = create_count();

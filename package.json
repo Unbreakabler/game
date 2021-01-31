@@ -19,7 +19,8 @@
     "useTabs": false,
     "printWidth": 140,
     "semi": true,
-    "trailingComma": "es5"
+    "trailingComma": "all",
+    "endOfLine": "lf"
   },
   "devDependencies": {
     "@rollup/plugin-typescript": "^8.1.1",
