@@ -1,31 +1,45 @@
-<script>
-import { count } from "../gamelogic/store";
+<script lang="ts">
+import { gameModel, GameModel } from "../gamelogic/gamemodel";
+import type { Job } from '../gamelogic/jobs';
+import { formatNumber } from "../gamelogic/utils";
 
 import ProgressBar from "./progress_bar.svelte";
 
-export let job_name;
-export let base_income;
-export let base_exp;
-export let income_level_multiplier;
-export let xp_level_multiplier;
-export let max_level;
-export let current_level;
-export let current_exp;
-export let exp_per_second;
+export let job: Job;
 
-let required_exp = base_exp;
-let income = base_income;
-$: if (current_level > 0) {
-  required_exp = base_exp
-  for(i = 0; i < current_level; i++){
-    required_exp = required_exp*xp_level_multiplier;
-    income = income*income_level_multiplier;
-  }
+let gameModelInstance : GameModel;
+gameModel.subscribe(m => gameModelInstance = m);
+
+$: game_model_job = gameModelInstance.saveData.jobs[job.id];
+
+let current_exp = 0
+let max_level_reached = 0
+let total_exp_for_level = 0
+let current_income = 0
+let current_level = 0;
+$: if (game_model_job) {
+  current_level = game_model_job.current_level
+  current_exp = game_model_job.current_exp
+  max_level_reached = game_model_job.max_level_reached
+  // move this calculations into functions 
+  total_exp_for_level = job.getTotalExpForLevel(job.base_exp, job.multiplier, current_level)
+  current_income = job.base_income * Math.pow(job.multiplier, current_level)
 }
 </script>
 
-<ProgressBar current={current_exp} total={required_exp} name={job_name} />
-<div>level: {current_level}</div>
-<div>income: {income}</div>
-<div>Xp remaining: {required_exp - current_exp}</div>
-<div>Max Level: {max_level}</div>
+<style>
+  row {
+    display: flex;
+  }
+  div {
+    flex: 1;
+  }
+</style>
+
+<row>
+  <div><ProgressBar current={current_exp} total={total_exp_for_level} name={job.name} /></div>
+  <div>{current_level}</div>
+  <div>{formatNumber(current_income, 2)}</div>
+  <div>{formatNumber(total_exp_for_level - current_exp, 2)}</div>
+  <div>{max_level_reached}</div>
+</row>
