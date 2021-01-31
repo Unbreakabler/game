@@ -1,5 +1,8 @@
 import "phaser";
-import { count } from "../gamelogic/store";
+
+// import { count } from "../gamelogic/store";
+// import { GameModel } from ''
+import { gameModel } from "../gamelogic/gamemodel";
 import { svelte_game_loop } from "../gamelogic/gameloop";
 
 export default class Main extends Phaser.Scene {
@@ -20,9 +23,8 @@ export default class Main extends Phaser.Scene {
       sb.setText([`Count: ${value}`]);
     });
 
-    // This is a memory leak, we need to destroy this subscription when the scene unmounts
-    const unsub = count.subscribe((c) => {
-      scoreboard.data.set("count", c);
+    const unsub = gameModel.subscribe((model) => {
+      scoreboard.data.set("count", model.saveData.money);
     });
 
     this.events.addListener("destroy", () => {
@@ -35,15 +37,10 @@ export default class Main extends Phaser.Scene {
     });
     inc_button.setInteractive();
     inc_button.setText(["Increment"]);
-    inc_button.on("pointerup", () => {
-      count.increment();
-    });
-
     // GAME LOOP INTEGRATION TO SVELTE
+
     this.game.events.on("step", function (time: number, delta_t: number) {
       svelte_game_loop(time, delta_t);
-      // console.log(time, delta)
-      // call update in svelte land
     });
   }
 }
