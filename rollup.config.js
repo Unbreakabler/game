@@ -12,6 +12,8 @@ export default {
     dir: "public/build",
     format: "es",
   },
+  //NOTE: Enable node_modules and src imports to keep in original files and location
+  preserveModules: true,
   plugins: [
     svelte({
       // By default, all ".svelte" files are compiled
