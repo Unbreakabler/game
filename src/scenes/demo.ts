@@ -2,25 +2,30 @@ import "phaser";
 import { count } from "../gamelogic/store";
 
 export default class Demo extends Phaser.Scene {
-  constructor (){
-    super('demo');
+  public constructor() {
+    super("demo");
   }
 
-  create(): void {
+  public create(): void {
     const scoreboard: Phaser.GameObjects.Text = this.add.text(100, 100, "", {
       font: "64px Courier",
       backgroundColor: "#00ff00",
     });
 
     scoreboard.setDataEnabled();
-    scoreboard.on("changedata", (game_object: any, key: any, value: any) => {
-      scoreboard.setText(["Count: " + scoreboard.data.get("count")]);
+    scoreboard.data.set("count", 0);
+
+    scoreboard.on("changedata", (sb: Phaser.GameObjects.Text, key: string, value: number) => {
+      sb.setText([`Count: ${value}`]);
     });
-    scoreboard.data.set('count', 0)
 
     // This is a memory leak, we need to destroy this subscription when the scene unmounts
-    const unsubscribe_store = count.subscribe((c) => {
+    const unsub = count.subscribe((c) => {
       scoreboard.data.set("count", c);
+    });
+
+    this.events.addListener("destroy", () => {
+      unsub();
     });
 
     const inc_button = this.add.text(200, 200, "", {
@@ -29,9 +34,8 @@ export default class Demo extends Phaser.Scene {
     });
     inc_button.setInteractive();
     inc_button.setText(["Increment"]);
-    inc_button.on("pointerup", (pointer: any) => {
+    inc_button.on("pointerup", () => {
       count.increment();
     });
   }
-
 }

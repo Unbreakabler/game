@@ -9,8 +9,11 @@ export default {
   output: {
     name: "app",
     sourcemap: true,
-    file: "public/build/bundle.js",
+    dir: "public/build",
+    format: "es",
   },
+  //NOTE: Enable node_modules and src imports to keep in original files and location
+  preserveModules: true,
   plugins: [
     svelte({
       // By default, all ".svelte" files are compiled

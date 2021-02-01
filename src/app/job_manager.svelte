@@ -1,5 +1,5 @@
 <script>
-  import { count } from "../gamelogic/store.ts";
+  import { count } from "../gamelogic/store";
   import ProgressBar from "../components/progress_bar.svelte";
 </script>
 
