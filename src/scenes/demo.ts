@@ -13,10 +13,11 @@ export default class Demo extends Phaser.Scene {
     });
 
     scoreboard.setDataEnabled();
-    scoreboard.on("changedata", (game_object: never, key: any, value: any) => {
-      scoreboard.setText(["Count: " + scoreboard.data.get("count")]);
+    scoreboard.data.set("count", 0);
+
+    scoreboard.on("changedata", (sb: Phaser.GameObjects.Text, key: string, value: number) => {
+      sb.setText([`Count: ${value}`]);
     });
-    scoreboard.data.set("count", 1);
 
     // This is a memory leak, we need to destroy this subscription when the scene unmounts
     const unsub = count.subscribe((c) => {
