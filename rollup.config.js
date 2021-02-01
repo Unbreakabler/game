@@ -9,7 +9,8 @@ export default {
   output: {
     name: "app",
     sourcemap: true,
-    file: "public/build/bundle.js",
+    dir: "public/build",
+    format: "es",
   },
   plugins: [
     svelte({

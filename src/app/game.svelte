@@ -1,6 +1,6 @@
 <script lang="ts">
   import "phaser";
-  import { onMount, onDestroy } from "svelte";
+  import { onMount } from "svelte";
   import { count } from "../gamelogic/store";
   import Demo from "../scenes/demo";
   let canvas: HTMLCanvasElement, game;
@@ -16,6 +16,9 @@
 
     game = new Phaser.Game(config);
   });
+
+let a = 1;
+
 
 </script>
 

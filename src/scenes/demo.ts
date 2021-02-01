@@ -33,7 +33,7 @@ export default class Demo extends Phaser.Scene {
     });
     inc_button.setInteractive();
     inc_button.setText(["Increment"]);
-    inc_button.on("pointerup", (pointer: any) => {
+    inc_button.on("pointerup", () => {
       count.increment();
     });
   }

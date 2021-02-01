@@ -9,8 +9,7 @@
     "test": "web-test-runner test/**/*.test.jsx",
     "test:watch": "web-test-runner test/**/*.test.jsx --watch",
     "build": "rollup -c rollup.config.js",
-    "prettier": "npx prettier --write .",
-    "postinstall": "patch-package"
+    "prettier": "npx prettier --write ."
   },
   "author": "",
   "license": "ISC",
@@ -20,7 +19,10 @@
     "printWidth": 140,
     "semi": true,
     "trailingComma": "all",
-    "endOfLine": "lf"
+    "endOfLine": "lf",
+    "plugins": [
+      "prettier-plugin-svelte"
+    ]
   },
   "devDependencies": {
     "@rollup/plugin-typescript": "^8.1.1",
@@ -30,17 +32,14 @@
     "@web/dev-server": "^0.1.5",
     "@web/dev-server-esbuild": "^0.2.11",
     "@web/rollup-plugin-html": "^1.4.0",
-    "eslint": "^7.18.0",
+    "eslint": "^7.19.0",
     "eslint-config-prettier": "^7.2.0",
     "eslint-plugin-prettier": "^3.3.1",
-    "eslint-plugin-svelte3": "^3.0.0",
-    "eslint-svelte3-preprocess": "0.0.4",
-    "patch-package": "^6.2.2",
     "prettier": "^2.2.1",
     "prettier-plugin-svelte": "^2.1.1",
     "pretty-quick": "^3.1.0",
     "rollup-plugin-svelte": "^7.1.0",
-    "svelte": "^3.31.2",
+    "svelte": "^3.32.1",
     "svelte-preprocess": "^4.6.5",
     "tslib": "^2.1.0",
     "typescript": "^4.1.3"
