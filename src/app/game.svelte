@@ -16,10 +16,6 @@
 
     game = new Phaser.Game(config);
   });
-
-let a = 1;
-
-
 </script>
 
 <canvas bind:this={canvas} id="game-container" />
