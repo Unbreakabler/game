@@ -15,14 +15,8 @@ export default class Main extends Phaser.Scene {
       backgroundColor: "#00ff00",
     });
 
-    scoreboard.setDataEnabled();
-    scoreboard.on("changedata", (game_object: any, key: any, value: any) => {
-      scoreboard.setText(["Count: " + scoreboard.data.get("count")]);
-    });
-    scoreboard.data.set('count', 0)
-
     const unsubscribe_store = gameModel.subscribe((model) => {
-      scoreboard.data.set('count', model.saveData.money)
+      scoreboard.setText(["Count: " + model.saveData.money]);
     })
 
     const inc_button = this.add.text(10, 110, "", {
