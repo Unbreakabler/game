@@ -13,7 +13,7 @@ class SaveData {
         this.lastSaved = 0;
         this.jobs = {
             1: { current_level: 1, max_level_reached: 0, current_exp: 0 },
-            2: { current_level: 1, max_level_reached: 0, current_exp: 0 }
+            2: { current_level: 1, max_level_reached: 0, current_exp: 0 },
         };
     }
 }
@@ -49,15 +49,15 @@ class GameModel {
     }
 }
 /**
-* A writable store of the gameModel that can be accessed from other parts of the application.
-*/
+ * A writable store of the gameModel that can be accessed from other parts of the application.
+ */
 const gameModel = writable(new GameModel());
 /**
-* A function that can be called anywhere to update the game model in the svelte store.
-* This will trigger the svelte components to re-evaluate and update their content.
-*/
+ * A function that can be called anywhere to update the game model in the svelte store.
+ * This will trigger the svelte components to re-evaluate and update their content.
+ */
 function updateGameModel() {
-    gameModel.update(m => m = m);
+    gameModel.update((m) => (m = m));
 }
 
 export { GameModel, SaveData, gameModel, updateGameModel };

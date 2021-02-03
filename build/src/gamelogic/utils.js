@@ -16,13 +16,13 @@ function formatNumber(input, decimals) {
     if (input >= quadrilion)
         return input.toExponential(decimals).replace("+", "");
     if (input >= trillion)
-        return (input / trillion).toFixed(decimals) + 'T';
+        return (input / trillion).toFixed(decimals) + "T";
     if (input >= billion)
-        return (input / billion).toFixed(decimals) + 'B';
+        return (input / billion).toFixed(decimals) + "B";
     if (input >= million)
-        return (input / million).toFixed(decimals) + 'M';
+        return (input / million).toFixed(decimals) + "M";
     if (input >= thousand)
-        return (input / thousand).toFixed(decimals) + 'K';
+        return (input / thousand).toFixed(decimals) + "K";
     return input.toFixed(decimals);
 }
 

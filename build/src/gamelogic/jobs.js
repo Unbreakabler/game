@@ -6,8 +6,9 @@ import { saveSaveGame } from './saveloadfunctions.js';
  * We use the subscribe function so if the store is updated our local instance will also update.
  */
 let gameModelInstance;
-gameModel.subscribe(m => gameModelInstance = m);
+gameModel.subscribe((m) => (gameModelInstance = m));
 class Job {
+    //prettier-ignore
     constructor(id, name, description, base_exp, base_income, base_exp_rate, multiplier) {
         this.id = id;
         this.name = name;
@@ -38,6 +39,7 @@ class Job {
         return this.base_exp * Math.pow(this.multiplier, this.getCurrentLevel());
     }
     getCurrentExpRate() {
+        //prettier-ignore
         return this.base_exp_rate
             + (this.base_exp_rate * (0.5 * this.getCurrentLevel())
                 + (this.base_exp_rate * (0.1 * (this.getMaxLevelReached() + 1))));
@@ -61,9 +63,10 @@ class Job {
         }
     }
 }
+//prettier-ignore
 const jobs = [
-    new Job(1, 'Starter', 'Starting Job', 100, 1, 10, 1.1),
-    new Job(2, 'Starter2', 'Starting Job', 1000, 10, 10, 2.0)
+    new Job(1, "Starter", "Starting Job", 100, 1, 10, 1.1),
+    new Job(2, "Starter2", "Starting Job", 1000, 10, 10, 2.0)
 ];
 
 export { Job, jobs };

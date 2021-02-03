@@ -30,10 +30,10 @@ function sendMessage(message) {
     // create a message object
     const notification = new Message(message);
     // add the message to the message queue
-    messageQueue.update(m => m = [...m, notification]);
+    messageQueue.update((m) => (m = [...m, notification]));
     // create a timeout to automatically remove the message after messageTime elapsed
     setTimeout(() => {
-        messageQueue.update(m => m = m.filter(e => e.id != notification.id));
+        messageQueue.update((m) => (m = m.filter((e) => e.id != notification.id)));
     }, messageTime);
 }
 

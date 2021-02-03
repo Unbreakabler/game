@@ -169,7 +169,7 @@ function instance($$self, $$props, $$invalidate) {
 				$$invalidate(2, current_exp = game_model_job.current_exp);
 				$$invalidate(3, max_level_reached = game_model_job.max_level_reached);
 
-				// move this calculations into functions 
+				// move this calculations into functions
 				$$invalidate(4, total_exp_for_level = job.getTotalExpForLevel(job.base_exp, job.multiplier, current_level));
 
 				$$invalidate(5, current_income = job.base_income * Math.pow(job.multiplier, current_level));

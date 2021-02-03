@@ -4,7 +4,7 @@ import { SaveData } from './gamemodel.js';
 /**
  * This is the key the save data will be stored under inside localstorage
  */
-const storageName = 'sveltedata';
+const storageName = "sveltedata";
 /**
  * Load the save data from localstorage.
  * If no data is found just return a new SaveData with default values.
@@ -19,8 +19,8 @@ function loadSaveGame() {
             // const decompressed_state = decompress(uncompressed_saved_data)
             const decompressed_state = uncompressed_saved_data;
             if (decompressed_state) {
-                let saveData = JSON.parse(decompressed_state);
-                console.log('SaveData loaded:');
+                const saveData = JSON.parse(decompressed_state);
+                console.log("SaveData loaded:");
                 console.log(saveData);
                 // migrate the data so we know it is good to use
                 dataMigrate(saveData);
@@ -60,12 +60,12 @@ function saveSaveGame(saveData) {
  */
 function dataMigrate(saveData) {
     // create a new saveData to use as a reference
-    let master = new SaveData();
+    const master = new SaveData();
     // get an array of the properties of saveData
-    let keys = Object.getOwnPropertyNames(master);
+    const keys = Object.getOwnPropertyNames(master);
     // check each property to make sure it exists on the save data
     keys.forEach((prop) => {
-        if (typeof saveData[prop] === 'undefined') {
+        if (typeof saveData[prop] === "undefined") {
             console.log(`${prop} was undefined, adding it to saveData`);
             saveData[prop] = master[prop];
         }
