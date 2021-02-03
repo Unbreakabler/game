@@ -4,8 +4,7 @@ import { GameModel, gameModel, SaveData } from "./gamemodel";
 /**
  * This is the key the save data will be stored under inside localstorage
  */
-const storageName = 'sveltedata';
-
+const storageName = "sveltedata";
 
 /**
  * Load the save data from localstorage.
@@ -14,26 +13,23 @@ const storageName = 'sveltedata';
 export function loadSaveGame(): SaveData {
   // using a try/catch in case this fails for some reason
   try {
-
     // see if data exists first
-    const uncompressed_saved_data = localStorage.getItem(storageName)
+    const uncompressed_saved_data = localStorage.getItem(storageName);
     if (uncompressed_saved_data) {
       // get data from localstorage, decompress it using lz-string, then parse it back into a javascript object
       // const decompressed_state = decompress(uncompressed_saved_data)
-      const decompressed_state = uncompressed_saved_data
+      const decompressed_state = uncompressed_saved_data;
       if (decompressed_state) {
-        let saveData = JSON.parse(decompressed_state);
-        console.log('SaveData loaded:');
+        const saveData = JSON.parse(decompressed_state);
+        console.log("SaveData loaded:");
         console.log(saveData);
-  
+
         // migrate the data so we know it is good to use
         dataMigrate(saveData);
-  
+
         return saveData;
       }
     }
-
-    
   } catch (error) {
     console.error(error); // log the error so at least we can see it
   }
@@ -45,10 +41,9 @@ export function loadSaveGame(): SaveData {
  * Saves the data to localstorage
  * @param saveData SaveData
  */
-export function saveSaveGame(saveData: SaveData) {
+export function saveSaveGame(saveData: SaveData): void {
   // if save data exists
   if (saveData) {
-
     // set the last saved time
     saveData.lastSaved = Date.now();
 
@@ -57,11 +52,9 @@ export function saveSaveGame(saveData: SaveData) {
       // before setting it in localstorage
       // localStorage.setItem(storageName, compress(JSON.stringify(saveData)));
       localStorage.setItem(storageName, JSON.stringify(saveData));
-
     } catch (error) {
       console.error(error); // log the error so at least we can see it
     }
-
   }
 }
 
@@ -69,31 +62,29 @@ export function saveSaveGame(saveData: SaveData) {
  * This function will help to update any data that was saved before new variables were added.
  * Otherwise this can cause errors when something you expected to be there is not there.
  */
-function dataMigrate(saveData: any) {
-
+function dataMigrate(saveData: any): void {
   // create a new saveData to use as a reference
-  let master: any = new SaveData();
+  const master: any = new SaveData();
 
   // get an array of the properties of saveData
-  let keys = Object.getOwnPropertyNames(master);
+  const keys = Object.getOwnPropertyNames(master);
 
   // check each property to make sure it exists on the save data
   keys.forEach((prop) => {
-    if (typeof saveData[prop] === 'undefined') {
+    if (typeof saveData[prop] === "undefined") {
       console.log(`${prop} was undefined, adding it to saveData`);
       saveData[prop] = master[prop];
     }
-  })
+  });
 }
-
 
 /**
  * Resets save game in localstorage and resets the gameModel
  */
-export function resetSaveGame() {
+export function resetSaveGame(): void {
   // remove from local storage
   localStorage.removeItem(storageName);
 
   // update the stored gameModel with a new one
-  gameModel.update(g => g = new GameModel());
+  gameModel.update((g) => (g = new GameModel()));
 }

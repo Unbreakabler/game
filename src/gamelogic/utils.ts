@@ -10,20 +10,15 @@ const quadrilion = 1000000000000000;
  * @param decimals How many decimals do you want
  */
 export function formatNumber(input: number, decimals: number): string {
-    if (!input) input = 0;
-    if (input < 0) return "-" + formatNumber(-1 * input, decimals);
-    if (input >= quadrilion)
-        return input.toExponential(decimals).replace("+", "");
-    if (input >= trillion)
-        return (input / trillion).toFixed(decimals) + 'T';
-    if (input >= billion)
-        return (input / billion).toFixed(decimals) + 'B';
-    if (input >= million)
-        return (input / million).toFixed(decimals) + 'M';
-    if (input >= thousand)
-        return (input / thousand).toFixed(decimals) + 'K';
+  if (!input) input = 0;
+  if (input < 0) return "-" + formatNumber(-1 * input, decimals);
+  if (input >= quadrilion) return input.toExponential(decimals).replace("+", "");
+  if (input >= trillion) return (input / trillion).toFixed(decimals) + "T";
+  if (input >= billion) return (input / billion).toFixed(decimals) + "B";
+  if (input >= million) return (input / million).toFixed(decimals) + "M";
+  if (input >= thousand) return (input / thousand).toFixed(decimals) + "K";
 
-    return input.toFixed(decimals);
+  return input.toFixed(decimals);
 }
 
 /**
@@ -32,8 +27,8 @@ export function formatNumber(input: number, decimals: number): string {
  * @param input Number to format
  */
 export function formatWhole(input: number): string {
-    if (!input) input = 0;
-    if (input < 0) return "-" + formatWhole(-1 * input);
-    if (input < thousand) return formatNumber(input, 0);
-    return formatNumber(input, 2);
+  if (!input) input = 0;
+  if (input < 0) return "-" + formatWhole(-1 * input);
+  if (input < thousand) return formatNumber(input, 0);
+  return formatNumber(input, 2);
 }

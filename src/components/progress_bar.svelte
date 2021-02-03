@@ -1,7 +1,7 @@
 <script lang="ts">
   export let total = 100;
   export let current = 0;
-  export let name = 'Test';
+  export let name = "Test";
 
   $: progress_width = (current / total) * 100 + "%";
 </script>
