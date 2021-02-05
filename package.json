@@ -1,11 +1,11 @@
 {
-  "name": "svelte_snowpack",
+  "name": "baby-village-idle-td",
   "version": "1.0.0",
   "description": "",
   "main": "src/index.js",
   "scripts": {
     "start": "start rollup -w -c rollup.config.js && web-dev-server --open --node-resolve",
-    "start:watch": "start rollup -w -c rollup.config.js && web-dev-server  --open --node-resolve --watch",
+    "start:watch": "start rollup -w -c rollup.config.js && web-dev-server --open --node-resolve --watch",
     "test": "web-test-runner test/**/*.test.jsx",
     "test:watch": "web-test-runner test/**/*.test.jsx --watch",
     "build": "rollup -c rollup.config.js",
