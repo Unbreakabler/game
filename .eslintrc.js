@@ -26,9 +26,8 @@ module.exports = {
     // e.g. "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/naming-convention": [
       "error",
-      { selector: "default", format: ["snake_case"] },
+      { selector: "default", format: ["snake_case", "camelCase"] },
       { selector: "typeLike", format: ["PascalCase"] },
-      { selector: "property", format: ["snake_case", "camelCase"] },
       { selector: "enum", format: ["UPPER_CASE"] },
       { selector: "enumMember", format: ["UPPER_CASE"] },
     ],
