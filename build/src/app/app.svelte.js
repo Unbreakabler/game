@@ -11,8 +11,8 @@ import Workshop from './workshop.svelte.js';
 
 function add_css() {
 	var style = element("style");
-	style.id = "svelte-1fnj03m-style";
-	style.textContent = ".main-container.svelte-1fnj03m{display:flex;flex-direction:column}.game-container.svelte-1fnj03m{display:flex;flex:1}.menu.svelte-1fnj03m{flex:1\n  }";
+	style.id = "svelte-1pc9jru-style";
+	style.textContent = ".main-container.svelte-1pc9jru{display:flex;flex-direction:column;height:100%}.game-container.svelte-1pc9jru{display:flex;flex:1}@media only screen and (max-width: 1200px){.game-container.svelte-1pc9jru{flex-direction:column}}.menu.svelte-1pc9jru{display:flex;flex-direction:column;flex:1\n  }";
 	append(document.head, style);
 }
 
@@ -31,7 +31,7 @@ function create_if_block(ctx) {
 	var switch_value = /*val*/ ctx[4];
 
 	function switch_props(ctx) {
-		return {};
+		return { props: { class: "tab" } };
 	}
 
 	if (switch_value) {
@@ -197,9 +197,9 @@ function create_fragment(ctx) {
 
 			t2 = space();
 			create_component(game.$$.fragment);
-			attr(div0, "class", "menu svelte-1fnj03m");
-			attr(div1, "class", "game-container svelte-1fnj03m");
-			attr(div2, "class", "main-container svelte-1fnj03m");
+			attr(div0, "class", "menu svelte-1pc9jru");
+			attr(div1, "class", "game-container svelte-1pc9jru");
+			attr(div2, "class", "main-container svelte-1pc9jru");
 		},
 		m(target, anchor) {
 			insert(target, div2, anchor);
@@ -283,7 +283,7 @@ function instance($$self, $$props, $$invalidate) {
 class App extends SvelteComponent {
 	constructor(options) {
 		super();
-		if (!document.getElementById("svelte-1fnj03m-style")) add_css();
+		if (!document.getElementById("svelte-1pc9jru-style")) add_css();
 		init(this, options, instance, create_fragment, safe_not_equal, {});
 	}
 }
