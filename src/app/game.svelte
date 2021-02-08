@@ -17,4 +17,17 @@
   });
 </script>
 
-<canvas bind:this={canvas} id="game-container" />
+<div>
+  <canvas bind:this={canvas} id="game-container" />
+</div>
+
+<style>
+  canvas {
+    width: 800px;
+    height: 600px;
+  }
+  div {
+    display: flex;
+    justify-content: center;
+  }
+</style>
