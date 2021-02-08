@@ -1,4 +1,4 @@
-import { SvelteComponent, init, safe_not_equal, element, append, create_component, claim_component, mount_component, transition_in, transition_out, destroy_component, text, space, empty, claim_element, children, claim_text, detach, claim_space, attr, insert, group_outros, check_outros, destroy_each } from '../../node_modules/svelte/internal/index.mjs.js';
+import { SvelteComponent, init, safe_not_equal, element, append, create_component, mount_component, transition_in, transition_out, destroy_component, space, empty, attr, insert, group_outros, check_outros, detach, destroy_each } from '../../node_modules/svelte/internal/index.mjs.js';
 import Job_base from '../components/job_base.svelte.js';
 import { jobs } from '../gamelogic/jobs.js';
 
@@ -27,9 +27,6 @@ function create_each_block(ctx) {
 		c() {
 			create_component(jobbase.$$.fragment);
 		},
-		l(nodes) {
-			claim_component(jobbase.$$.fragment, nodes);
-		},
 		m(target, anchor) {
 			mount_component(jobbase, target, anchor);
 			current = true;
@@ -56,20 +53,6 @@ function create_each_block(ctx) {
 
 function create_fragment(ctx) {
 	let header;
-	let div0;
-	let t0;
-	let t1;
-	let div1;
-	let t2;
-	let t3;
-	let div2;
-	let t4;
-	let t5;
-	let div3;
-	let t6;
-	let t7;
-	let div4;
-	let t8;
 	let t9;
 	let each_1_anchor;
 	let current;
@@ -87,20 +70,13 @@ function create_fragment(ctx) {
 	return {
 		c() {
 			header = element("header");
-			div0 = element("div");
-			t0 = text("Name");
-			t1 = space();
-			div1 = element("div");
-			t2 = text("Current Level");
-			t3 = space();
-			div2 = element("div");
-			t4 = text("Income");
-			t5 = space();
-			div3 = element("div");
-			t6 = text("Required Xp");
-			t7 = space();
-			div4 = element("div");
-			t8 = text("Max level Reached");
+
+			header.innerHTML = `<div class="svelte-1xzhl4s">Name</div> 
+  <div class="svelte-1xzhl4s">Current Level</div> 
+  <div class="svelte-1xzhl4s">Income</div> 
+  <div class="svelte-1xzhl4s">Required Xp</div> 
+  <div class="svelte-1xzhl4s">Max level Reached</div>`;
+
 			t9 = space();
 
 			for (let i = 0; i < each_blocks.length; i += 1) {
@@ -108,69 +84,10 @@ function create_fragment(ctx) {
 			}
 
 			each_1_anchor = empty();
-			this.h();
-		},
-		l(nodes) {
-			header = claim_element(nodes, "HEADER", { class: true });
-			var header_nodes = children(header);
-			div0 = claim_element(header_nodes, "DIV", { class: true });
-			var div0_nodes = children(div0);
-			t0 = claim_text(div0_nodes, "Name");
-			div0_nodes.forEach(detach);
-			t1 = claim_space(header_nodes);
-			div1 = claim_element(header_nodes, "DIV", { class: true });
-			var div1_nodes = children(div1);
-			t2 = claim_text(div1_nodes, "Current Level");
-			div1_nodes.forEach(detach);
-			t3 = claim_space(header_nodes);
-			div2 = claim_element(header_nodes, "DIV", { class: true });
-			var div2_nodes = children(div2);
-			t4 = claim_text(div2_nodes, "Income");
-			div2_nodes.forEach(detach);
-			t5 = claim_space(header_nodes);
-			div3 = claim_element(header_nodes, "DIV", { class: true });
-			var div3_nodes = children(div3);
-			t6 = claim_text(div3_nodes, "Required Xp");
-			div3_nodes.forEach(detach);
-			t7 = claim_space(header_nodes);
-			div4 = claim_element(header_nodes, "DIV", { class: true });
-			var div4_nodes = children(div4);
-			t8 = claim_text(div4_nodes, "Max level Reached");
-			div4_nodes.forEach(detach);
-			header_nodes.forEach(detach);
-			t9 = claim_space(nodes);
-
-			for (let i = 0; i < each_blocks.length; i += 1) {
-				each_blocks[i].l(nodes);
-			}
-
-			each_1_anchor = empty();
-			this.h();
-		},
-		h() {
-			attr(div0, "class", "svelte-1xzhl4s");
-			attr(div1, "class", "svelte-1xzhl4s");
-			attr(div2, "class", "svelte-1xzhl4s");
-			attr(div3, "class", "svelte-1xzhl4s");
-			attr(div4, "class", "svelte-1xzhl4s");
 			attr(header, "class", "svelte-1xzhl4s");
 		},
 		m(target, anchor) {
 			insert(target, header, anchor);
-			append(header, div0);
-			append(div0, t0);
-			append(header, t1);
-			append(header, div1);
-			append(div1, t2);
-			append(header, t3);
-			append(header, div2);
-			append(div2, t4);
-			append(header, t5);
-			append(header, div3);
-			append(div3, t6);
-			append(header, t7);
-			append(header, div4);
-			append(div4, t8);
 			insert(target, t9, anchor);
 
 			for (let i = 0; i < each_blocks.length; i += 1) {

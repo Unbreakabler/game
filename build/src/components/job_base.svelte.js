@@ -1,4 +1,4 @@
-import { SvelteComponent, init, safe_not_equal, element, append, create_component, space, text, claim_element, children, claim_component, detach, claim_space, claim_text, attr, insert, mount_component, set_data, transition_in, transition_out, destroy_component } from '../../node_modules/svelte/internal/index.mjs.js';
+import { SvelteComponent, init, safe_not_equal, element, append, create_component, space, text, attr, insert, mount_component, set_data, transition_in, transition_out, detach, destroy_component } from '../../node_modules/svelte/internal/index.mjs.js';
 import { gameModel } from '../gamelogic/gamemodel.js';
 import { formatNumber } from '../gamelogic/utils.js';
 import Progress_bar from './progress_bar.svelte.js';
@@ -57,39 +57,6 @@ function create_fragment(ctx) {
 			t6 = space();
 			div4 = element("div");
 			t7 = text(/*max_level_reached*/ ctx[3]);
-			this.h();
-		},
-		l(nodes) {
-			row = claim_element(nodes, "ROW", { class: true });
-			var row_nodes = children(row);
-			div0 = claim_element(row_nodes, "DIV", { class: true });
-			var div0_nodes = children(div0);
-			claim_component(progressbar.$$.fragment, div0_nodes);
-			div0_nodes.forEach(detach);
-			t0 = claim_space(row_nodes);
-			div1 = claim_element(row_nodes, "DIV", { class: true });
-			var div1_nodes = children(div1);
-			t1 = claim_text(div1_nodes, /*current_level*/ ctx[1]);
-			div1_nodes.forEach(detach);
-			t2 = claim_space(row_nodes);
-			div2 = claim_element(row_nodes, "DIV", { class: true });
-			var div2_nodes = children(div2);
-			t3 = claim_text(div2_nodes, t3_value);
-			div2_nodes.forEach(detach);
-			t4 = claim_space(row_nodes);
-			div3 = claim_element(row_nodes, "DIV", { class: true });
-			var div3_nodes = children(div3);
-			t5 = claim_text(div3_nodes, t5_value);
-			div3_nodes.forEach(detach);
-			t6 = claim_space(row_nodes);
-			div4 = claim_element(row_nodes, "DIV", { class: true });
-			var div4_nodes = children(div4);
-			t7 = claim_text(div4_nodes, /*max_level_reached*/ ctx[3]);
-			div4_nodes.forEach(detach);
-			row_nodes.forEach(detach);
-			this.h();
-		},
-		h() {
 			attr(div0, "class", "svelte-7f2fy5");
 			attr(div1, "class", "svelte-7f2fy5");
 			attr(div2, "class", "svelte-7f2fy5");

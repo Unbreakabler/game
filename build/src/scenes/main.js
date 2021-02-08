@@ -11,15 +11,12 @@ class Main extends Phaser.Scene {
             font: "64px Courier",
             backgroundColor: "#00ff00",
         });
-        gameModel.subscribe((model) => {
+        const unsubscribe_store = gameModel.subscribe((model) => {
             scoreboard.setText(["Count: " + model.saveData.money]);
         });
-        const inc_button = this.add.text(10, 110, "", {
-            font: "64px Courier",
-            backgroundColor: "#00ff00",
+        this.events.on('destroy', function () {
+            unsubscribe_store();
         });
-        inc_button.setInteractive();
-        inc_button.setText(["Increment"]);
         // GAME LOOP INTEGRATION TO SVELTE
         this.game.events.on("step", function (time, delta_t) {
             svelte_game_loop(time, delta_t);
