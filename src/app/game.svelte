@@ -1,7 +1,6 @@
 <script lang="ts">
   import "phaser";
   import { onMount } from "svelte";
-  import { count } from "../gamelogic/store";
   import Main from "../scenes/main";
   let canvas: HTMLCanvasElement, game, unsubscribe_store: any;
 
@@ -19,4 +18,3 @@
 </script>
 
 <canvas bind:this={canvas} id="game-container" />
-<button on:click={count.increment}>Increment</button>
