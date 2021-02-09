@@ -3,10 +3,10 @@
   export let current = 0;
   export let name = "Test";
 
-  $: progress_width = (current / total) * 100 + "%";
+  $: progress_width = (current / total) * 100;
 </script>
 
-<div class="container" style="--progress_width: {progress_width}">
+<div class="container" style="--progress_width: {progress_width}%">
   <span>{name}</span>
   <div class="progress" />
 </div>

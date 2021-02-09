@@ -49,7 +49,7 @@ export default {
 
         // ensure that extra attributes are added to head
         // elements for hydration (used with generate: 'ssr')
-        hydratable: true,
+        // hydratable: true,
 
         // You can optionally set 'customElement' to 'true' to compile
         // your components to custom elements (aka web elements)
