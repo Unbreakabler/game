@@ -81,7 +81,7 @@ export class FarmJob extends Job<FARM_JOB> {
   }
 
   public getCurrentExpRate(): number {
-    return this.base_exp_per_level;
+    return this.base_exp_rate;
   }
 
   public update(delta_t_s: number): void {
