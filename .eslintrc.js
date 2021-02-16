@@ -29,7 +29,6 @@ module.exports = {
       { selector: "default", format: ["snake_case", "camelCase"] },
       { selector: "typeLike", format: ["PascalCase"] },
       { selector: "enum", format: ["UPPER_CASE"] },
-      { selector: "enumMember", format: ["UPPER_CASE"] },
     ],
     "@typescript-eslint/no-inferrable-types": "off",
     "@typescript-eslint/explicit-function-return-type": [

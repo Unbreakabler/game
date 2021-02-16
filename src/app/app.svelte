@@ -3,7 +3,7 @@
   import Tabs from "../components/tabs.svelte";
   import Blacksmith from "./blacksmith.svelte";
   import Game from "./game.svelte";
-  import JobManager from "./job_manager.svelte";
+  import Farm from "./farm.svelte";
   import Village from "./village.svelte";
   import Workshop from "./workshop.svelte";
 
@@ -15,7 +15,7 @@
 
   const routes = {
     '/': Village,
-    '/farm': JobManager,
+    '/farm': Farm,
     '/workshop': Workshop,
     '/blacksmith': Blacksmith,
   }
