@@ -1,9 +1,7 @@
-import { gameModel, GameModel } from "./gamemodel";
-import { sendMessage } from "./notifications";
-import { saveSaveGame } from "./saveloadfunctions";
-// import { generators } from "./upgrades";
-import { jobs } from "./jobs";
-import { formatWhole } from "./utils";
+import { gameModel, GameModel, updateGameModel } from "./gamemodel";
+import { sendMessage } from "./util/notifications";
+import { formatWhole } from "./util/utils";
+import { saveToStorage } from "./util/saveloadfunctions";
 
 /**
  * Reference to the GameModel.
@@ -58,7 +56,7 @@ export function svelte_game_loop(current_time: number, ms_delta_t: number): void
   // if lastSaved was more than 60 seconds ago we should save the game
   if (current_time - lastSaved > autoSaveTime) {
     lastSaved = current_time;
-    saveSaveGame(gameModelInstance.saveData);
+    saveToStorage(gameModelInstance);
     sendMessage("Game auto-saved");
   }
 
@@ -75,22 +73,23 @@ export function svelte_game_loop(current_time: number, ms_delta_t: number): void
  * Function to update all game data based on time.
  * This is where all idle calculations should start so they can be
  * used by the main loop and the offline progress function.
- * @param delta_t time in seconds since last update
+ * @param seconds_delta_t time in seconds since last update
  */
-function game_update(delta_t: number): void {
-  jobs.forEach((job) => job.update(delta_t));
+function game_update(seconds_delta_t: number): void {
+  gameModelInstance.update(seconds_delta_t);
+  updateGameModel();
 }
 
 /**
  * Function to calculate the offline progress
  */
-function calculateOfflineProgress(): void {
+export function calculateOfflineProgress(): void {
   // note how much we had before
-  const moneyBefore = gameModelInstance.saveData.money;
+  const moneyBefore = gameModelInstance.wallet.money;
 
   // calculate time in seconds since last saved
   const currentTime = Date.now();
-  const offlineDeltaT = Math.max((currentTime - gameModelInstance.saveData.lastSaved) / 1000, 0);
+  const offlineDeltaT = Math.max((currentTime - gameModelInstance.last_saved) / 1000, 0);
 
   console.log(`Offline for ${offlineDeltaT} seconds`);
 
@@ -98,7 +97,8 @@ function calculateOfflineProgress(): void {
   game_update(offlineDeltaT);
 
   // calculate total earned
-  const moneyEarned = gameModelInstance.saveData.money - moneyBefore;
+  const moneyEarned = gameModelInstance.wallet.money - moneyBefore;
 
+  console.log(`You have earned $${formatWhole(moneyEarned)} while offline!`);
   sendMessage(`You have earned $${formatWhole(moneyEarned)} while offline!`);
 }

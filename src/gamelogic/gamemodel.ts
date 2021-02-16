@@ -1,27 +1,12 @@
+import { deserialize, Exclude, serialize, Transform, Type } from "class-transformer";
 import { writable } from "svelte/store";
-import { loadSaveGame } from "./saveloadfunctions";
+import type { Achievable } from "./village/achievable";
+import { FarmJob } from "./village/farmjob";
+import { default_farm_jobs, farmJobTransformer } from "./village/farmjobs";
 
-class SavedJob {
-  public current_level: number = 0;
-  public max_level_reached: number = 0;
-  public current_exp: number = 0;
-}
-
-/**
- * This class holds any data that needs to be saved when the player saves their game.
- * It should only be used for values that must be saved. Anything transient should go directly on the GameModel.
- */
-export class SaveData {
-  // Used to hold the current money the player has, initialized at 0
+export class Wallet {
   public money: number = 0;
-
-  // Used to hold when the game was last saved, needed to calculate offline progress
-  public lastSaved: number = 0;
-
-  public jobs: { [job_id: number]: SavedJob } = {
-    1: { current_level: 1, max_level_reached: 0, current_exp: 0 },
-    2: { current_level: 1, max_level_reached: 0, current_exp: 0 },
-  };
+  public constructor() {}
 }
 
 /**
@@ -29,34 +14,55 @@ export class SaveData {
  * It will be accessible from anywhere in the game using svelte stores.
  */
 export class GameModel {
-  public saveData: SaveData;
+  public last_saved: number;
+
+  @Type(() => Wallet)
+  public wallet: Wallet;
+
+  @Type(() => FarmJob)
+  @Transform(farmJobTransformer, { toClassOnly: true })
+  public farm_jobs: Map<string, FarmJob> = new Map();
+
+  @Exclude()
+  public achievables: Map<string, Achievable> = new Map();
 
   public constructor() {
-    // when we first create the game model we need to load any save data from localstorage
-    this.saveData = loadSaveGame();
+    //Create new empty GameModel
+    this.last_saved = Date.now();
+    this.wallet = new Wallet();
+    this.farm_jobs = default_farm_jobs;
+    this.reloadAchievables();
   }
 
-  /**
-   * Add money to the save data
-   * @param value Amount of money to add
-   */
-  public addMoney(value: number): void {
-    if (!isNaN(value)) {
-      this.saveData.money += value;
+  public reloadAchievables(): void {
+    this.achievables = new Map([...this.farm_jobs]);
+  }
+
+  public update(delta_t_s: number): void {
+    for (const [key, farm_job] of this.farm_jobs.entries()) {
+      farm_job.update(delta_t_s);
+      farm_job.earnIncome(this.wallet, delta_t_s);
     }
   }
 
-  /**
-   * Takes money from the save data.
-   * Returns true if there was enough money, false if not.
-   * @param value Amount of money to spend
-   */
-  public spendMoney(value: number): boolean {
-    if (!isNaN(value) && this.saveData.money >= value) {
-      this.saveData.money -= value;
-      return true;
+  public exportToSave(): string {
+    this.last_saved = Date.now();
+    return serialize(this);
+  }
+
+  public static loadFromSave(data: string): GameModel {
+    const model = deserialize(GameModel, data);
+    model.reloadAchievables();
+    return model;
+  }
+
+  public setActiveFarmJob(achievable_name: string): void {
+    for (const [key, farm_job] of this.farm_jobs.entries()) {
+      farm_job.active = false;
     }
-    return false;
+    const job = this.farm_jobs.get(achievable_name);
+    if (!job) throw new Error(`Missing FarmJob ${achievable_name}`);
+    job.active = true;
   }
 }
 
