@@ -1,5 +1,5 @@
 import '../../node_modules/phaser/dist/phaser.js';
-import { gameModel, updateGameModel } from '../gamelogic/gamemodel.js';
+import { gameModel } from '../gamelogic/gamemodel.js';
 import { calculateOfflineProgress, svelte_game_loop } from '../gamelogic/gameloop.js';
 import { loadFromStorage } from '../gamelogic/util/saveloadfunctions.js';
 
@@ -15,7 +15,6 @@ class Main extends Phaser.Scene {
         const model = loadFromStorage();
         gameModel.set(model);
         calculateOfflineProgress();
-        updateGameModel();
         const unsubscribe_store = gameModel.subscribe((model) => {
             scoreboard.setText(["Money: " + model.wallet.money]);
         });

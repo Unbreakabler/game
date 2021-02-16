@@ -1,9 +1,9 @@
 import { __decorate } from '../../../node_modules/tslib/tslib.es6.js';
-import { Job } from './job.js';
+import { Achievable } from './achievable.js';
 import { Expose } from '../../../node_modules/class-transformer/esm5/decorators/expose.decorator.js';
 import { Exclude } from '../../../node_modules/class-transformer/esm5/decorators/exclude.decorator.js';
 
-let FarmJob = class FarmJob extends Job {
+let FarmJob = class FarmJob extends Achievable {
     constructor(short_name, requirements, display_name, description, difficulty_growth_factor, base_exp_rate = 1, base_income = 1, base_time_per_level = 5, start_level = 0) {
         super(short_name, requirements, start_level);
         //Saveable Members
@@ -38,7 +38,7 @@ let FarmJob = class FarmJob extends Job {
     }
     /**
      *  https://www.desmos.com/calculator/lor4dbrqdz
-     *  formual 2
+     *  formula 2
      */
     getCurrentIncome() {
         const g = this.difficulty_growth_factor;
@@ -57,12 +57,10 @@ let FarmJob = class FarmJob extends Job {
         const exp_gained = delta_t_s * this.getCurrentExpRate();
         this.current_exp += exp_gained;
         //apply exp until no more level ups
-        do {
-            if (this.current_exp > this.getTotalExpToNextLevel()) {
-                this.current_exp -= this.getTotalExpToNextLevel();
-                this.level++;
-            }
-        } while (this.current_exp > this.getTotalExpToNextLevel());
+        while (this.current_exp > this.getTotalExpToNextLevel()) {
+            this.current_exp -= this.getTotalExpToNextLevel();
+            this.level++;
+        }
     }
     earnIncome(wallet, delta_t_s) {
         if (!this.active)

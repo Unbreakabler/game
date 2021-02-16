@@ -22,7 +22,7 @@ let Achievable = class Achievable {
      * Returns name in the form classname_shortname lowercase
      */
     getAchievableName() {
-        return `${this.constructor.name}_${this.short_name}`.toLocaleLowerCase();
+        return `${this.constructor.name}_${this.short_name}`.toLowerCase();
     }
     isAcquired() {
         return this.level >= 1;
