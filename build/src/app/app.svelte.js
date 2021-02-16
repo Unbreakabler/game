@@ -3,7 +3,7 @@ import Resources from '../components/resources.svelte.js';
 import Tabs from '../components/tabs.svelte.js';
 import Blacksmith from './blacksmith.svelte.js';
 import Game from './game.svelte.js';
-import Job_manager from './job_manager.svelte.js';
+import Farm from './farm.svelte.js';
 import Village from './village.svelte.js';
 import Workshop from './workshop.svelte.js';
 
@@ -272,7 +272,7 @@ function instance($$self, $$props, $$invalidate) {
 
 	const routes = {
 		"/": Village,
-		"/farm": Job_manager,
+		"/farm": Farm,
 		"/workshop": Workshop,
 		"/blacksmith": Blacksmith
 	};

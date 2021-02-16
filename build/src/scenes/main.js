@@ -1,6 +1,7 @@
 import '../../node_modules/phaser/dist/phaser.js';
-import { gameModel } from '../gamelogic/gamemodel.js';
-import { svelte_game_loop } from '../gamelogic/gameloop.js';
+import { gameModel, updateGameModel } from '../gamelogic/gamemodel.js';
+import { calculateOfflineProgress, svelte_game_loop } from '../gamelogic/gameloop.js';
+import { loadFromStorage } from '../gamelogic/util/saveloadfunctions.js';
 
 class Main extends Phaser.Scene {
     constructor() {
@@ -11,10 +12,14 @@ class Main extends Phaser.Scene {
             font: "64px Courier",
             backgroundColor: "#00ff00",
         });
+        const model = loadFromStorage();
+        gameModel.set(model);
+        calculateOfflineProgress();
+        updateGameModel();
         const unsubscribe_store = gameModel.subscribe((model) => {
-            scoreboard.setText(["Count: " + model.saveData.money]);
+            scoreboard.setText(["Money: " + model.wallet.money]);
         });
-        this.events.on('destroy', function () {
+        this.events.on("destroy", function () {
             unsubscribe_store();
         });
         // GAME LOOP INTEGRATION TO SVELTE

@@ -1,20 +1,15 @@
+import { __decorate } from '../../node_modules/tslib/tslib.es6.js';
+import { serialize, deserialize } from '../../node_modules/class-transformer/esm5/index.js';
 import { writable } from '../../node_modules/svelte/store/index.mjs.js';
-import { loadSaveGame } from './saveloadfunctions.js';
+import { FarmJob } from './village/farmjob.js';
+import { default_farm_jobs, farmJobTransformer } from './village/farmjobs.js';
+import { Type } from '../../node_modules/class-transformer/esm5/decorators/type.decorator.js';
+import { Transform } from '../../node_modules/class-transformer/esm5/decorators/transform.decorator.js';
+import { Exclude } from '../../node_modules/class-transformer/esm5/decorators/exclude.decorator.js';
 
-/**
- * This class holds any data that needs to be saved when the player saves their game.
- * It should only be used for values that must be saved. Anything transient should go directly on the GameModel.
- */
-class SaveData {
+class Wallet {
     constructor() {
-        // Used to hold the current money the player has, initialized at 0
         this.money = 0;
-        // Used to hold when the game was last saved, needed to calculate offline progress
-        this.lastSaved = 0;
-        this.jobs = {
-            1: { current_level: 1, max_level_reached: 0, current_exp: 0 },
-            2: { current_level: 1, max_level_reached: 0, current_exp: 0 },
-        };
     }
 }
 /**
@@ -23,31 +18,52 @@ class SaveData {
  */
 class GameModel {
     constructor() {
-        // when we first create the game model we need to load any save data from localstorage
-        this.saveData = loadSaveGame();
+        this.farm_jobs = new Map();
+        this.achievables = new Map();
+        //Create new empty GameModel
+        this.last_saved = Date.now();
+        this.wallet = new Wallet();
+        this.farm_jobs = default_farm_jobs;
+        this.reloadAchievables();
     }
-    /**
-     * Add money to the save data
-     * @param value Amount of money to add
-     */
-    addMoney(value) {
-        if (!isNaN(value)) {
-            this.saveData.money += value;
+    reloadAchievables() {
+        this.achievables = new Map([...this.farm_jobs]);
+    }
+    update(delta_t_s) {
+        for (const [key, farm_job] of this.farm_jobs.entries()) {
+            farm_job.update(delta_t_s);
+            farm_job.earnIncome(this.wallet, delta_t_s);
         }
     }
-    /**
-     * Takes money from the save data.
-     * Returns true if there was enough money, false if not.
-     * @param value Amount of money to spend
-     */
-    spendMoney(value) {
-        if (!isNaN(value) && this.saveData.money >= value) {
-            this.saveData.money -= value;
-            return true;
+    exportToSave() {
+        this.last_saved = Date.now();
+        return serialize(this);
+    }
+    static loadFromSave(data) {
+        const model = deserialize(GameModel, data);
+        model.reloadAchievables();
+        return model;
+    }
+    setActiveFarmJob(achievable_name) {
+        for (const [key, farm_job] of this.farm_jobs.entries()) {
+            farm_job.active = false;
         }
-        return false;
+        const job = this.farm_jobs.get(achievable_name);
+        if (!job)
+            throw new Error(`Missing FarmJob ${achievable_name}`);
+        job.active = true;
     }
 }
+__decorate([
+    Type(() => Wallet)
+], GameModel.prototype, "wallet", void 0);
+__decorate([
+    Type(() => FarmJob),
+    Transform(farmJobTransformer, { toClassOnly: true })
+], GameModel.prototype, "farm_jobs", void 0);
+__decorate([
+    Exclude()
+], GameModel.prototype, "achievables", void 0);
 /**
  * A writable store of the gameModel that can be accessed from other parts of the application.
  */
@@ -60,5 +76,5 @@ function updateGameModel() {
     gameModel.update((m) => (m = m));
 }
 
-export { GameModel, SaveData, gameModel, updateGameModel };
+export { GameModel, Wallet, gameModel, updateGameModel };
 //# sourceMappingURL=gamemodel.js.map

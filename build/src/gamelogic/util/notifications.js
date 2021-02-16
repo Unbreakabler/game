@@ -1,4 +1,4 @@
-import { writable } from '../../node_modules/svelte/store/index.mjs.js';
+import { writable } from '../../../node_modules/svelte/store/index.mjs.js';
 
 /**
  * Svelte store to hold an array of messages

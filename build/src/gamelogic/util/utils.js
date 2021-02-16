@@ -25,6 +25,20 @@ function formatNumber(input, decimals) {
         return (input / thousand).toFixed(decimals) + "K";
     return input.toFixed(decimals);
 }
+/**
+ * Function to format a number for display on screen.
+ * Will only show decimal places when the number is abbreviated.
+ * @param input Number to format
+ */
+function formatWhole(input) {
+    if (!input)
+        input = 0;
+    if (input < 0)
+        return "-" + formatWhole(-1 * input);
+    if (input < thousand)
+        return formatNumber(input, 0);
+    return formatNumber(input, 2);
+}
 
-export { formatNumber };
+export { formatNumber, formatWhole };
 //# sourceMappingURL=utils.js.map

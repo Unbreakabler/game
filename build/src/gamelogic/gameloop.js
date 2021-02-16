@@ -1,7 +1,7 @@
-import { gameModel } from './gamemodel.js';
-import { sendMessage } from './notifications.js';
-import { saveSaveGame } from './saveloadfunctions.js';
-import { jobs } from './jobs.js';
+import { gameModel, updateGameModel } from './gamemodel.js';
+import { sendMessage } from './util/notifications.js';
+import { formatWhole } from './util/utils.js';
+import { saveToStorage } from './util/saveloadfunctions.js';
 
 /**
  * Reference to the GameModel.
@@ -37,7 +37,7 @@ function svelte_game_loop(current_time, ms_delta_t) {
     // if lastSaved was more than 60 seconds ago we should save the game
     if (current_time - lastSaved > autoSaveTime) {
         lastSaved = current_time;
-        saveSaveGame(gameModelInstance.saveData);
+        saveToStorage(gameModelInstance);
         sendMessage("Game auto-saved");
     }
     // calculate ms_delta_t based on the current time and the last run time
@@ -51,11 +51,29 @@ function svelte_game_loop(current_time, ms_delta_t) {
  * Function to update all game data based on time.
  * This is where all idle calculations should start so they can be
  * used by the main loop and the offline progress function.
- * @param delta_t time in seconds since last update
+ * @param seconds_delta_t time in seconds since last update
  */
-function game_update(delta_t) {
-    jobs.forEach((job) => job.update(delta_t));
+function game_update(seconds_delta_t) {
+    gameModelInstance.update(seconds_delta_t);
+    updateGameModel();
+}
+/**
+ * Function to calculate the offline progress
+ */
+function calculateOfflineProgress() {
+    // note how much we had before
+    const moneyBefore = gameModelInstance.wallet.money;
+    // calculate time in seconds since last saved
+    const currentTime = Date.now();
+    const offlineDeltaT = Math.max((currentTime - gameModelInstance.last_saved) / 1000, 0);
+    console.log(`Offline for ${offlineDeltaT} seconds`);
+    // perform the game update for the total time
+    game_update(offlineDeltaT);
+    // calculate total earned
+    const moneyEarned = gameModelInstance.wallet.money - moneyBefore;
+    console.log(`You have earned $${formatWhole(moneyEarned)} while offline!`);
+    sendMessage(`You have earned $${formatWhole(moneyEarned)} while offline!`);
 }
 
-export { svelte_game_loop };
+export { calculateOfflineProgress, svelte_game_loop };
 //# sourceMappingURL=gameloop.js.map
