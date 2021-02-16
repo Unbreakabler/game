@@ -49,7 +49,7 @@ let FarmJob = class FarmJob extends Job {
         return result / 10;
     }
     getCurrentExpRate() {
-        return this.base_exp_per_level;
+        return this.base_exp_rate;
     }
     update(delta_t_s) {
         if (!this.active)
