@@ -1,6 +1,5 @@
-import { plainToClassFromExist, TransformFnParams, plainToClass } from "class-transformer";
+import { plainToClassFromExist, TransformFnParams } from "class-transformer";
 import { FarmJob } from "./farmjob";
-import type { Job } from "./job";
 
 export enum FARM_JOB {
   empty_zero,

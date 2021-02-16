@@ -1,11 +1,11 @@
 import { Exclude, Expose } from "class-transformer";
 import type { Wallet } from "../gamemodel";
-import { Job } from "./job";
 import type { Requirement } from "./achievable";
 import type { FARM_JOB } from "./farmjobs";
+import { Achievable } from "./achievable";
 
 @Exclude()
-export class FarmJob extends Job<FARM_JOB> {
+export class FarmJob extends Achievable {
   //TODO add some way to make it active  at reduced rrate when you unlock the helper
 
   public display_name: string;
@@ -69,7 +69,7 @@ export class FarmJob extends Job<FARM_JOB> {
 
   /**
    *  https://www.desmos.com/calculator/lor4dbrqdz
-   *  formual 2
+   *  formula 2
    */
   public getCurrentIncome(): number {
     const g = this.difficulty_growth_factor;
@@ -90,12 +90,10 @@ export class FarmJob extends Job<FARM_JOB> {
     this.current_exp += exp_gained;
 
     //apply exp until no more level ups
-    do {
-      if (this.current_exp > this.getTotalExpToNextLevel()) {
-        this.current_exp -= this.getTotalExpToNextLevel();
-        this.level++;
-      }
-    } while (this.current_exp > this.getTotalExpToNextLevel());
+    while (this.current_exp > this.getTotalExpToNextLevel()) {
+      this.current_exp -= this.getTotalExpToNextLevel();
+      this.level++;
+    }
   }
 
   public earnIncome(wallet: Wallet, delta_t_s: number): void {

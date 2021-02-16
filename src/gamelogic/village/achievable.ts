@@ -32,7 +32,7 @@ export abstract class Achievable {
    * Returns name in the form classname_shortname lowercase
    */
   public getAchievableName(): string {
-    return `${this.constructor.name}_${this.short_name}`.toLocaleLowerCase();
+    return `${this.constructor.name}_${this.short_name}`.toLowerCase();
   }
 
   public abstract getDisplayName(): string;

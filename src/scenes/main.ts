@@ -17,7 +17,6 @@ export default class Main extends Phaser.Scene {
     const model = loadFromStorage();
     gameModel.set(model);
     calculateOfflineProgress();
-    updateGameModel();
 
     const unsubscribe_store = gameModel.subscribe((model) => {
       scoreboard.setText(["Money: " + model.wallet.money]);
