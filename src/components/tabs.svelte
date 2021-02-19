@@ -1,31 +1,48 @@
 <script lang="ts">
-  export let goto: CallableFunction;
+  import { Tabs, Tab } from "smelte/src/components/Tabs";
+  import Laboratory from "../app/laboratory.svelte";
+  import Blacksmith from "../app/blacksmith.svelte";
+  import Farm from "../app/farm.svelte";
+  import Village from "../app/village.svelte";
+  import Workshop from "../app/workshop.svelte";
+
+  import { gameModel, GameModel } from "../gamelogic/gamemodel";
+
+  let gameModelInstance: GameModel;
+  gameModel.subscribe((m) => (gameModelInstance = m));
+
+  let items = [
+    { id: "village", component: Village, text: "Village", locked: false },
+    { id: "farm", component: Farm, text: "Farm", name: "villagebuilding_farm", locked: false },
+    { id: "workshop", component: Workshop, text: "Workshop", name: "villagebuilding_workshop", locked: false },
+    { id: "blacksmith", component: Blacksmith, text: "Blacksmith", name: "villagebuilding_blacksmith", locked: false },
+    { id: "laboratory", component: Laboratory, text: "Laboratory", name: "villagebuilding_laboratory", locked: false },
+  ];
+
+  items.forEach((item) => {
+    if (!item.name) return;
+    const b = gameModelInstance.village_buildings.get(item.name);
+    if (!b) return;
+    if (b.level < 1) item.locked = true;
+  });
+
+  let filtered = items;
+  $: filtered = items.filter((item) => {
+    if (!item.name) return true;
+    const b = gameModelInstance.village_buildings.get(item.name);
+
+    if (b === undefined) return true;
+    if (b.level < 1) return false;
+    return true;
+  });
+
+  let selected: string = items[0].id;
 </script>
 
-<div class="tabs">
-  <div on:click={goto('/')}>Village</div>
-  <div on:click={goto('/farm')}>Farm</div>
-  <div on:click={goto('/workshop')}>Workshop</div>
-  <div on:click={goto('/blacksmith')}>Blacksmith</div>
-</div>
-
-<style>
-  .tabs {
-    display: flex;
-  }
-  .tabs > div {
-    flex: 1;
-    padding: 10px;
-    background-color: rgb(97,17,233);
-    border: 2px solid rgb(87,109,213);
-    border-top: 4px solid rgb(87,109,213);
-    border-bottom: 4px solid rgb(87,109,213);
-    color: white;
-    font-size: 16px;
-    text-align: center;
-  }
-  .tabs > div:hover {
-    background-color: rgb(0, 0, 156);
-    cursor: pointer;
-  }
-</style>
+<Tabs bind:selected items={filtered} class="bg-primary-500 text-white">
+  <div slot="content">
+    {#each items as item}
+      <Tab id={item.id} bind:selected><svelte:component this={item.component} bind:selected /></Tab>
+    {/each}
+  </div>
+</Tabs>

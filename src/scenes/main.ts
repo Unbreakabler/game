@@ -1,7 +1,7 @@
 import "phaser";
 import { gameModel, updateGameModel } from "../gamelogic/gamemodel";
 import { calculateOfflineProgress, svelte_game_loop } from "../gamelogic/gameloop";
-import { loadFromStorage } from "../gamelogic/util/saveloadfunctions";
+import { loadFromStorage, saveToStorage } from "../gamelogic/util/saveloadfunctions";
 
 export default class Main extends Phaser.Scene {
   public constructor() {
@@ -17,6 +17,7 @@ export default class Main extends Phaser.Scene {
     const model = loadFromStorage();
     gameModel.set(model);
     calculateOfflineProgress();
+    saveToStorage(model);
 
     const unsubscribe_store = gameModel.subscribe((model) => {
       scoreboard.setText(["Money: " + model.wallet.money]);

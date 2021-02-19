@@ -1,4 +1,5 @@
 import "reflect-metadata";
+import "smelte/src/tailwind.css";
 import App from "./app/app.svelte";
 
 new App({

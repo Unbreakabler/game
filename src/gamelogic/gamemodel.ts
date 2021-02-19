@@ -3,6 +3,8 @@ import { writable } from "svelte/store";
 import type { Achievable } from "./village/achievable";
 import { FarmJob } from "./village/farmjob";
 import { default_farm_jobs, farmJobTransformer } from "./village/farmjobs";
+import { VillageBuilding } from "./village/villagebuilding";
+import { villageBuildingTransformer, default_village_buildings } from "./village/villagebuildings";
 
 export class Wallet {
   public money: number = 0;
@@ -23,6 +25,10 @@ export class GameModel {
   @Transform(farmJobTransformer, { toClassOnly: true })
   public farm_jobs: Map<string, FarmJob> = new Map();
 
+  @Type(() => VillageBuilding)
+  @Transform(villageBuildingTransformer, { toClassOnly: true })
+  public village_buildings: Map<string, VillageBuilding> = new Map();
+
   @Exclude()
   public achievables: Map<string, Achievable> = new Map();
 
@@ -31,6 +37,7 @@ export class GameModel {
     this.last_saved = Date.now();
     this.wallet = new Wallet();
     this.farm_jobs = default_farm_jobs;
+    this.village_buildings = default_village_buildings;
     this.reloadAchievables();
   }
 

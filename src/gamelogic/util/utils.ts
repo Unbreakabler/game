@@ -1,3 +1,5 @@
+import type { SvelteComponent } from "svelte";
+
 const thousand = 1_000;
 const million = 1_000_000;
 const billion = 1_000_000_000;
@@ -31,4 +33,11 @@ export function formatWhole(input: number): string {
   if (input < 0) return "-" + formatWhole(-1 * input);
   if (input < thousand) return formatNumber(input, 0);
   return formatNumber(input, 2);
+}
+
+export interface Route {
+  url: string;
+  component: typeof SvelteComponent;
+  locked: boolean;
+  name?: string;
 }
