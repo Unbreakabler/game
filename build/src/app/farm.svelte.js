@@ -23,7 +23,7 @@ function get_each_context_1(ctx, list, i) {
 	return child_ctx;
 }
 
-// (20:2) {:else}
+// (21:2) {:else}
 function create_else_block(ctx) {
 	let row;
 	let div;
@@ -90,7 +90,7 @@ function create_else_block(ctx) {
 	};
 }
 
-// (18:2) {#if job.areRequirementsMet(gameModelInstance.achievables)}
+// (19:2) {#if job.areRequirementsMet(gameModelInstance.achievables)}
 function create_if_block(ctx) {
 	let farmjobcomponenent;
 	let current;
@@ -124,7 +124,7 @@ function create_if_block(ctx) {
 	};
 }
 
-// (23:8) {#each job.requirements as r}
+// (24:8) {#each job.requirements as r}
 function create_each_block_1(ctx) {
 	let t0;
 	let t1_value = /*gameModelInstance*/ ctx[0].achievables.get(/*r*/ ctx[5].achievable_name).getDisplayName() + "";
@@ -159,7 +159,7 @@ function create_each_block_1(ctx) {
 	};
 }
 
-// (17:0) {#each jobs as job}
+// (18:0) {#each jobs as job}
 function create_each_block(ctx) {
 	let show_if;
 	let current_block_type_index;
@@ -333,10 +333,10 @@ function create_fragment(ctx) {
 }
 
 function instance($$self, $$props, $$invalidate) {
-	let jobs;
 	
 	let gameModelInstance;
 	gameModel.subscribe(m => $$invalidate(0, gameModelInstance = m));
+	let jobs;
 
 	$$self.$$.update = () => {
 		if ($$self.$$.dirty & /*gameModelInstance*/ 1) {

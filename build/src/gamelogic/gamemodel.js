@@ -3,6 +3,8 @@ import { serialize, deserialize } from '../../node_modules/class-transformer/esm
 import { writable } from '../../node_modules/svelte/store/index.mjs.js';
 import { FarmJob } from './village/farmjob.js';
 import { default_farm_jobs, farmJobTransformer } from './village/farmjobs.js';
+import { VillageBuilding } from './village/villagebuilding.js';
+import { villageBuildingTransformer, default_village_buildings } from './village/villagebuildings.js';
 import { Type } from '../../node_modules/class-transformer/esm5/decorators/type.decorator.js';
 import { Transform } from '../../node_modules/class-transformer/esm5/decorators/transform.decorator.js';
 import { Exclude } from '../../node_modules/class-transformer/esm5/decorators/exclude.decorator.js';
@@ -19,11 +21,13 @@ class Wallet {
 class GameModel {
     constructor() {
         this.farm_jobs = new Map();
+        this.village_buildings = new Map();
         this.achievables = new Map();
         //Create new empty GameModel
         this.last_saved = Date.now();
         this.wallet = new Wallet();
         this.farm_jobs = default_farm_jobs;
+        this.village_buildings = default_village_buildings;
         this.reloadAchievables();
     }
     reloadAchievables() {
@@ -61,6 +65,10 @@ __decorate([
     Type(() => FarmJob),
     Transform(farmJobTransformer, { toClassOnly: true })
 ], GameModel.prototype, "farm_jobs", void 0);
+__decorate([
+    Type(() => VillageBuilding),
+    Transform(villageBuildingTransformer, { toClassOnly: true })
+], GameModel.prototype, "village_buildings", void 0);
 __decorate([
     Exclude()
 ], GameModel.prototype, "achievables", void 0);
