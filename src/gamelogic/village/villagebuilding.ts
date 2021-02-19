@@ -29,7 +29,7 @@ export class VillageBuilding extends Achievable {
 
   public upgrade(wallet: Wallet): boolean {
     const next_upgrade = this.getNextUpgrade();
-
+    if (!next_upgrade) return false;
     if (wallet.money >= next_upgrade.money_cost) {
       wallet.money -= next_upgrade.money_cost;
       this.level++;
@@ -38,11 +38,14 @@ export class VillageBuilding extends Achievable {
     return false;
   }
 
-  public getNextUpgrade(): Upgrade {
+  public getNextUpgrade(): Upgrade | undefined {
+    if (this.level > this.upgrades.length) return undefined;
     return this.upgrades[this.level];
   }
 
-  public getUpgradeMoneyCost(): string {
-    return formatNumber(this.getNextUpgrade().money_cost, 0);
+  public getUpgradeMoneyCostAsString(): string {
+    const next_upgrade = this.getNextUpgrade();
+    if (!next_upgrade) return "Max Level Reached.";
+    return formatNumber(next_upgrade.money_cost, 0);
   }
 }

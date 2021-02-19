@@ -15,22 +15,22 @@
   let gameModelInstance: GameModel;
   gameModel.subscribe((m) => (gameModelInstance = m));
 
-  const next_upgrade = building.getNextUpgrade();
-
   function upgrade(building: VillageBuilding) {
     building.upgrade(gameModelInstance.wallet);
     updateGameModel();
   }
 
-  function canAfford() {
-    return gameModelInstance.wallet.money >= next_upgrade.money_cost;
-  }
+  $: can_afford = () => {
+    const next = building.getNextUpgrade();
+    if (!next) return false;
+    return gameModelInstance.wallet.money >= next.money_cost;
+  };
 </script>
 
 <div class="my-card">
   <Card.Card class="bg-white">
     <div slot="title"><Card.Title title={building.getDisplayName()} {subheader} /></div>
-    <div slot="text" class="pb-0 pt-0 p-5">Cost to upgrade: {building.getUpgradeMoneyCost()}</div>
+    <div slot="text" class="pb-0 pt-0 p-5">Cost to upgrade: {building.getUpgradeMoneyCostAsString()}</div>
     <div slot="actions">
       <div class="p-2">
         <Button
@@ -40,7 +40,7 @@
             selected = building.short_name;
           }}>Visit</Button
         >
-        <Button disabled={!canAfford()} text on:click={upgrade(building)}>Upgrade</Button>
+        <Button disabled={!can_afford()} text on:click={upgrade(building)}>Upgrade</Button>
       </div>
     </div>
   </Card.Card>
