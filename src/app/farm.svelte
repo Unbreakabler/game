@@ -6,6 +6,7 @@
   let gameModelInstance: GameModel;
   gameModel.subscribe((m) => (gameModelInstance = m));
 
+  let jobs: FarmJob[];
   $: jobs = Array.from(gameModelInstance.farm_jobs.values());
 </script>
 
