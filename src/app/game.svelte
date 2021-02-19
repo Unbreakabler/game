@@ -2,6 +2,7 @@
   import "phaser";
   import { onMount } from "svelte";
   import Main from "../scenes/main";
+  import TD from "../scenes/td";
   let canvas: HTMLCanvasElement, game, unsubscribe_store: any;
 
   onMount(() => {
@@ -9,8 +10,14 @@
       type: Phaser.CANVAS,
       width: 800,
       height: 600,
+      physics: {
+        default: 'arcade'
+      },
       canvas: canvas,
-      scene: Main,
+      scene: [
+        TD,
+        Main,
+      ]
     };
 
     game = new Phaser.Game(config);
