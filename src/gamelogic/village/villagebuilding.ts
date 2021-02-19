@@ -1,8 +1,8 @@
 import { Expose } from "class-transformer";
-import { Achievable, Requirement } from "./achievable";
-import type { Upgrade, VILLAGE_BUILDING } from "./villagebuildings";
-import { Wallet } from "../gamemodel";
+import type { Wallet } from "../gamemodel";
 import { formatNumber } from "../util/utils";
+import { Achievable } from "./achievable";
+import type { Upgrade, VILLAGE_BUILDING } from "./villagebuildings";
 
 export class VillageBuilding extends Achievable {
   public display_name: string;
