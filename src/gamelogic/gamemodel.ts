@@ -1,5 +1,6 @@
 import { deserialize, Exclude, serialize, Transform, Type } from "class-transformer";
 import { writable } from "svelte/store";
+import { TowerDefense } from "./td/tower_defense";
 import type { Achievable } from "./village/achievable";
 import { FarmJob } from "./village/farmjob";
 import { default_farm_jobs, farmJobTransformer } from "./village/farmjobs";
@@ -25,12 +26,16 @@ export class GameModel {
 
   @Exclude()
   public achievables: Map<string, Achievable> = new Map();
+  
+  @Type(() => TowerDefense)
+  public tower_defense: TowerDefense;
 
   public constructor() {
     //Create new empty GameModel
     this.last_saved = Date.now();
     this.wallet = new Wallet();
     this.farm_jobs = default_farm_jobs;
+    this.tower_defense = new TowerDefense();
     this.reloadAchievables();
   }
 

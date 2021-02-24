@@ -9,9 +9,9 @@ import Bullet from '../tower_bullet'
 export default class Turret extends Phaser.GameObjects.Image {
   private next_tick = 0;
   private projectiles: Phaser.GameObjects.Group;
-  private range = DEFAULT_RANGE;
-  private attack_speed = DEFAULT_ATTACK_SPEED;
-  private damage = DEFAULT_DAMAGE;
+  public range = DEFAULT_RANGE;
+  public attack_speed = DEFAULT_ATTACK_SPEED;
+  public damage = DEFAULT_DAMAGE;
 
   constructor(scene: Phaser.Scene, x: number = 0, y:number = 0, 
               sprite_name: string = 'turret', range: number = DEFAULT_RANGE, 
@@ -23,15 +23,18 @@ export default class Turret extends Phaser.GameObjects.Image {
     this.projectiles = this.scene.physics.add.group({ classType: Bullet, runChildUpdate: true });
   }
 
-  private isPlaceable(place_x: number, place_y: number, width: number, height: number, turrets: Phaser.GameObjects.Group, path: Phaser.Curves.Path): boolean {
+  public isPlaceable(place_x: number, place_y: number, width: number, height: number, turrets: Phaser.GameObjects.Group, path: Phaser.Curves.Path): boolean {
     const min_dist = path.getPoints(path.getLength()/20).reduce((acc, point) => {
       return Math.min(Phaser.Math.Distance.Between(place_x, place_y, point.x, point.y), acc);
     }, 1000)
     if (min_dist < PLACEABLE_MIN_DISTANCE_FROM_PATH) {
-      return false // Can not place turret next to path
+      // console.error('Can not place turret next to path')
+      return false
     }
 
     for (const t of turrets.children.entries) {
+      if (t == this.scene.selection) continue; // current turret on cursor
+
       let min_x = t.x - t.width/2
       let max_x = t.x + t.width/2
       let min_y = t.y - t.height/2
@@ -46,7 +49,8 @@ export default class Turret extends Phaser.GameObjects.Image {
       const y_overlap = Math.max(0, Math.min(max_y, new_max_y) - Math.max(min_y, new_min_y));
   
       if (x_overlap * y_overlap > 0) {
-        return false // Can not place a turret overlapping another turret
+        // console.error('Can not place a turret overlapping another turret')
+        return false
       }
     }
     return true

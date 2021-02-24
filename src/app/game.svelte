@@ -1,9 +1,14 @@
 <script lang="ts">
   import "phaser";
   import { onMount } from "svelte";
+  import { GameModel, gameModel } from "../gamelogic/gamemodel";
+import type { TowerType } from "../gamelogic/td/tower_defense";
   import Main from "../scenes/main";
   import TD from "../scenes/td";
-  let canvas: HTMLCanvasElement, game, unsubscribe_store: any;
+  let canvas: HTMLCanvasElement, game: any;
+
+  let gameModelInstance: GameModel;
+  gameModel.subscribe((m) => (gameModelInstance = m));
 
   onMount(() => {
     const config: Phaser.Types.Core.GameConfig = {
@@ -22,10 +27,19 @@
 
     game = new Phaser.Game(config);
   });
+
+  const toggleTowerSelection = (tower_type: TowerType) => {
+    if (gameModelInstance.tower_defense.selection == tower_type) {
+      gameModelInstance.tower_defense.selection = null
+    } else {
+      gameModelInstance.tower_defense.selectForPlacement(tower_type);
+    }
+  }
 </script>
 
 <div>
   <canvas bind:this={canvas} id="game-container" />
+  <button on:click={() => toggleTowerSelection('basic')}>Tower</button>
 </div>
 
 <style>
@@ -35,6 +49,7 @@
   }
   div {
     display: flex;
+    flex-direction: column;
     justify-content: center;
   }
 </style>
