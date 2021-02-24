@@ -15,6 +15,7 @@
   function hardReset() {
     if (window.confirm("You will lose all progress. Are you sure?")) {
       resetSaveGame();
+      saveGame();
     }
   }
 </script>
