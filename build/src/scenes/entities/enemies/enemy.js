@@ -6,9 +6,7 @@ class Enemy extends Phaser.GameObjects.Sprite {
         this.path = null;
         this.speed = DEFAULT_ENEMY_SPEED;
         this.health_points = DEFAULT_ENEMY_HP;
-        td_scene.add.existing(this);
         td_scene.physics.add.existing(this);
-        td_scene.add.group(this, { active: true });
         this.follower = { t: 0, vec: new Phaser.Math.Vector2() };
         this.speed = speed;
         this.health_points = health_points;

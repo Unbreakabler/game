@@ -12,14 +12,10 @@ class Turret extends Phaser.GameObjects.Image {
         this.attack_speed = DEFAULT_ATTACK_SPEED;
         this.damage = DEFAULT_DAMAGE;
         this.td_scene = td_scene;
-        this.td_scene.add.existing(this);
-        td_scene.add.group(this, { active: true });
         this.range = range;
         this.attack_speed = attack_speed;
         this.damage = damage;
-        this.projectiles = [];
-        this.setActive(true);
-        this.setVisible(true);
+        this.projectiles = this.td_scene.add.group({ classType: Bullet, active: true, runChildUpdate: true });
     }
     isPlaceable(place_x, place_y, width, height, turrets, path) {
         const min_dist = path.getPoints(path.getLength() / 20).reduce((acc, point) => {
@@ -28,7 +24,7 @@ class Turret extends Phaser.GameObjects.Image {
         if (min_dist < PLACEABLE_MIN_DISTANCE_FROM_PATH) {
             return false; // Can not place turret next to path
         }
-        for (const t of turrets) {
+        for (const t of turrets.getChildren()) {
             const min_x = t.x - t.width / 2;
             const max_x = t.x + t.width / 2;
             const min_y = t.y - t.height / 2;
@@ -62,7 +58,7 @@ class Turret extends Phaser.GameObjects.Image {
     }
     update(time, delta) {
         //Look at near enemies
-        const e = this.findClosestEnemyInRange(100);
+        const e = this.findClosestEnemyInRange(20);
         if (e) {
             this.targetEnemy(e);
         }
@@ -75,8 +71,6 @@ class Turret extends Phaser.GameObjects.Image {
             if (this.attemptToFire())
                 this.next_tick = time + this.attack_speed;
         }
-        for (const p of this.projectiles)
-            p.update(time, delta);
     }
     attemptToFire() {
         //Enemy Found
@@ -94,7 +88,7 @@ class Turret extends Phaser.GameObjects.Image {
         const enemies = this.td_scene.enemies;
         let closest_enemy;
         let closest_distance = Number.MAX_VALUE;
-        for (const e of enemies) {
+        for (const e of enemies.getChildren()) {
             const d = Phaser.Math.Distance.Between(this.x, this.y, e.x, e.y);
             if (d < this.range + range_bonus) {
                 if (d < closest_distance) {
@@ -113,7 +107,7 @@ class Turret extends Phaser.GameObjects.Image {
     }
     fireBullet(x, y, angle) {
         const b = new Bullet(this.scene);
-        this.projectiles.push(b);
+        this.projectiles.add(b);
         //TODO - Make bullets smart so they follow units and delete selves when enemy is dead
         b.fire(x, y, angle, this.range, this.damage);
     }

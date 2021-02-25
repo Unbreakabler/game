@@ -1,13 +1,13 @@
 import '../../node_modules/phaser/dist/phaser.js';
+import Enemy from './entities/enemies/enemy.js';
 import GreenKnight from './entities/enemies/green_knight.js';
 import BaseTurret from './entities/towers/base_turret.js';
+import Turret from './entities/towers/turret.js';
 
 class TD extends Phaser.Scene {
     constructor() {
         super({ key: "td", active: true });
         this.nextEnemy = 0;
-        this.enemies = [];
-        this.turrets = [];
     }
     preload() {
         this.load.image("turret", "static/shotgun.png");
@@ -19,6 +19,8 @@ class TD extends Phaser.Scene {
     }
     create() {
         const graphics = this.add.graphics();
+        this.enemies = this.add.group({ classType: Enemy, active: true, runChildUpdate: true });
+        this.turrets = this.add.group({ classType: Turret, active: true, runChildUpdate: true });
         // The path for the current level, the coorodinates should be stored as a list
         // of tuples and be loaded on level start.
         this.path = this.add.path(96, -32);
@@ -46,22 +48,16 @@ class TD extends Phaser.Scene {
         // Place turrets on click, this will be changed to be a drag/drop from a tower menu
         this.input.on("pointerdown", this.placeTurret.bind(this));
         // Get turret info when hovering
-        this.input.setHitArea(this.turrets).on("pointerover", this.test.bind(this));
+        this.input.setHitArea(this.turrets.getChildren()).on("pointerover", this.test.bind(this));
     }
     update(time, delta) {
         // if its time for the next enemy
         if (time > this.nextEnemy) {
             const enemy = new GreenKnight(this);
-            this.enemies.push(enemy);
+            this.enemies.add(enemy, true);
             // place the enemy at the start of the path
             enemy.startOnPath(this.path);
             this.nextEnemy = time + 2000;
-        }
-        for (const e of this.enemies) {
-            e.update(time, delta);
-        }
-        for (const t of this.turrets) {
-            t.update(time, delta);
         }
     }
     test(pointer, game_objects_under_pointer) {
@@ -80,7 +76,7 @@ class TD extends Phaser.Scene {
                 t.destroy();
                 return false;
             }
-            this.turrets.push(t);
+            this.turrets.add(t, true);
             t.enableBulletCollisions(this.enemies);
             return true;
         }
