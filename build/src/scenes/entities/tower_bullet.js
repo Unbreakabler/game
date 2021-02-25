@@ -1,11 +1,13 @@
 class Bullet extends Phaser.GameObjects.Image {
     constructor(scene) {
-        super(scene, 0, 0, 'small_bullet');
+        super(scene, 0, 0, "small_bullet");
         this.dx = 0;
         this.dy = 0;
         this.lifespan = 0;
         this.speed = 0;
         this.damage = 0;
+        scene.add.existing(this);
+        scene.physics.add.existing(this);
         this.dx = 0;
         this.dy = 0;
         this.lifespan = 0;
@@ -16,7 +18,7 @@ class Bullet extends Phaser.GameObjects.Image {
         this.setVisible(true);
         this.setPosition(x, y);
         this.setRotation(angle - Phaser.Math.PI2 / 4); // FIXME(jon): not necessary if proj is round
-        this.dx = Math.cos(angle); // 
+        this.dx = Math.cos(angle); //
         this.dy = Math.sin(angle);
         this.lifespan = range;
         this.damage = damage;

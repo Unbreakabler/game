@@ -1,15 +1,20 @@
 const DEFAULT_ENEMY_SPEED = 1 / 10;
 const DEFAULT_ENEMY_HP = 100;
 class Enemy extends Phaser.GameObjects.Sprite {
-    constructor(scene, x = 0, y = 0, sprite_name, speed = DEFAULT_ENEMY_SPEED, health_points = DEFAULT_ENEMY_HP) {
-        super(scene, x, y, sprite_name);
+    constructor(td_scene, x = 0, y = 0, sprite_name, speed = DEFAULT_ENEMY_SPEED, health_points = DEFAULT_ENEMY_HP) {
+        super(td_scene, x, y, sprite_name);
         this.path = null;
         this.speed = DEFAULT_ENEMY_SPEED;
         this.health_points = DEFAULT_ENEMY_HP;
+        td_scene.add.existing(this);
+        td_scene.physics.add.existing(this);
+        td_scene.add.group(this, { active: true });
         this.follower = { t: 0, vec: new Phaser.Math.Vector2() };
         this.speed = speed;
         this.health_points = health_points;
         this.original_health_points = this.health_points; // health_points will need to be set for each enemy
+        this.setActive(true);
+        this.setVisible(true);
     }
     resetEnemy() {
         if (!this.path) {
@@ -17,7 +22,7 @@ class Enemy extends Phaser.GameObjects.Sprite {
         }
         // set the t parameter at the start of the path
         this.follower.t = 0;
-        // get x and y of the given t point            
+        // get x and y of the given t point
         this.path.getPoint(this.follower.t, this.follower.vec);
         // set the x and y of our enemy to the received from the previous step
         this.setPosition(this.follower.vec.x, this.follower.vec.y);
@@ -44,6 +49,8 @@ class Enemy extends Phaser.GameObjects.Sprite {
         if (this.follower.t >= 1) {
             this.setActive(false);
             this.setVisible(false);
+            this.destroy();
+            console.log("Enemy reached end.");
         }
     }
     receiveDamage(damage) {
@@ -51,6 +58,7 @@ class Enemy extends Phaser.GameObjects.Sprite {
         if (this.health_points < 0) {
             this.setActive(false);
             this.setVisible(false);
+            this.destroy();
         }
     }
 }
