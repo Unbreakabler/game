@@ -10,7 +10,7 @@ import type Enemy from "../enemies/enemy";
 
 export default class Turret extends Phaser.GameObjects.Image {
   private next_tick = 0;
-  private projectiles: Bullet[];
+  private projectiles: BetterGroup<Bullet>;
   private range = DEFAULT_RANGE;
   private attack_speed = DEFAULT_ATTACK_SPEED;
   private damage = DEFAULT_DAMAGE;
@@ -25,16 +25,12 @@ export default class Turret extends Phaser.GameObjects.Image {
     attack_speed: number = DEFAULT_ATTACK_SPEED,
     damage: number = DEFAULT_DAMAGE,
   ) {
-    super(td_scene as Phaser.Scene, 0, 0, sprite_name);
+    super(td_scene, 0, 0, sprite_name);
     this.td_scene = td_scene;
-    this.td_scene.add.existing(this);
-    td_scene.add.group(this, { active: true });
     this.range = range;
     this.attack_speed = attack_speed;
     this.damage = damage;
-    this.projectiles = [];
-    this.setActive(true);
-    this.setVisible(true);
+    this.projectiles = this.td_scene.add.group({ classType: Bullet, active: true, runChildUpdate: true }) as BetterGroup<Bullet>;
   }
 
   private isPlaceable(
@@ -42,7 +38,7 @@ export default class Turret extends Phaser.GameObjects.Image {
     place_y: number,
     width: number,
     height: number,
-    turrets: Turret[],
+    turrets: BetterGroup<Turret>,
     path: Phaser.Curves.Path,
   ): boolean {
     const min_dist = path.getPoints(path.getLength() / 20).reduce((acc, point) => {
@@ -52,7 +48,7 @@ export default class Turret extends Phaser.GameObjects.Image {
       return false; // Can not place turret next to path
     }
 
-    for (const t of turrets) {
+    for (const t of turrets.getChildren()) {
       const min_x = t.x - t.width / 2;
       const max_x = t.x + t.width / 2;
       const min_y = t.y - t.height / 2;
@@ -90,7 +86,7 @@ export default class Turret extends Phaser.GameObjects.Image {
 
   public update(time: number, delta: number): void {
     //Look at near enemies
-    const e = this.findClosestEnemyInRange(100);
+    const e = this.findClosestEnemyInRange(20);
 
     if (e) {
       this.targetEnemy(e);
@@ -102,8 +98,6 @@ export default class Turret extends Phaser.GameObjects.Image {
       //If fired at enemy, start cooldown
       if (this.attemptToFire()) this.next_tick = time + this.attack_speed;
     }
-
-    for (const p of this.projectiles) p.update(time, delta);
   }
 
   public attemptToFire(): boolean {
@@ -123,7 +117,7 @@ export default class Turret extends Phaser.GameObjects.Image {
     const enemies = this.td_scene.enemies;
     let closest_enemy: Enemy | undefined;
     let closest_distance = Number.MAX_VALUE;
-    for (const e of enemies) {
+    for (const e of enemies.getChildren()) {
       const d = Phaser.Math.Distance.Between(this.x, this.y, e.x, e.y);
       if (d < this.range + range_bonus) {
         if (d < closest_distance) {
@@ -145,16 +139,12 @@ export default class Turret extends Phaser.GameObjects.Image {
 
   public fireBullet(x: number, y: number, angle: number): void {
     const b = new Bullet(this.scene);
-    this.projectiles.push(b);
+    this.projectiles.add(b);
     //TODO - Make bullets smart so they follow units and delete selves when enemy is dead
     b.fire(x, y, angle, this.range, this.damage);
   }
 
-  public enableBulletCollisions(enemies: Enemy[]): void {
-    this.scene.physics.add.overlap(
-      enemies as Phaser.GameObjects.GameObject[],
-      this.projectiles as Phaser.GameObjects.GameObject[],
-      this.td_scene.damageEnemy as ArcadePhysicsCallback,
-    );
+  public enableBulletCollisions(enemies: BetterGroup<Enemy>): void {
+    this.scene.physics.add.overlap(enemies, this.projectiles, this.td_scene.damageEnemy as ArcadePhysicsCallback);
   }
 }

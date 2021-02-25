@@ -22,7 +22,7 @@ export default class Bullet extends Phaser.GameObjects.Image {
     this.setRotation(angle - Phaser.Math.PI2 / 4); // FIXME(jon): not necessary if proj is round
     this.dx = Math.cos(angle); //
     this.dy = Math.sin(angle);
-    this.lifespan = range;
+    this.lifespan = range * 1.3;
     this.damage = damage;
   }
 
@@ -35,6 +35,7 @@ export default class Bullet extends Phaser.GameObjects.Image {
     if (this.lifespan <= 0) {
       this.setActive(false);
       this.setVisible(false);
+      this.destroy();
     }
   }
 }

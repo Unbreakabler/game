@@ -18,9 +18,7 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
     health_points: number = DEFAULT_ENEMY_HP,
   ) {
     super(td_scene as Phaser.Scene, x, y, sprite_name);
-    td_scene.add.existing(this);
     td_scene.physics.add.existing(this);
-    td_scene.add.group(this, { active: true });
     this.follower = { t: 0, vec: new Phaser.Math.Vector2() };
     this.speed = speed;
     this.health_points = health_points;

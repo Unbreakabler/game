@@ -1,17 +1,17 @@
 import "phaser";
 
-import type Enemy from "./entities/enemies/enemy";
+import Enemy from "./entities/enemies/enemy";
 import type Bullet from "./entities/tower_bullet";
 
 import GreenKnight from "./entities/enemies/green_knight";
 import BaseTurret from "./entities/towers/base_turret";
-import type Turret from "./entities/towers/turret";
+import Turret from "./entities/towers/turret";
 
 export default class TD extends Phaser.Scene {
   public path!: Phaser.Curves.Path;
   private nextEnemy = 0;
-  public enemies: Enemy[] = [];
-  public turrets: Turret[] = [];
+  public enemies!: BetterGroup<Enemy>;
+  public turrets!: BetterGroup<Turret>;
 
   public constructor() {
     super({ key: "td", active: true });
@@ -28,6 +28,9 @@ export default class TD extends Phaser.Scene {
 
   public create(): void {
     const graphics = this.add.graphics();
+
+    this.enemies = this.add.group({ classType: Enemy, active: true, runChildUpdate: true }) as BetterGroup<Enemy>;
+    this.turrets = this.add.group({ classType: Turret, active: true, runChildUpdate: true }) as BetterGroup<Turret>;
 
     // The path for the current level, the coorodinates should be stored as a list
     // of tuples and be loaded on level start.
@@ -61,23 +64,17 @@ export default class TD extends Phaser.Scene {
     this.input.on("pointerdown", this.placeTurret.bind(this));
 
     // Get turret info when hovering
-    this.input.setHitArea(this.turrets).on("pointerover", this.test.bind(this));
+    this.input.setHitArea(this.turrets.getChildren()).on("pointerover", this.test.bind(this));
   }
 
   public update(time: number, delta: number): void {
     // if its time for the next enemy
     if (time > this.nextEnemy) {
       const enemy = new GreenKnight(this);
-      this.enemies.push(enemy);
+      this.enemies.add(enemy, true);
       // place the enemy at the start of the path
       enemy.startOnPath(this.path);
       this.nextEnemy = time + 2000;
-    }
-    for (const e of this.enemies) {
-      e.update(time, delta);
-    }
-    for (const t of this.turrets) {
-      t.update(time, delta);
     }
   }
 
@@ -98,7 +95,7 @@ export default class TD extends Phaser.Scene {
         t.destroy();
         return false;
       }
-      this.turrets.push(t);
+      this.turrets.add(t, true);
       t.enableBulletCollisions(this.enemies);
       return true;
     }
