@@ -21,9 +21,12 @@ class Turret extends Phaser.GameObjects.Image {
             return Math.min(Phaser.Math.Distance.Between(place_x, place_y, point.x, point.y), acc);
         }, 1000);
         if (min_dist < PLACEABLE_MIN_DISTANCE_FROM_PATH) {
-            return false; // Can not place turret next to path
+            // console.error('Can not place turret next to path')
+            return false;
         }
         for (const t of turrets.children.entries) {
+            if (t == this.scene.selection)
+                continue; // current turret on cursor
             let min_x = t.x - t.width / 2;
             let max_x = t.x + t.width / 2;
             let min_y = t.y - t.height / 2;
@@ -35,7 +38,8 @@ class Turret extends Phaser.GameObjects.Image {
             const x_overlap = Math.max(0, Math.min(max_x, new_max_x) - Math.max(min_x, new_min_x));
             const y_overlap = Math.max(0, Math.min(max_y, new_max_y) - Math.max(min_y, new_min_y));
             if (x_overlap * y_overlap > 0) {
-                return false; // Can not place a turret overlapping another turret
+                // console.error('Can not place a turret overlapping another turret')
+                return false;
             }
         }
         return true;

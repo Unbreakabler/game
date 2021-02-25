@@ -1,4 +1,4 @@
-import { GameModel, gameModel } from '../gamemodel.js';
+import { GameModel } from '../gamemodel.js';
 
 // import { compress, decompress } from 'lz-string';
 /**
@@ -47,15 +47,6 @@ function saveToStorage(game_model) {
         console.error(error); // log the error so at least we can see it
     }
 }
-/**
- * Resets save game in localstorage and resets the gameModel
- */
-function resetSaveGame() {
-    // remove from local storage
-    localStorage.removeItem(storageName);
-    // update the stored gameModel with a new one
-    gameModel.update((g) => (new GameModel()));
-}
 
-export { loadFromStorage, resetSaveGame, saveToStorage };
+export { loadFromStorage, saveToStorage };
 //# sourceMappingURL=saveloadfunctions.js.map
