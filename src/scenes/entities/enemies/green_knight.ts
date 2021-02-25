@@ -1,9 +1,9 @@
-import Enemy from './enemy'
+import Enemy from "./enemy";
+import type TD from "../../td";
 
 export default class GreenKnight extends Enemy {
-
-  constructor(scene: Phaser.Scene) {
-    super(scene, 0, 0, 'green-knight')
-    this.anims.play('green-knight-walking')
+  public constructor(scene: TD) {
+    super(scene, 0, 0, "green-knight");
+    this.anims.play("green-knight-walking");
   }
 }

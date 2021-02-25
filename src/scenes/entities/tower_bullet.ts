@@ -1,42 +1,41 @@
 export default class Bullet extends Phaser.GameObjects.Image {
-
   public dx: number = 0;
   public dy: number = 0;
   public lifespan: number = 0;
   public speed: number = 0;
   public damage: number = 0;
 
-  constructor(scene: Phaser.Scene) {
-    super(scene, 0, 0, 'small_bullet');
-
+  public constructor(scene: Phaser.Scene) {
+    super(scene, 0, 0, "small_bullet");
+    scene.add.existing(this);
+    scene.physics.add.existing(this);
     this.dx = 0;
     this.dy = 0;
     this.lifespan = 0;
     this.speed = Phaser.Math.GetSpeed(600, 1);
   }
 
-  public fire(x: number, y: number, angle: number, range: number, damage: number) {
+  public fire(x: number, y: number, angle: number, range: number, damage: number): void {
     this.setActive(true);
     this.setVisible(true);
     this.setPosition(x, y);
     this.setRotation(angle - Phaser.Math.PI2 / 4); // FIXME(jon): not necessary if proj is round
-    this.dx = Math.cos(angle); // 
+    this.dx = Math.cos(angle); //
     this.dy = Math.sin(angle);
-    this.lifespan = range;
+    this.lifespan = range * 1.3;
     this.damage = damage;
   }
 
-  public update(time: number, delta: number) {
+  public update(time: number, delta: number): void {
     this.lifespan -= delta;
 
     this.x += this.dx * (this.speed * delta);
     this.y += this.dy * (this.speed * delta);
 
-    if (this.lifespan <= 0)
-    {
+    if (this.lifespan <= 0) {
       this.setActive(false);
       this.setVisible(false);
+      this.destroy();
     }
   }
-
 }
