@@ -1,7 +1,7 @@
 <script lang="ts">
   import Card from "smelte/src/components/Card";
 
-  import VillageBuilding from "../components/village_building.svelte";
+  import VillageBuildingComponent from "../components/village_building.svelte";
   import { GameModel, gameModel } from "../gamelogic/gamemodel";
   import type { VillageBuilding } from "../gamelogic/village/villagebuilding";
 
@@ -16,7 +16,7 @@
 
 <div class="building-container">
   {#each buildings as building}
-    <VillageBuilding {building} bind:selected />
+    <VillageBuildingComponent {building} bind:selected />
   {/each}
 </div>
 

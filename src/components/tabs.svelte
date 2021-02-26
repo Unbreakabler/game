@@ -19,13 +19,6 @@
     { id: "laboratory", component: Laboratory, text: "Laboratory", name: "villagebuilding_laboratory", locked: false },
   ];
 
-  items.forEach((item) => {
-    if (!item.name) return;
-    const b = gameModelInstance.village_buildings.get(item.name);
-    if (!b) return;
-    if (b.level < 1) item.locked = true;
-  });
-
   let filtered = items;
   $: filtered = items.filter((item) => {
     if (!item.name) return true;
@@ -41,7 +34,7 @@
 
 <Tabs bind:selected items={filtered} class="bg-primary-500 text-white">
   <div slot="content">
-    {#each items as item}
+    {#each filtered as item}
       <Tab id={item.id} bind:selected><svelte:component this={item.component} bind:selected /></Tab>
     {/each}
   </div>

@@ -13,7 +13,7 @@ export type ValidAchievableShortName = FARM_JOB | VILLAGE_BUILDING;
  * Achievables would be Jobs, Skills, Talents that have or are
  * a requirement before being unlocked
  **/
-@Exclude()
+
 export abstract class Achievable {
   @Expose() public short_name: ValidAchievableShortName;
   @Expose() public level: number = 0;
@@ -21,7 +21,7 @@ export abstract class Achievable {
   //  money earned? etc.
   // do we need to track per prestige level reset
   //public amount_earned: number = 0;
-  public requirements: Requirement[] = [];
+  @Exclude() public requirements: Requirement[] = [];
 
   protected constructor(short_name: ValidAchievableShortName, requirements: Requirement[] = [], level: number = 0) {
     this.short_name = short_name;

@@ -1,4 +1,4 @@
-import { GameModel, gameModel } from "../gamemodel";
+import { GameModel, gameModel, updateGameModel } from "../gamemodel";
 // import { compress, decompress } from 'lz-string';
 
 /**

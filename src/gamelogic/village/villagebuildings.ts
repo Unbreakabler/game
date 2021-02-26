@@ -1,6 +1,5 @@
-import { plainToClassFromExist, TransformFnParams } from "class-transformer";
+import { classToClass, plainToClassFromExist, TransformFnParams } from "class-transformer";
 import type { Requirement } from "./achievable";
-import { FarmJob } from "./farmjob";
 import { VillageBuilding } from "./villagebuilding";
 
 export enum VILLAGE_BUILDING {
@@ -48,15 +47,17 @@ const arr: VillageBuilding[] = [
   new VillageBuilding(VILLAGE_BUILDING.laboratory, laboratory_upgrades, "Laboratory", "Empower creeps for bonus rewards"),
 ];
 
-export const default_village_buildings: Map<string, VillageBuilding> = arr.reduce(function (map, obj) {
-  map.set(obj.getAchievableName(), obj);
-  return map;
-}, new Map());
+export const get_default_village_buildings = (): Map<string, VillageBuilding> => {
+  return arr.reduce(function (map, obj) {
+    map.set(obj.getAchievableName(), classToClass(obj, { ignoreDecorators: true });
+    return map;
+  }, new Map());
+};
 
 export function villageBuildingTransformer(param: TransformFnParams): Map<string, VillageBuilding> {
   const map = new Map(Object.entries(param.obj.village_buildings));
   for (const [name, village_building] of map.entries()) {
-    const default_village_buiding = default_village_buildings.get(name);
+    const default_village_buiding = get_default_village_buildings().get(name);
     if (!default_village_buiding) throw new Error(`Corrupt Save. Village Building ${name} is invalid.`);
     map.set(name, plainToClassFromExist(default_village_buiding, village_building));
   }

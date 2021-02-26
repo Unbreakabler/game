@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { GameModel, gameModel } from "../gamelogic/gamemodel";
+  import { GameModel, gameModel, updateGameModel } from "../gamelogic/gamemodel";
   import { resetSaveGame, saveToStorage } from "../gamelogic/util/saveloadfunctions";
   import { formatNumber } from "../gamelogic/util/utils";
   import Button from "smelte/src/components/Button";
@@ -16,6 +16,7 @@
     if (window.confirm("You will lose all progress. Are you sure?")) {
       resetSaveGame();
       saveGame();
+
     }
   }
 </script>
