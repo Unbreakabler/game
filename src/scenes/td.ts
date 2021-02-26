@@ -7,6 +7,7 @@ import type Bullet from "./entities/tower_bullet";
 
 import GreenKnight from "./entities/enemies/green_knight";
 import BaseTurret from "./entities/towers/base_turret";
+import MachineGun from "./entities/towers/machine_gun";
 import type Turret from "./entities/towers/turret";
 
 export default class TD extends Phaser.Scene {
@@ -15,6 +16,7 @@ export default class TD extends Phaser.Scene {
   private nextEnemy = 0;
   public enemies!: BetterGroup<Enemy>;
   public turrets!: BetterGroup<Turret>;
+  public machine_guns!: BetterGroup<MachineGun>;
   public selection!: Turret | null;
 
   public constructor() {
@@ -23,10 +25,11 @@ export default class TD extends Phaser.Scene {
 
   public preload(): void {
     this.load.image("turret", "static/shotgun.png");
+    this.load.image("machine_gun", "static/machine_gun.png");
     this.load.image("small_bullet", "static/small_bullet.png");
     this.load.spritesheet("green-knight", "static/green_knight.png", {
-      frameWidth: 20,
-      frameHeight: 29,
+      frameWidth: 329/16,
+      frameHeight: 30,
     });
   }
 
@@ -42,8 +45,26 @@ export default class TD extends Phaser.Scene {
   private generateAnimations() {
     // Set up animations
     this.anims.create({
-      key: 'green-knight-walking',
+      key: 'green-knight-walking-down',
       frames: this.anims.generateFrameNames('green-knight', {start: 0, end: 3}),
+      frameRate: 3,
+      repeat: -1
+    })
+    this.anims.create({
+      key: 'green-knight-walking-right',
+      frames: this.anims.generateFrameNames('green-knight', {start: 4, end: 7}),
+      frameRate: 3,
+      repeat: -1
+    })
+    this.anims.create({
+      key: 'green-knight-walking-left',
+      frames: this.anims.generateFrameNames('green-knight', {start: 8, end: 11}),
+      frameRate: 3,
+      repeat: -1
+    })
+    this.anims.create({
+      key: 'green-knight-walking-up',
+      frames: this.anims.generateFrameNames('green-knight', {start: 12, end: 15}),
       frameRate: 3,
       repeat: -1
     })
@@ -72,17 +93,22 @@ export default class TD extends Phaser.Scene {
   private setupEntities() {
     // Add gameobject groups for towers and enemies, these manage interactions and collisions
     this.turrets = this.add.group({ classType: BaseTurret, runChildUpdate: true }) as BetterGroup<Turret>;
+    this.machine_guns = this.add.group({ classType: MachineGun, runChildUpdate: true }) as BetterGroup<Turret>;
     this.enemies = this.add.group({ classType: GreenKnight, runChildUpdate: true }) as BetterGroup<Enemy>;
     this.placement_radius = this.add.circle(100, 100, this.selection?.range, 0xff0000, 0.5);
   }
 
   private setupModelSubscriptions() {
-    const unsubscribe_store = gameModel.subscribe((model) => {
-      if (model.tower_defense.selection == 'basic') {
-        this.selection = this.turrets?.get()
+    const unsubscribe_store = gameModel.subscribe((model) => {    
+      if (model.tower_defense.selection === 'basic') {
+        this.selection = this.turrets?.get();
         if (this.selection) {
           this.placement_radius?.setRadius(this.selection.range)
-          // this.selection?.setVisible(false);
+        }
+      } else if (model.tower_defense.selection === 'machine_gun') {
+        this.selection = this.machine_guns?.get();
+        if (this.selection) {
+          this.placement_radius?.setRadius(this.selection.range)
         }
       } else {
         this.placement_radius?.setVisible(false);
@@ -145,16 +171,16 @@ export default class TD extends Phaser.Scene {
     const place_y = Math.floor(pointer.y);
     const width: number = 32; // Default width/height for now, can be changed per tower.
     const height: number = 32;
-    // NO IDEA why I have to access turrents/path/bullets via `this.scene.` instead of `this.` directly.
-    // I think accessing through scene is correct but I'm not sure how to update the type signatures.
+    
     if (game_objects_under_pointer.length === 0) {
-      const t = new BaseTurret(this);
+      const t = this.selection;
       if (!t.place(place_x, place_y, width, height)) {
         t.destroy();
         return false;
       }
       this.turrets.add(t, true);
       t.enableBulletCollisions(this.enemies);
+      this.selection = null;
       return true;
     }
     return false;

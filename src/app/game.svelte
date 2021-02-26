@@ -43,6 +43,7 @@
 <div>
   <canvas bind:this={canvas} id="game-container" />
   <button class:active={selection === 'basic'} class="base-turret" on:click={() => toggleTowerSelection('basic')}></button>
+  <button class:active={selection === 'machine_gun'} class="machine-gun" on:click={() => toggleTowerSelection('machine_gun')}></button>
 </div>
 
 <style>
@@ -57,11 +58,14 @@
   }
   button {
     border: none;
+    height: 32px;
+    width: 32px;
   }
   .base-turret {
     background-image: url('static/shotgun.png');
-    height: 32px;
-    width: 32px;
+  }
+  .machine-gun {
+    background-image: url('static/machine_gun.png');
   }
   .active {
 		background-color: green;

@@ -9,6 +9,8 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
   private speed: number = DEFAULT_ENEMY_SPEED;
   private health_points = DEFAULT_ENEMY_HP;
   private original_health_points;
+  private sprite_name: string;
+  private prev_ang: number = 0;
   public constructor(
     td_scene: TD,
     x: number = 0,
@@ -19,6 +21,7 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
   ) {
     super(td_scene as Phaser.Scene, x, y, sprite_name);
     td_scene.physics.add.existing(this);
+    this.sprite_name = sprite_name;
     this.follower = { t: 0, vec: new Phaser.Math.Vector2() };
     this.speed = speed;
     this.health_points = health_points;
@@ -38,6 +41,7 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
     this.path.getPoint(this.follower.t, this.follower.vec);
 
     // set the x and y of our enemy to the received from the previous step
+    
     this.setPosition(this.follower.vec.x, this.follower.vec.y);
     this.health_points = this.original_health_points;
   }
@@ -60,6 +64,26 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
 
     // get the new x and y coordinates in vec
     this.path.getPoint(this.follower.t, this.follower.vec);
+
+    // angle between 0 and 2*PI
+    const ang = Phaser.Math.Angle.Between(this.x, this.y, this.follower.vec.x, this.follower.vec.y) + Math.PI;
+    if (ang != this.prev_ang) {
+      if (ang < 1/4 * Math.PI || ang >= 7/4 * Math.PI) {
+        // right
+        this.anims.play(`${this.sprite_name}-walking-left`)
+      } else if (ang < 7/4 * Math.PI && ang >= 5/4 * Math.PI) {
+        // down
+        this.anims.play(`${this.sprite_name}-walking-down`)
+      } else if (ang < 5/4 * Math.PI && ang >= 3/4 * Math.PI) {
+        // left
+        this.anims.play(`${this.sprite_name}-walking-right`)
+      } else if (ang < 3/4 * Math.PI && ang >= 1/4 * Math.PI) {
+        // up
+        this.anims.play(`${this.sprite_name}-walking-up`)
+      }
+    }
+    this.prev_ang = ang;
+
 
     // update enemy x and y to the newly obtained x and y
     this.setPosition(this.follower.vec.x, this.follower.vec.y);
