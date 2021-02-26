@@ -1,9 +1,9 @@
 import { __decorate } from '../../../node_modules/tslib/tslib.es6.js';
 import { Achievable } from './achievable.js';
-import { Expose } from '../../../node_modules/class-transformer/esm5/decorators/expose.decorator.js';
 import { Exclude } from '../../../node_modules/class-transformer/esm5/decorators/exclude.decorator.js';
+import { Expose } from '../../../node_modules/class-transformer/esm5/decorators/expose.decorator.js';
 
-let FarmJob = class FarmJob extends Achievable {
+class FarmJob extends Achievable {
     constructor(short_name, requirements, display_name, description, difficulty_growth_factor, base_exp_rate = 1, base_income = 1, base_time_per_level = 5, start_level = 0) {
         super(short_name, requirements, start_level);
         //Saveable Members
@@ -67,7 +67,25 @@ let FarmJob = class FarmJob extends Achievable {
             return;
         wallet.money += this.getCurrentIncome() * delta_t_s;
     }
-};
+}
+__decorate([
+    Exclude()
+], FarmJob.prototype, "display_name", void 0);
+__decorate([
+    Exclude()
+], FarmJob.prototype, "description", void 0);
+__decorate([
+    Exclude()
+], FarmJob.prototype, "difficulty_growth_factor", void 0);
+__decorate([
+    Exclude()
+], FarmJob.prototype, "base_exp_rate", void 0);
+__decorate([
+    Exclude()
+], FarmJob.prototype, "base_income", void 0);
+__decorate([
+    Exclude()
+], FarmJob.prototype, "base_exp_per_level", void 0);
 __decorate([
     Expose()
 ], FarmJob.prototype, "active", void 0);
@@ -77,9 +95,6 @@ __decorate([
 __decorate([
     Expose()
 ], FarmJob.prototype, "max_level", void 0);
-FarmJob = __decorate([
-    Exclude()
-], FarmJob);
 
 export { FarmJob };
 //# sourceMappingURL=farmjob.js.map

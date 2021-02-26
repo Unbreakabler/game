@@ -38,7 +38,7 @@ function create_fragment(ctx) {
 			props: {
 				current: /*current_exp*/ ctx[1],
 				total: /*total_exp_for_level*/ ctx[3],
-				name: /*job*/ ctx[0].display_name
+				name: /*job*/ ctx[0].getDisplayName()
 			}
 		});
 
@@ -93,7 +93,7 @@ function create_fragment(ctx) {
 			const progressbar_changes = {};
 			if (dirty & /*current_exp*/ 2) progressbar_changes.current = /*current_exp*/ ctx[1];
 			if (dirty & /*total_exp_for_level*/ 8) progressbar_changes.total = /*total_exp_for_level*/ ctx[3];
-			if (dirty & /*job*/ 1) progressbar_changes.name = /*job*/ ctx[0].display_name;
+			if (dirty & /*job*/ 1) progressbar_changes.name = /*job*/ ctx[0].getDisplayName();
 			progressbar.$set(progressbar_changes);
 			if (!current || dirty & /*current_level*/ 32) set_data(t1, /*current_level*/ ctx[5]);
 			if ((!current || dirty & /*current_income*/ 16) && t3_value !== (t3_value = formatNumber(/*current_income*/ ctx[4], 2) + "")) set_data(t3, t3_value);

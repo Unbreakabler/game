@@ -6,7 +6,7 @@ import { Exclude } from '../../../node_modules/class-transformer/esm5/decorators
  * Achievables would be Jobs, Skills, Talents that have or are
  * a requirement before being unlocked
  **/
-let Achievable = class Achievable {
+class Achievable {
     constructor(short_name, requirements = [], level = 0) {
         this.level = 0;
         //TODO: what  do we want to track to help with achievments??
@@ -39,16 +39,16 @@ let Achievable = class Achievable {
         }
         return true;
     }
-};
+}
 __decorate([
     Expose()
 ], Achievable.prototype, "short_name", void 0);
 __decorate([
     Expose()
 ], Achievable.prototype, "level", void 0);
-Achievable = __decorate([
+__decorate([
     Exclude()
-], Achievable);
+], Achievable.prototype, "requirements", void 0);
 
 export { Achievable };
 //# sourceMappingURL=achievable.js.map
