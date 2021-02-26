@@ -4,8 +4,8 @@ import { SvelteComponent, init, safe_not_equal, element, append, text, space, at
 
 function add_css() {
 	var style = element("style");
-	style.id = "svelte-y2w4f1-style";
-	style.textContent = "span.svelte-y2w4f1{position:absolute;padding:2px 10px;color:white}.container.svelte-y2w4f1{height:1.5em;width:100%;display:relative}.progress.svelte-y2w4f1{width:var(--progress_width);height:1.5em}";
+	style.id = "svelte-17qulq4-style";
+	style.textContent = "span.svelte-17qulq4{position:absolute;padding:2px 10px;color:white}.container.svelte-17qulq4{height:1.5em;width:100%;background-color:red;display:relative}.progress.svelte-17qulq4{background-color:blue;width:var(--progress_width);height:1.5em}";
 	append(document.head, style);
 }
 
@@ -23,9 +23,9 @@ function create_fragment(ctx) {
 			t0 = text(/*name*/ ctx[0]);
 			t1 = space();
 			div0 = element("div");
-			attr(span, "class", "svelte-y2w4f1");
-			attr(div0, "class", "progress bg-primary-500 svelte-y2w4f1");
-			attr(div1, "class", "container bg-error-500 svelte-y2w4f1");
+			attr(span, "class", "svelte-17qulq4");
+			attr(div0, "class", "progress svelte-17qulq4");
+			attr(div1, "class", "container svelte-17qulq4");
 			set_style(div1, "--progress_width", /*progress_width*/ ctx[1] + "%");
 		},
 		m(target, anchor) {
@@ -74,7 +74,7 @@ function instance($$self, $$props, $$invalidate) {
 class Progress_bar extends SvelteComponent {
 	constructor(options) {
 		super();
-		if (!document.getElementById("svelte-y2w4f1-style")) add_css();
+		if (!document.getElementById("svelte-17qulq4-style")) add_css();
 		init(this, options, instance, create_fragment, safe_not_equal, { total: 2, current: 3, name: 0 });
 	}
 }

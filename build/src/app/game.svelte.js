@@ -1,5 +1,6 @@
-import { SvelteComponent, init, safe_not_equal, element, append, attr, insert, noop, detach, onMount, binding_callbacks } from '../../node_modules/svelte/internal/index.mjs.js';
+import { SvelteComponent, init, safe_not_equal, element, append, space, attr, toggle_class, insert, listen, noop, detach, onMount, binding_callbacks } from '../../node_modules/svelte/internal/index.mjs.js';
 import '../../node_modules/phaser/dist/phaser.js';
+import { gameModel } from '../gamelogic/gamemodel.js';
 import Main from '../scenes/main.js';
 import TD from '../scenes/td.js';
 
@@ -7,40 +8,65 @@ import TD from '../scenes/td.js';
 
 function add_css() {
 	var style = element("style");
-	style.id = "svelte-1wcpsjn-style";
-	style.textContent = "canvas.svelte-1wcpsjn{width:800px;height:600px}div.svelte-1wcpsjn{display:flex;justify-content:center}";
+	style.id = "svelte-i7htqj-style";
+	style.textContent = "canvas.svelte-i7htqj{width:800px;height:600px}div.svelte-i7htqj{display:flex;flex-direction:column;justify-content:center}button.svelte-i7htqj{border:none}.base-turret.svelte-i7htqj{background-image:url('static/shotgun.png');height:32px;width:32px}.active.svelte-i7htqj{background-color:green}";
 	append(document.head, style);
 }
 
 function create_fragment(ctx) {
 	let div;
 	let canvas_1;
+	let t;
+	let button;
+	let mounted;
+	let dispose;
 
 	return {
 		c() {
 			div = element("div");
 			canvas_1 = element("canvas");
+			t = space();
+			button = element("button");
 			attr(canvas_1, "id", "game-container");
-			attr(canvas_1, "class", "svelte-1wcpsjn");
-			attr(div, "class", "svelte-1wcpsjn");
+			attr(canvas_1, "class", "svelte-i7htqj");
+			attr(button, "class", "base-turret svelte-i7htqj");
+			toggle_class(button, "active", /*selection*/ ctx[1] === "basic");
+			attr(div, "class", "svelte-i7htqj");
 		},
 		m(target, anchor) {
 			insert(target, div, anchor);
 			append(div, canvas_1);
-			/*canvas_1_binding*/ ctx[1](canvas_1);
+			/*canvas_1_binding*/ ctx[4](canvas_1);
+			append(div, t);
+			append(div, button);
+
+			if (!mounted) {
+				dispose = listen(button, "click", /*click_handler*/ ctx[5]);
+				mounted = true;
+			}
 		},
-		p: noop,
+		p(ctx, [dirty]) {
+			if (dirty & /*selection*/ 2) {
+				toggle_class(button, "active", /*selection*/ ctx[1] === "basic");
+			}
+		},
 		i: noop,
 		o: noop,
 		d(detaching) {
 			if (detaching) detach(div);
-			/*canvas_1_binding*/ ctx[1](null);
+			/*canvas_1_binding*/ ctx[4](null);
+			mounted = false;
+			dispose();
 		}
 	};
 }
 
 function instance($$self, $$props, $$invalidate) {
+	let selection;
+	
 	let canvas;
+	let gameModelInstance;
+	gameModel.subscribe(m => $$invalidate(3, gameModelInstance = m));
 
 	onMount(() => {
 		const config = {
@@ -55,6 +81,14 @@ function instance($$self, $$props, $$invalidate) {
 		new Phaser.Game(config);
 	});
 
+	const toggleTowerSelection = tower_type => {
+		if (gameModelInstance.tower_defense.selection == tower_type) {
+			$$invalidate(3, gameModelInstance.tower_defense.selection = null, gameModelInstance);
+		} else {
+			gameModelInstance.tower_defense.selectForPlacement(tower_type);
+		}
+	};
+
 	function canvas_1_binding($$value) {
 		binding_callbacks[$$value ? "unshift" : "push"](() => {
 			canvas = $$value;
@@ -62,13 +96,28 @@ function instance($$self, $$props, $$invalidate) {
 		});
 	}
 
-	return [canvas, canvas_1_binding];
+	const click_handler = () => toggleTowerSelection("basic");
+
+	$$self.$$.update = () => {
+		if ($$self.$$.dirty & /*gameModelInstance*/ 8) {
+			 $$invalidate(1, selection = gameModelInstance.tower_defense.selection);
+		}
+	};
+
+	return [
+		canvas,
+		selection,
+		toggleTowerSelection,
+		gameModelInstance,
+		canvas_1_binding,
+		click_handler
+	];
 }
 
 class Game extends SvelteComponent {
 	constructor(options) {
 		super();
-		if (!document.getElementById("svelte-1wcpsjn-style")) add_css();
+		if (!document.getElementById("svelte-i7htqj-style")) add_css();
 		init(this, options, instance, create_fragment, safe_not_equal, {});
 	}
 }
