@@ -3,6 +3,7 @@ import svelte from "rollup-plugin-svelte";
 import resolve from "@rollup/plugin-node-resolve";
 import typescript from "@rollup/plugin-typescript";
 import sveltePreprocess from "svelte-preprocess";
+import smelte from "smelte/rollup-plugin-smelte";
 
 export default {
   input: "src/index.js",
@@ -14,6 +15,9 @@ export default {
   },
   //NOTE: Enable node_modules and src imports to keep in original files and location
   preserveModules: true,
+  watch: {
+    clearScreen: false,
+  },
   plugins: [
     svelte({
       // By default, all ".svelte" files are compiled
@@ -21,7 +25,7 @@ export default {
 
       // You can restrict which files are compiled
       // using `include` and `exclude`
-      include: "src/**/*.svelte",
+      //include: "src/**/*.svelte",
 
       // Optionally, preprocess components with svelte.preprocess:
       // https://svelte.dev/docs#svelte_preprocess
@@ -55,6 +59,34 @@ export default {
         // your components to custom elements (aka web elements)
         customElement: false,
       },
+    }),
+    smelte({
+      purge: false,
+      output: "public/global.css", // it defaults to static/global.css which is probably what you expect in Sapper
+      postcss: [], // Your PostCSS plugins
+      whitelist: [], // Array of classnames whitelisted from purging
+      whitelistPatterns: [], // Same as above, but list of regexes
+      tailwind: {
+        theme: {
+          extend: {
+            spacing: {
+              72: "18rem",
+              84: "21rem",
+              96: "24rem",
+            },
+          },
+        }, // Extend Tailwind theme
+        colors: {
+          primary: "#2ecc71",
+          secondary: "#3498db",
+          error: "#f44336",
+          success: "#4caf50",
+          alert: "#ff9800",
+          blue: "#34495e",
+          dark: "#212121",
+        }, // Object of colors to generate a palette from, and then all the utility classes
+        darkMode: true,
+      }, // Any other props will be applied on top of default Smelte tailwind.config.js
     }),
     // see NOTICE below
     resolve({ browser: true, dedupe: ["svelte"] }),

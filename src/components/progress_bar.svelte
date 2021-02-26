@@ -6,9 +6,9 @@
   $: progress_width = (current / total) * 100;
 </script>
 
-<div class="container" style="--progress_width: {progress_width}%">
+<div class="container bg-error-500" style="--progress_width: {progress_width}%">
   <span>{name}</span>
-  <div class="progress" />
+  <div class="progress bg-primary-500" />
 </div>
 
 <style>
@@ -20,11 +20,10 @@
   .container {
     height: 1.5em;
     width: 100%;
-    background-color: red;
+
     display: relative;
   }
   .progress {
-    background-color: blue;
     width: var(--progress_width);
     height: 1.5em;
   }

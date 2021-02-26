@@ -4,21 +4,20 @@ import type { Requirement } from "./achievable";
 import type { FARM_JOB } from "./farmjobs";
 import { Achievable } from "./achievable";
 
-@Exclude()
 export class FarmJob extends Achievable {
   //TODO add some way to make it active  at reduced rrate when you unlock the helper
 
-  public display_name: string;
-  public description: string;
+  @Exclude() private display_name: string;
+  @Exclude() public description: string;
 
-  public difficulty_growth_factor: number;
+  @Exclude() public difficulty_growth_factor: number;
   //exp gained per second
-  public base_exp_rate: number;
+  @Exclude() public base_exp_rate: number;
   //base income gained per second. affected by income growth factor
-  public base_income: number;
+  @Exclude() public base_income: number;
   //time in seconds per level. affected by level and income growth factor
   //level 0 with income_growth_factor of 1 will take base_time_per_level seconds to level.
-  public base_exp_per_level: number;
+  @Exclude() public base_exp_per_level: number;
 
   //Saveable Members
   @Expose() public active: boolean = false;

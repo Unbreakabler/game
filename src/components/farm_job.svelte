@@ -29,7 +29,7 @@
 </script>
 
 <row on:click={handleClick}>
-  <div><ProgressBar current={current_exp} total={total_exp_for_level} name={job.display_name} /></div>
+  <div><ProgressBar current={current_exp} total={total_exp_for_level} name={job.getDisplayName()} /></div>
   <div>{current_level}</div>
   <div>{formatNumber(current_income, 2)}</div>
   <div>{formatNumber(total_exp_for_level - current_exp, 2)}</div>

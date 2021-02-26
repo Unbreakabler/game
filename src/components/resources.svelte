@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { GameModel, gameModel } from "../gamelogic/gamemodel";
-  import { saveToStorage } from "../gamelogic/util/saveloadfunctions";
+  import { GameModel, gameModel, updateGameModel } from "../gamelogic/gamemodel";
+  import { resetSaveGame, saveToStorage } from "../gamelogic/util/saveloadfunctions";
   import { formatNumber } from "../gamelogic/util/utils";
+  import Button from "smelte/src/components/Button";
 
   let gameModelInstance: GameModel;
   gameModel.subscribe((m) => (gameModelInstance = m));
@@ -11,24 +12,33 @@
   function saveGame() {
     saveToStorage(gameModelInstance);
   }
+  function hardReset() {
+    if (window.confirm("You will lose all progress. Are you sure?")) {
+      resetSaveGame();
+      saveGame();
+
+    }
+  }
 </script>
 
-<div class="container">
-  <div class="money">
+<div class="resource-container bg-secondary-400">
+  <div class="money bg-secondary-400">
     {money}
     <div class="coin" />
   </div>
-  <button class="save" on:click={saveGame}>Save</button>
+  <div>
+    <Button color="secondary" on:click={saveGame}>Save</Button>
+    <Button color="secondary" on:click={hardReset}>Hard Reset</Button>
+  </div>
 </div>
 
 <style>
-  .container {
+  .resource-container {
     display: flex;
-    background-color: rgb(33, 178, 166);
+    justify-content: space-between;
     padding: 5px;
   }
   .money {
-    background-color: rgb(30, 161, 152);
     width: 300px;
     padding: 10px;
   }
