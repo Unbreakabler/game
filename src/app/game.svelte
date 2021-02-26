@@ -2,7 +2,7 @@
   import "phaser";
   import { onMount } from "svelte";
   import { GameModel, gameModel } from "../gamelogic/gamemodel";
-import type { TowerType } from "../gamelogic/td/tower_defense";
+  import type { TowerType } from "../gamelogic/td/tower_defense";
   import Main from "../scenes/main";
   import TD from "../scenes/td";
   let canvas: HTMLCanvasElement, game: any;
@@ -35,11 +35,14 @@ import type { TowerType } from "../gamelogic/td/tower_defense";
       gameModelInstance.tower_defense.selectForPlacement(tower_type);
     }
   }
+
+  $: selection = gameModelInstance.tower_defense.selection;
+
 </script>
 
 <div>
   <canvas bind:this={canvas} id="game-container" />
-  <button on:click={() => toggleTowerSelection('basic')}>Tower</button>
+  <button class:active={selection === 'basic'} class="base-turret" on:click={() => toggleTowerSelection('basic')}></button>
 </div>
 
 <style>
@@ -52,4 +55,15 @@ import type { TowerType } from "../gamelogic/td/tower_defense";
     flex-direction: column;
     justify-content: center;
   }
+  button {
+    border: none;
+  }
+  .base-turret {
+    background-image: url('static/shotgun.png');
+    height: 32px;
+    width: 32px;
+  }
+  .active {
+		background-color: green;
+	}
 </style>

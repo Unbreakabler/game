@@ -103,9 +103,9 @@ export default class TD extends Phaser.Scene {
     this.input.on('pointermove', this.testTurretPlacement.bind(this));
 
     // Get turret info when hovering
-    if (this.turrets) {
-      this.input.setHitArea(this.turrets.getChildren()).on('pointerover', this.test)
-    }
+    // if (this.turrets) {
+    //   this.input.setHitArea(this.turrets.getChildren()).on('pointerover', this.test)
+    // }
   }
 
   public update(time: number, delta: number): void {
@@ -119,9 +119,9 @@ export default class TD extends Phaser.Scene {
     }
   }
 
-  public test(pointer: Phaser.Input.Pointer, game_objects_under_pointer: Phaser.GameObjects.GameObject[]): void {
-    console.log(pointer, game_objects_under_pointer);
-  }
+  // public test(pointer: Phaser.Input.Pointer, game_objects_under_pointer: Phaser.GameObjects.GameObject[]): void {
+  //   console.log(pointer, game_objects_under_pointer);
+  // }
 
   public testTurretPlacement(pointer: Phaser.Input.Pointer, game_objects_under_pointer: Phaser.GameObjects.GameObject[]) {
     if (!this.selection) return;
