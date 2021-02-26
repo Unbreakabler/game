@@ -1,4 +1,4 @@
-import { plainToClassFromExist, TransformFnParams } from "class-transformer";
+import { classToClass, plainToClassFromExist, TransformFnParams } from "class-transformer";
 import { FarmJob } from "./farmjob";
 
 export enum FARM_JOB {
@@ -26,15 +26,17 @@ const arr: FarmJob[] = [
   new FarmJob(FARM_JOB.farmboss, [{ achievable_name: `${pre}_${FARM_JOB.farmer}`, level_required: 100 }], "Farm Boss", "", 5),
 ];
 
-export const default_farm_jobs: Map<string, FarmJob> = arr.reduce(function (map, obj) {
-  map.set(obj.getAchievableName(), obj);
-  return map;
-}, new Map());
+export const get_default_farm_jobs = (): Map<string, FarmJob> => {
+  return arr.reduce(function (map, obj) {
+    map.set(obj.getAchievableName(), classToClass(obj, { ignoreDecorators: true }));
+    return map;
+  }, new Map<string, FarmJob>());
+};
 
 export function farmJobTransformer(param: TransformFnParams): Map<string, FarmJob> {
   const map = new Map(Object.entries(param.obj.farm_jobs));
   for (const [name, farm_job] of map.entries()) {
-    const default_farm_job = default_farm_jobs.get(name);
+    const default_farm_job = get_default_farm_jobs().get(name);
     if (!default_farm_job) throw new Error(`Corrupt Save. FarmJob ${name} is invalid.`);
     map.set(name, plainToClassFromExist(default_farm_job, farm_job));
   }
