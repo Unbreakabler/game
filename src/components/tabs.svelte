@@ -30,9 +30,10 @@
   });
 
   let selected: string = items[0].id;
+  $: selected = items[0].id;
 </script>
 
-<Tabs bind:selected items={filtered} class="bg-primary-500 text-white">
+<Tabs bind:selected items={filtered} class="bg-primary-500 text-white z-10">
   <div slot="content">
     {#each filtered as item}
       <Tab id={item.id} bind:selected><svelte:component this={item.component} bind:selected /></Tab>

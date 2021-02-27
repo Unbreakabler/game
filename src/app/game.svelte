@@ -11,13 +11,10 @@
       width: 800,
       height: 600,
       physics: {
-        default: 'arcade'
+        default: "arcade",
       },
       canvas: canvas,
-      scene: [
-        TD,
-        Main,
-      ]
+      scene: [TD, Main],
     };
 
     game = new Phaser.Game(config);
@@ -32,6 +29,7 @@
   canvas {
     width: 800px;
     height: 600px;
+    z-index: 20;
   }
   div {
     display: flex;

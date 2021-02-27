@@ -27,7 +27,7 @@
 </script>
 
 <div class="my-card">
-  <Card.Card class="bg-white mt-5">
+  <Card.Card class="bg-white mt-5 min-w-max">
     <div slot="title"><Card.Title title={display_name} {subheader} /></div>
     <div slot="text" class="pb-0 pt-0 p-5">{cost}</div>
     <div slot="actions">
@@ -50,5 +50,10 @@
     flex-basis: 50%;
     display: inline-flex;
     justify-content: center;
+  }
+  @media only screen and (min-width: 1200px) and (max-width: 1600px) {
+    .my-card {
+      flex-basis: 25%;
+    }
   }
 </style>
