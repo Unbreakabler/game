@@ -10,7 +10,9 @@
   $: jobs = Array.from(gameModelInstance.farm_jobs.values());
 </script>
 
-<header>
+<div class="pt-4 config-container"><div>Config settings here</div></div>
+
+<header class="pt-4">
   <div>Name</div>
   <div>Current Level</div>
   <div>Income</div>
@@ -33,10 +35,21 @@
 {/each}
 
 <style>
+  .config-container {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-around;
+  }
+  .config-container > div {
+    justify-content: center;
+    align-items: center;
+  }
   header {
     display: flex;
+    flex-flow: row nowrap;
   }
-  div {
+  header > div,
+  row > div {
     flex: 1;
   }
 </style>
