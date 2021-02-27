@@ -6,9 +6,7 @@ class Enemy extends Phaser.GameObjects.Sprite {
         this.path = null;
         this.speed = DEFAULT_ENEMY_SPEED;
         this.health_points = DEFAULT_ENEMY_HP;
-        this.prev_ang = 0;
         td_scene.physics.add.existing(this);
-        this.sprite_name = sprite_name;
         this.follower = { t: 0, vec: new Phaser.Math.Vector2() };
         this.speed = speed;
         this.health_points = health_points;
@@ -43,27 +41,6 @@ class Enemy extends Phaser.GameObjects.Sprite {
         this.follower.t += (this.speed / this.path.getLength()) * delta;
         // get the new x and y coordinates in vec
         this.path.getPoint(this.follower.t, this.follower.vec);
-        // angle between 0 and 2*PI
-        const ang = Phaser.Math.Angle.Between(this.x, this.y, this.follower.vec.x, this.follower.vec.y) + Math.PI;
-        if (ang != this.prev_ang) {
-            if (ang < 1 / 4 * Math.PI || ang >= 7 / 4 * Math.PI) {
-                // right
-                this.anims.play(`${this.sprite_name}-walking-left`);
-            }
-            else if (ang < 7 / 4 * Math.PI && ang >= 5 / 4 * Math.PI) {
-                // down
-                this.anims.play(`${this.sprite_name}-walking-down`);
-            }
-            else if (ang < 5 / 4 * Math.PI && ang >= 3 / 4 * Math.PI) {
-                // left
-                this.anims.play(`${this.sprite_name}-walking-right`);
-            }
-            else if (ang < 3 / 4 * Math.PI && ang >= 1 / 4 * Math.PI) {
-                // up
-                this.anims.play(`${this.sprite_name}-walking-up`);
-            }
-        }
-        this.prev_ang = ang;
         // update enemy x and y to the newly obtained x and y
         this.setPosition(this.follower.vec.x, this.follower.vec.y);
         // if we have reached the end of the path, remove the enemy
