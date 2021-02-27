@@ -7,8 +7,8 @@ import TD from '../scenes/td.js';
 
 function add_css() {
 	var style = element("style");
-	style.id = "svelte-1wcpsjn-style";
-	style.textContent = "canvas.svelte-1wcpsjn{width:800px;height:600px}div.svelte-1wcpsjn{display:flex;justify-content:center}";
+	style.id = "svelte-xd8z9n-style";
+	style.textContent = "canvas.svelte-xd8z9n{width:800px;height:600px;z-index:20}div.svelte-xd8z9n{display:flex;justify-content:center}";
 	append(document.head, style);
 }
 
@@ -21,8 +21,8 @@ function create_fragment(ctx) {
 			div = element("div");
 			canvas_1 = element("canvas");
 			attr(canvas_1, "id", "game-container");
-			attr(canvas_1, "class", "svelte-1wcpsjn");
-			attr(div, "class", "svelte-1wcpsjn");
+			attr(canvas_1, "class", "svelte-xd8z9n");
+			attr(div, "class", "svelte-xd8z9n");
 		},
 		m(target, anchor) {
 			insert(target, div, anchor);
@@ -68,7 +68,7 @@ function instance($$self, $$props, $$invalidate) {
 class Game extends SvelteComponent {
 	constructor(options) {
 		super();
-		if (!document.getElementById("svelte-1wcpsjn-style")) add_css();
+		if (!document.getElementById("svelte-xd8z9n-style")) add_css();
 		init(this, options, instance, create_fragment, safe_not_equal, {});
 	}
 }

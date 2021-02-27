@@ -16,7 +16,7 @@ function get_each_context(ctx, list, i) {
 	return child_ctx;
 }
 
-// (34:6) <Tab id={item.id} bind:selected>
+// (35:6) <Tab id={item.id} bind:selected>
 function create_default_slot_1(ctx) {
 	let switch_instance;
 	let updating_selected;
@@ -107,7 +107,7 @@ function create_default_slot_1(ctx) {
 	};
 }
 
-// (33:4) {#each filtered as item}
+// (34:4) {#each filtered as item}
 function create_each_block(ctx) {
 	let tab;
 	let updating_selected;
@@ -169,7 +169,7 @@ function create_each_block(ctx) {
 	};
 }
 
-// (32:2) <div slot="content">
+// (33:2) <div slot="content">
 function create_content_slot(ctx) {
 	let div;
 	let current;
@@ -267,7 +267,7 @@ function create_fragment(ctx) {
 
 	let tabs_props = {
 		items: /*filtered*/ ctx[0],
-		class: "bg-primary-500 text-white",
+		class: "bg-primary-500 text-white z-10",
 		$$slots: { content: [create_content_slot] },
 		$$scope: { ctx }
 	};
@@ -364,17 +364,17 @@ function instance($$self, $$props, $$invalidate) {
 
 	function switch_instance_selected_binding(value) {
 		selected = value;
-		$$invalidate(1, selected);
+		($$invalidate(1, selected), $$invalidate(6, items));
 	}
 
 	function tab_selected_binding(value) {
 		selected = value;
-		$$invalidate(1, selected);
+		($$invalidate(1, selected), $$invalidate(6, items));
 	}
 
 	function tabs_selected_binding(value) {
 		selected = value;
-		$$invalidate(1, selected);
+		($$invalidate(1, selected), $$invalidate(6, items));
 	}
 
 	$$self.$$.update = () => {
@@ -388,6 +388,8 @@ function instance($$self, $$props, $$invalidate) {
 			}));
 		}
 	};
+
+	 $$invalidate(1, selected = items[0].id);
 
 	return [
 		filtered,

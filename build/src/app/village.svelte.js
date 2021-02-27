@@ -6,8 +6,8 @@ import { gameModel } from '../gamelogic/gamemodel.js';
 
 function add_css() {
 	var style = element("style");
-	style.id = "svelte-1vzadf8-style";
-	style.textContent = ".building-container.svelte-1vzadf8{justify-content:space-around;align-items:center;display:flex;flex:1;flex-flow:row wrap}";
+	style.id = "svelte-f71h51-style";
+	style.textContent = ".building-container.svelte-f71h51{justify-content:space-around;align-items:center;display:flex;flex:1;flex-flow:row wrap}";
 	append(document.head, style);
 }
 
@@ -93,7 +93,7 @@ function create_fragment(ctx) {
 				each_blocks[i].c();
 			}
 
-			attr(div, "class", "building-container svelte-1vzadf8");
+			attr(div, "class", "building-container mb-5 svelte-f71h51");
 		},
 		m(target, anchor) {
 			insert(target, div, anchor);
@@ -190,7 +190,7 @@ function instance($$self, $$props, $$invalidate) {
 class Village extends SvelteComponent {
 	constructor(options) {
 		super();
-		if (!document.getElementById("svelte-1vzadf8-style")) add_css();
+		if (!document.getElementById("svelte-f71h51-style")) add_css();
 		init(this, options, instance, create_fragment, safe_not_equal, { selected: 0 });
 	}
 }

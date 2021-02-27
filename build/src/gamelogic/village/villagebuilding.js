@@ -1,6 +1,7 @@
 import { __decorate } from '../../../node_modules/tslib/tslib.es6.js';
 import { formatNumber } from '../util/utils.js';
 import { Achievable } from './achievable.js';
+import '../gamemodel.js';
 import { Exclude } from '../../../node_modules/class-transformer/esm5/decorators/exclude.decorator.js';
 import { Expose } from '../../../node_modules/class-transformer/esm5/decorators/expose.decorator.js';
 
@@ -27,6 +28,12 @@ class VillageBuilding extends Achievable {
             return true;
         }
         return false;
+    }
+    canAffordNextUpgrade(wallet) {
+        const next = this.getNextUpgrade();
+        if (!next)
+            return false;
+        return wallet.money >= next.money_cost;
     }
     getNextUpgrade() {
         if (this.level > this.upgrades.length)
