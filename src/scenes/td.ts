@@ -18,6 +18,7 @@ export default class TD extends Phaser.Scene {
   public turrets!: BetterGroup<Turret>;
   public machine_guns!: BetterGroup<MachineGun>;
   public selection!: Turret | null;
+  private selection_type: string | null = null;
 
   public constructor() {
     super({ key: "td", active: true });
@@ -96,26 +97,29 @@ export default class TD extends Phaser.Scene {
     this.machine_guns = this.add.group({ classType: MachineGun, runChildUpdate: true }) as BetterGroup<Turret>;
     this.enemies = this.add.group({ classType: GreenKnight, runChildUpdate: true }) as BetterGroup<Enemy>;
     this.placement_radius = this.add.circle(100, 100, this.selection?.range, 0xff0000, 0.5);
+    this.placement_radius.setVisible(false);
   }
 
   private setupModelSubscriptions() {
     const unsubscribe_store = gameModel.subscribe((model) => {    
-      if (model.tower_defense.selection === 'basic') {
-        this.selection = this.turrets?.get();
-        if (this.selection) {
-          this.placement_radius?.setRadius(this.selection.range)
+      if (model.tower_defense.selection !== this.selection_type) {
+        this.selection?.destroy();
+        if (model.tower_defense.selection === 'basic') {
+          this.selection = this.turrets?.get();
+        } else if (model.tower_defense.selection === 'machine_gun') {
+          this.selection = this.machine_guns?.get();
+        } else {
+          this.selection = null
         }
-      } else if (model.tower_defense.selection === 'machine_gun') {
-        this.selection = this.machine_guns?.get();
         if (this.selection) {
-          this.placement_radius?.setRadius(this.selection.range)
+          this.placement_radius.setRadius(this.selection.range)
         }
-      } else {
-        this.placement_radius?.setVisible(false);
+
+        this.placement_radius.setVisible(false);
         this.selection?.setVisible(false);
-        this.selection = null
+        this.selection?.setActive(false);
+        this.selection_type = model.tower_defense.selection
       }
-      this.selection?.setActive(false);
     });
     this.events.on("destroy", function () {
       unsubscribe_store();
@@ -124,8 +128,8 @@ export default class TD extends Phaser.Scene {
 
   private setupInputHandlers() {
     // Place turrets on click, this will be changed to be a drag/drop from a tower menu
+    this.input.on("pointerdown", this.selectUnderCursor.bind(this));
     this.input.on("pointerdown", this.placeTurret.bind(this));
-
     this.input.on('pointermove', this.testTurretPlacement.bind(this));
 
     // Get turret info when hovering
@@ -184,6 +188,13 @@ export default class TD extends Phaser.Scene {
       return true;
     }
     return false;
+  }
+
+  public selectUnderCursor(pointer: Phaser.Input.Pointer, game_objects_under_pointer: Phaser.GameObjects.GameObject[]) {
+    // broadcast game object out of phaser to game model
+    // in order to do this the game objects real state should be stored in svelte/js instead of phaser
+    // and then a "selected" flag or similar should be toggled by this method.
+    // This means creating and managing a player inventory of towers.
   }
 
   public damageEnemy(enemy: Enemy, bullet: Bullet): void {
