@@ -1,9 +1,9 @@
 <script lang="ts">
   import Card from "smelte/src/components/Card";
 
-  import VillageBuildingComponent from "../components/village_building.svelte";
-  import { GameModel, gameModel } from "../gamelogic/gamemodel";
-  import type { VillageBuilding } from "../gamelogic/village/villagebuilding";
+  import VillageBuildingComponent from "./village_building.svelte";
+  import { GameModel, gameModel } from "../../gamelogic/gamemodel";
+  import type { VillageBuilding } from "../../gamelogic/village/villagebuilding";
 
   let gameModelInstance: GameModel;
   gameModel.subscribe((m) => (gameModelInstance = m));

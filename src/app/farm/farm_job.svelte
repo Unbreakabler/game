@@ -1,10 +1,10 @@
 <script lang="ts">
-  import type { FarmJob } from "./../gamelogic/village/farmjob";
-  import { gameModel, GameModel } from "../gamelogic/gamemodel";
+  import type { FarmJob } from "../../gamelogic/village/farmjob";
+  import { gameModel, GameModel } from "../../gamelogic/gamemodel";
 
-  import { formatNumber } from "../gamelogic/util/utils";
+  import { formatNumber } from "../../gamelogic/util/utils";
 
-  import ProgressBar from "./progress_bar.svelte";
+  import ProgressBar from "../../components/progress_bar.svelte";
 
   let gameModelInstance: GameModel;
   gameModel.subscribe((m) => (gameModelInstance = m));

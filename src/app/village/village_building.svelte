@@ -1,8 +1,8 @@
 <script lang="ts">
   import Button from "smelte/src/components/Button";
   import Card from "smelte/src/components/Card";
-  import { gameModel, GameModel, updateGameModel } from "../gamelogic/gamemodel";
-  import type { VillageBuilding } from "../gamelogic/village/villagebuilding";
+  import { gameModel, GameModel, updateGameModel } from "../../gamelogic/gamemodel";
+  import type { VillageBuilding } from "../../gamelogic/village/villagebuilding";
 
   export let building: VillageBuilding;
 

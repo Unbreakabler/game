@@ -1,7 +1,7 @@
 <script lang="ts">
-  import FarmJobComponenent from "../components/farm_job.svelte";
-  import { GameModel, gameModel } from "../gamelogic/gamemodel";
-  import type { FarmJob } from "../gamelogic/village/farmjob";
+  import FarmJobComponenent from "./farm_job.svelte";
+  import { GameModel, gameModel } from "../../gamelogic/gamemodel";
+  import type { FarmJob } from "../../gamelogic/village/farmjob";
   let gameModelInstance: GameModel;
   gameModel.subscribe((m) => (gameModelInstance = m));
   let jobs: FarmJob[];
