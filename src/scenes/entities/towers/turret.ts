@@ -183,8 +183,7 @@ export default class Turret extends Phaser.GameObjects.Image {
   }
 
   public fireBullet(x: number, y: number, angle: number): void {
-    const b = new Bullet(this.scene);
-    this.projectiles.add(b);
+    const b = this.projectiles.get();
     //TODO - Make bullets smart so they follow units and delete selves when enemy is dead
     b.fire(x, y, angle, this.range, this.damage);
   }
