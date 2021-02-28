@@ -42,8 +42,10 @@
 
 <div>
   <canvas bind:this={canvas} id="game-container" />
-  <button class:active={selection === 'basic'} class="base-turret" on:click={() => toggleTowerSelection('basic')}></button>
-  <button class:active={selection === 'machine_gun'} class="machine-gun" on:click={() => toggleTowerSelection('machine_gun')}></button>
+  <div class="towers">
+    <button class:active={selection === 'basic'} class="base-turret" on:click={() => toggleTowerSelection('basic')}></button>
+    <button class:active={selection === 'machine_gun'} class="machine-gun" on:click={() => toggleTowerSelection('machine_gun')}></button>
+  </div>
 </div>
 
 <style>
@@ -70,4 +72,9 @@
   .active {
 		background-color: green;
 	}
+  .towers {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+  }
 </style>

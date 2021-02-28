@@ -49,7 +49,7 @@ const arr: VillageBuilding[] = [
 
 export const get_default_village_buildings = (): Map<string, VillageBuilding> => {
   return arr.reduce(function (map, obj) {
-    map.set(obj.getAchievableName(), classToClass(obj, { ignoreDecorators: true });
+    map.set(obj.getAchievableName(), classToClass(obj, { ignoreDecorators: true }));
     return map;
   }, new Map());
 };

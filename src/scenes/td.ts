@@ -1,6 +1,6 @@
 import "phaser";
 
-import { gameModel } from "../gamelogic/gamemodel";
+import { GameModel, gameModel } from "../gamelogic/gamemodel";
 
 import type Enemy from "./entities/enemies/enemy";
 import type Bullet from "./entities/tower_bullet";
@@ -10,9 +10,11 @@ import BaseTurret from "./entities/towers/base_turret";
 import MachineGun from "./entities/towers/machine_gun";
 import type Turret from "./entities/towers/turret";
 
+let gameModelInstance: GameModel;
+gameModel.subscribe((m) => (gameModelInstance = m));
+
 export default class TD extends Phaser.Scene {
   public path!: Phaser.Curves.Path;
-  private placement_radius!:  Phaser.GameObjects.Arc;
   private nextEnemy = 0;
   public enemies!: BetterGroup<Enemy>;
   public turrets!: BetterGroup<Turret>;
@@ -96,8 +98,6 @@ export default class TD extends Phaser.Scene {
     this.turrets = this.add.group({ classType: BaseTurret, runChildUpdate: true }) as BetterGroup<Turret>;
     this.machine_guns = this.add.group({ classType: MachineGun, runChildUpdate: true }) as BetterGroup<Turret>;
     this.enemies = this.add.group({ classType: GreenKnight, runChildUpdate: true }) as BetterGroup<Enemy>;
-    this.placement_radius = this.add.circle(100, 100, this.selection?.range, 0xff0000, 0.5);
-    this.placement_radius.setVisible(false);
   }
 
   private setupModelSubscriptions() {
@@ -109,15 +109,12 @@ export default class TD extends Phaser.Scene {
         } else if (model.tower_defense.selection === 'machine_gun') {
           this.selection = this.machine_guns?.get();
         } else {
-          this.selection = null
-        }
-        if (this.selection) {
-          this.placement_radius.setRadius(this.selection.range)
+          this.selection = null;
         }
 
-        this.placement_radius.setVisible(false);
-        this.selection?.setVisible(false);
-        this.selection?.setActive(false);
+        if (this.selection) {
+          this.selection.setVisible(false);
+        }
         this.selection_type = model.tower_defense.selection
       }
     });
@@ -156,38 +153,27 @@ export default class TD extends Phaser.Scene {
   public testTurretPlacement(pointer: Phaser.Input.Pointer, game_objects_under_pointer: Phaser.GameObjects.GameObject[]) {
     if (!this.selection) return;
     this.selection.setVisible(true);
-    this.placement_radius.setVisible(true);
+    this.selection.show_range = true;
     this.selection.x = pointer.x;
     this.selection.y = pointer.y;
-    this.placement_radius.x = pointer.x;
-    this.placement_radius.y = pointer.y;
-    const is_placeable = this.selection.isPlaceable(pointer.x, pointer.y, 32, 32, this.turrets, this.path)
-    if (is_placeable) {
-      this.placement_radius.setFillStyle(0x00ff00, 0.3);
-    } else {
-      this.placement_radius.setFillStyle(0xff0000, 0.3);
-    }
   }
 
   public placeTurret(pointer: Phaser.Input.Pointer, game_objects_under_pointer: Phaser.GameObjects.GameObject[]): boolean {
     if (!this.selection) return false;
     const place_x = Math.floor(pointer.x);
     const place_y = Math.floor(pointer.y);
-    const width: number = 32; // Default width/height for now, can be changed per tower.
-    const height: number = 32;
     
-    if (game_objects_under_pointer.length === 0) {
-      const t = this.selection;
-      if (!t.place(place_x, place_y, width, height)) {
-        t.destroy();
-        return false;
-      }
-      this.turrets.add(t, true);
-      t.enableBulletCollisions(this.enemies);
-      this.selection = null;
-      return true;
+    // if (game_objects_under_pointer.length === 0) {
+    const t = this.selection;
+    if (!t.place(place_x, place_y)) {
+      t.destroy();
+      return false;
     }
-    return false;
+    this.turrets.add(t, true);
+    t.enableBulletCollisions(this.enemies);
+    this.selection = null;
+    gameModelInstance.tower_defense.selection = null;
+    return true;
   }
 
   public selectUnderCursor(pointer: Phaser.Input.Pointer, game_objects_under_pointer: Phaser.GameObjects.GameObject[]) {
