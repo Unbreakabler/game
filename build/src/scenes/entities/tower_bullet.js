@@ -30,7 +30,6 @@ class Bullet extends Phaser.GameObjects.Image {
         if (this.lifespan <= 0) {
             this.setActive(false);
             this.setVisible(false);
-            this.destroy();
         }
     }
 }

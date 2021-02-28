@@ -149,8 +149,7 @@ class Turret extends Phaser.GameObjects.Image {
         this.rotation = this.getAngleToEnemy(enemy) + Math.PI / 2;
     }
     fireBullet(x, y, angle) {
-        const b = new Bullet(this.scene);
-        this.projectiles.add(b);
+        const b = this.projectiles.get();
         //TODO - Make bullets smart so they follow units and delete selves when enemy is dead
         b.fire(x, y, angle, this.range, this.damage);
     }
