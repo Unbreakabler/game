@@ -1,6 +1,7 @@
 import { __decorate } from '../../node_modules/tslib/tslib.es6.js';
 import { serialize, deserialize } from '../../node_modules/class-transformer/esm5/index.js';
 import { writable } from '../../node_modules/svelte/store/index.mjs.js';
+import { TowerDefense } from './td/tower_defense.js';
 import { FarmJob } from './village/farmjob.js';
 import { get_default_farm_jobs, farmJobTransformer } from './village/farmjobs.js';
 import { VillageBuilding } from './village/villagebuilding.js';
@@ -29,6 +30,7 @@ class GameModel {
         this.wallet = new Wallet();
         this.farm_jobs = get_default_farm_jobs();
         this.village_buildings = get_default_village_buildings();
+        this.tower_defense = new TowerDefense();
         this.reloadAchievables();
     }
     reloadAchievables() {
@@ -73,6 +75,9 @@ __decorate([
 __decorate([
     Exclude()
 ], GameModel.prototype, "achievables", void 0);
+__decorate([
+    Type(() => TowerDefense)
+], GameModel.prototype, "tower_defense", void 0);
 /**
  * A writable store of the gameModel that can be accessed from other parts of the application.
  */

@@ -6,58 +6,29 @@ const DEFAULT_DAMAGE = 50;
 const PLACEABLE_MIN_DISTANCE_FROM_PATH = 50;
 class Turret extends Phaser.GameObjects.Image {
     constructor(td_scene, x = 0, y = 0, sprite_name = "turret", range = DEFAULT_RANGE, attack_speed = DEFAULT_ATTACK_SPEED, damage = DEFAULT_DAMAGE) {
-        super(td_scene, 0, 0, sprite_name);
-        this.next_tick = 0;
+        super(td_scene, x, y, sprite_name);
         this.range = DEFAULT_RANGE;
         this.attack_speed = DEFAULT_ATTACK_SPEED;
         this.damage = DEFAULT_DAMAGE;
+        this.display_type = 'range';
+        this.is_selected = true;
+        this.show_range = false;
+        this.is_placed = false;
+        this.next_tick = 0;
         this.td_scene = td_scene;
         this.range = range;
         this.attack_speed = attack_speed;
         this.damage = damage;
         this.projectiles = this.td_scene.add.group({ classType: Bullet, active: true, runChildUpdate: true });
-    }
-    isPlaceable(place_x, place_y, width, height, turrets, path) {
-        const min_dist = path.getPoints(path.getLength() / 20).reduce((acc, point) => {
-            return Math.min(Phaser.Math.Distance.Between(place_x, place_y, point.x, point.y), acc);
-        }, 1000);
-        if (min_dist < PLACEABLE_MIN_DISTANCE_FROM_PATH) {
-            return false; // Can not place turret next to path
-        }
-        for (const t of turrets.getChildren()) {
-            const min_x = t.x - t.width / 2;
-            const max_x = t.x + t.width / 2;
-            const min_y = t.y - t.height / 2;
-            const max_y = t.y + t.height / 2;
-            const new_min_x = place_x - width / 2;
-            const new_max_x = place_x + width / 2;
-            const new_min_y = place_y - height / 2;
-            const new_max_y = place_y + height / 2;
-            const x_overlap = Math.max(0, Math.min(max_x, new_max_x) - Math.max(min_x, new_min_x));
-            const y_overlap = Math.max(0, Math.min(max_y, new_max_y) - Math.max(min_y, new_min_y));
-            if (x_overlap * y_overlap > 0) {
-                return false; // Can not place a turret overlapping another turret
-            }
-        }
-        return true;
-    }
-    place(place_x, place_y, width, height) {
-        if (this.isPlaceable(place_x, place_y, width, height, this.td_scene.turrets, this.td_scene.path)) {
-            this.x = place_x;
-            this.y = place_y;
-            this.setActive(true);
-            this.setVisible(true);
-            this.setInteractive();
-            console.log(`placing turret @ x:${place_x}, y:${place_y}`);
-            return true;
-        }
-        else {
-            console.error(`Error placing turret @ x:${place_x}, y:${place_y}`);
-            return false;
-        }
+        this.display_range = this.td_scene.add.circle(0, 0, this.range, 0xff0000, 0.5);
     }
     update(time, delta) {
         //Look at near enemies
+        this.display_range.x = this.x;
+        this.display_range.y = this.y;
+        this.displayRange();
+        if (!this.is_placed)
+            return;
         const e = this.findClosestEnemyInRange(20);
         if (e) {
             this.targetEnemy(e);
@@ -70,6 +41,78 @@ class Turret extends Phaser.GameObjects.Image {
             //If fired at enemy, start cooldown
             if (this.attemptToFire())
                 this.next_tick = time + this.attack_speed;
+        }
+        this.display_range.x = this.x;
+        this.display_range.y = this.y;
+        this.displayRange();
+    }
+    onDestroy() {
+        this.is_selected = false;
+        this.displayRange();
+    }
+    isPlaceable(place_x, place_y) {
+        const min_dist = this.td_scene.path.getPoints(this.td_scene.path.getLength() / 20).reduce((acc, point) => {
+            return Math.min(Phaser.Math.Distance.Between(place_x, place_y, point.x, point.y), acc);
+        }, 1000);
+        if (min_dist < PLACEABLE_MIN_DISTANCE_FROM_PATH) {
+            // console.error('Can not place turret next to path')
+            return false;
+        }
+        for (const t of this.td_scene.turrets.getChildren()) {
+            if (t == this.td_scene.selection)
+                continue; // current turret on cursor
+            let min_x = t.x - t.width / 2;
+            let max_x = t.x + t.width / 2;
+            let min_y = t.y - t.height / 2;
+            let max_y = t.y + t.height / 2;
+            let new_min_x = place_x - this.width / 2;
+            let new_max_x = place_x + this.width / 2;
+            let new_min_y = place_y - this.height / 2;
+            let new_max_y = place_y + this.height / 2;
+            const x_overlap = Math.max(0, Math.min(max_x, new_max_x) - Math.max(min_x, new_min_x));
+            const y_overlap = Math.max(0, Math.min(max_y, new_max_y) - Math.max(min_y, new_min_y));
+            if (x_overlap * y_overlap > 0) {
+                // console.error('Can not place a turret overlapping another turret')
+                return false;
+            }
+        }
+        return true;
+    }
+    place(place_x, place_y) {
+        if (!this.isPlaceable(place_x, place_y)) {
+            console.error(`Error placing turret @ x:${place_x}, y:${place_y}`);
+            return false;
+        }
+        this.x = place_x;
+        this.y = place_y;
+        this.setActive(true);
+        this.setVisible(true);
+        this.setInteractive();
+        console.log(`placing turret @ x:${place_x}, y:${place_y}`);
+        this.is_placed = true;
+        this.is_selected = false;
+        return true;
+    }
+    displayRange() {
+        const red = 0xff0000;
+        const green = 0x00ff00;
+        const blue = 0x0000ff;
+        if (this.is_selected && this.show_range) {
+            this.display_range.setVisible(true);
+            if (!this.is_placed) {
+                if (this.isPlaceable(this.x, this.y)) {
+                    this.display_range.setFillStyle(green, 0.3);
+                }
+                else {
+                    this.display_range.setFillStyle(red, 0.3);
+                }
+            }
+            else {
+                this.display_range.setFillStyle(blue, 0.3);
+            }
+        }
+        else {
+            this.display_range.setVisible(false);
         }
     }
     attemptToFire() {
