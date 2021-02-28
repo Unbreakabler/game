@@ -68,12 +68,12 @@ export default class Turret extends Phaser.GameObjects.Image {
     this.displayRange()
   }
 
-  public onDestroy() {
+  public preDestroy() {
     this.is_selected = false;
     this.displayRange();
   }
 
-  public isPlaceable(
+  private isPlaceable(
     place_x: number,
     place_y: number,
   ): boolean {
@@ -88,15 +88,15 @@ export default class Turret extends Phaser.GameObjects.Image {
     for (const t of this.td_scene.turrets.getChildren()) {
       if (t == this.td_scene.selection) continue; // current turret on cursor
 
-      let min_x = t.x - t.width/2
-      let max_x = t.x + t.width/2
-      let min_y = t.y - t.height/2
-      let max_y = t.y + t.height/2
+      const min_x = t.x - t.width/2
+      const max_x = t.x + t.width/2
+      const min_y = t.y - t.height/2
+      const max_y = t.y + t.height/2
   
-      let new_min_x = place_x - this.width/2
-      let new_max_x = place_x + this.width/2
-      let new_min_y = place_y - this.height/2
-      let new_max_y = place_y + this.height/2
+      const new_min_x = place_x - this.width/2
+      const new_max_x = place_x + this.width/2
+      const new_min_y = place_y - this.height/2
+      const new_max_y = place_y + this.height/2
   
       const x_overlap = Math.max(0, Math.min(max_x, new_max_x) - Math.max(min_x, new_min_x));
       const y_overlap = Math.max(0, Math.min(max_y, new_max_y) - Math.max(min_y, new_min_y));

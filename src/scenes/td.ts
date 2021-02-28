@@ -128,11 +128,6 @@ export default class TD extends Phaser.Scene {
     this.input.on("pointerdown", this.selectUnderCursor.bind(this));
     this.input.on("pointerdown", this.placeTurret.bind(this));
     this.input.on('pointermove', this.testTurretPlacement.bind(this));
-
-    // Get turret info when hovering
-    // if (this.turrets) {
-    //   this.input.setHitArea(this.turrets.getChildren()).on('pointerover', this.test)
-    // }
   }
 
   public update(time: number, delta: number): void {
@@ -145,10 +140,6 @@ export default class TD extends Phaser.Scene {
       this.nextEnemy = time + 2000;
     }
   }
-
-  // public test(pointer: Phaser.Input.Pointer, game_objects_under_pointer: Phaser.GameObjects.GameObject[]): void {
-  //   console.log(pointer, game_objects_under_pointer);
-  // }
 
   public testTurretPlacement(pointer: Phaser.Input.Pointer, game_objects_under_pointer: Phaser.GameObjects.GameObject[]) {
     if (!this.selection) return;
