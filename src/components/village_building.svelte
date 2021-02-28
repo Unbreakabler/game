@@ -1,16 +1,14 @@
 <script lang="ts">
-  import Card from "smelte/src/components/Card";
   import Button from "smelte/src/components/Button";
+  import Card from "smelte/src/components/Card";
+  import { gameModel, GameModel, updateGameModel } from "../gamelogic/gamemodel";
   import type { VillageBuilding } from "../gamelogic/village/villagebuilding";
-  import { loop_guard } from "svelte/internal";
-  import { gameModel, GameModel, updateGameModel, Wallet } from "../gamelogic/gamemodel";
-  import type { Upgrade } from "../gamelogic/village/villagebuildings";
 
   export let building: VillageBuilding;
 
   $: subheader = `Lv. ${building.level}`;
 
-  export let selected: string;
+  export let selected: unknown;
 
   let gameModelInstance: GameModel;
   gameModel.subscribe((m) => (gameModelInstance = m));
@@ -20,19 +18,20 @@
     updateGameModel();
   }
 
-  $: can_afford = () => {
-    const next = building.getNextUpgrade();
-    if (!next) return false;
-    return gameModelInstance.wallet.money >= next.money_cost;
-  };
+  $: display_name = building.getDisplayName();
+  $: can_afford = building.canAffordNextUpgrade(gameModelInstance.wallet);
+  $: cost = building.getUpgradeMoneyCostAsString();
+  $: if (Number.isFinite(cost)) {
+    cost = `Cost to upgrade: ${cost}`;
+  }
 </script>
 
 <div class="my-card">
-  <Card.Card class="bg-white">
-    <div slot="title"><Card.Title title={building.getDisplayName()} {subheader} /></div>
-    <div slot="text" class="pb-0 pt-0 p-5">Cost to upgrade: {building.getUpgradeMoneyCostAsString()}</div>
+  <Card.Card class="bg-white mt-5 min-w-max">
+    <div slot="title"><Card.Title title={display_name} {subheader} /></div>
+    <div slot="text" class="pb-0 pt-0 p-5">{cost}</div>
     <div slot="actions">
-      <div class="p-2">
+      <div class="p-2 whitespace-nowrap">
         <Button
           text
           disabled={building.level == 0}
@@ -40,11 +39,21 @@
             selected = building.short_name;
           }}>Visit</Button
         >
-        <Button disabled={!can_afford()} text on:click={upgrade(building)}>Upgrade</Button>
+        <Button disabled={!can_afford} text on:click={() => upgrade(building)}>Upgrade</Button>
       </div>
     </div>
   </Card.Card>
 </div>
 
 <style>
+  .my-card {
+    flex-basis: 50%;
+    display: inline-flex;
+    justify-content: center;
+  }
+  @media only screen and (min-width: 1200px) and (max-width: 1600px) {
+    .my-card {
+      flex-basis: 25%;
+    }
+  }
 </style>

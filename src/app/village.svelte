@@ -14,13 +14,14 @@
   export let selected: string;
 </script>
 
-<div class="building-container">
+<div class="building-container mb-5">
   {#each buildings as building}
     <VillageBuildingComponent {building} bind:selected />
   {/each}
 </div>
 
 <style>
+  /* https://stackoverflow.com/questions/34274552/evenly-distribute-elements-in-columns */
   .building-container {
     justify-content: space-around;
     align-items: center;

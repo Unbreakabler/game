@@ -16,17 +16,16 @@
     if (window.confirm("You will lose all progress. Are you sure?")) {
       resetSaveGame();
       saveGame();
-
     }
   }
 </script>
 
 <div class="resource-container bg-secondary-400">
-  <div class="money bg-secondary-400">
+  <div class="money bg-secondary-400 whitespace-nowrap">
     {money}
     <div class="coin" />
   </div>
-  <div>
+  <div class="whitespace-nowrap">
     <Button color="secondary" on:click={saveGame}>Save</Button>
     <Button color="secondary" on:click={hardReset}>Hard Reset</Button>
   </div>
@@ -35,6 +34,7 @@
 <style>
   .resource-container {
     display: flex;
+    flex-flow: row wrap;
     justify-content: space-between;
     padding: 5px;
   }

@@ -3,6 +3,7 @@ import type { Wallet } from "../gamemodel";
 import { formatNumber } from "../util/utils";
 import { Achievable } from "./achievable";
 import type { Upgrade, VILLAGE_BUILDING } from "./villagebuildings";
+import { Wallet } from "../gamemodel";
 
 export class VillageBuilding extends Achievable {
   @Exclude() public display_name: string;
@@ -36,6 +37,12 @@ export class VillageBuilding extends Achievable {
       return true;
     }
     return false;
+  }
+
+  public canAffordNextUpgrade(wallet: Wallet): boolean {
+    const next = this.getNextUpgrade();
+    if (!next) return false;
+    return wallet.money >= next.money_cost;
   }
 
   public getNextUpgrade(): Upgrade | undefined {
