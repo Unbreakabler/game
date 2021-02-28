@@ -1,9 +1,14 @@
 <script lang="ts">
   import "phaser";
   import { onMount } from "svelte";
+  import { GameModel, gameModel } from "../gamelogic/gamemodel";
+  import type { TowerType } from "../gamelogic/td/tower_defense";
   import Main from "../scenes/main";
   import TD from "../scenes/td";
-  let canvas: HTMLCanvasElement, game, unsubscribe_store: any;
+  let canvas: HTMLCanvasElement, game: any;
+
+  let gameModelInstance: GameModel;
+  gameModel.subscribe((m) => (gameModelInstance = m));
 
   onMount(() => {
     const config: Phaser.Types.Core.GameConfig = {
@@ -22,10 +27,25 @@
 
     game = new Phaser.Game(config);
   });
+
+  const toggleTowerSelection = (tower_type: TowerType) => {
+    if (gameModelInstance.tower_defense.selection == tower_type) {
+      gameModelInstance.tower_defense.selection = null
+    } else {
+      gameModelInstance.tower_defense.selectForPlacement(tower_type);
+    }
+  }
+
+  $: selection = gameModelInstance.tower_defense.selection;
+
 </script>
 
 <div>
   <canvas bind:this={canvas} id="game-container" />
+  <div class="towers">
+    <button class:active={selection === 'basic'} class="base-turret" on:click={() => toggleTowerSelection('basic')}></button>
+    <button class:active={selection === 'machine_gun'} class="machine-gun" on:click={() => toggleTowerSelection('machine_gun')}></button>
+  </div>
 </div>
 
 <style>
@@ -35,6 +55,26 @@
   }
   div {
     display: flex;
+    flex-direction: column;
     justify-content: center;
+  }
+  button {
+    border: none;
+    height: 32px;
+    width: 32px;
+  }
+  .base-turret {
+    background-image: url('static/shotgun.png');
+  }
+  .machine-gun {
+    background-image: url('static/machine_gun.png');
+  }
+  .active {
+		background-color: green;
+	}
+  .towers {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
   }
 </style>

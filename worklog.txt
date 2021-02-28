@@ -2,3 +2,8 @@
 
 - broadcast event from phaser game loop to svelte
 - run svelte game loop in sync with phaser
+
+
+2/25/2021
+
+- TODO(jon): Fix green_knight.png sprite, the frames are not equal width.
