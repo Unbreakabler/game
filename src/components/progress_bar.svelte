@@ -14,17 +14,19 @@
 <style>
   span {
     position: absolute;
-    padding: 2px 10px;
+    padding: 0.15em 10px;
     color: white;
+    text-align: center;
+    justify-content: center;
   }
   .container {
-    height: 1.5em;
-    width: 100%;
-
+    height: 1.8em;
     display: relative;
+    overflow: hidden;
+    cursor: pointer;
   }
   .progress {
     width: var(--progress_width);
-    height: 1.5em;
+    height: 1.8em;
   }
 </style>

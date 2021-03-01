@@ -13,7 +13,7 @@
 </script>
 
 <Tabs bind:selected {items} class="bg-alert-300 text-white">
-  <div slot="content">
+  <div slot="content" class="p-4">
     {#each items as item}
       <Tab id={item.id} bind:selected><svelte:component this={item.component} /></Tab>
     {/each}

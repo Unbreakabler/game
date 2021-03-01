@@ -7,7 +7,7 @@
   let url = "/";
 </script>
 
-<div class="main-container ">
+<div class="main-container">
   <Resources />
   <div class="game-container">
     <div class="village-container">

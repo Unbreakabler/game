@@ -3,6 +3,7 @@
   import { resetSaveGame, saveToStorage } from "../gamelogic/util/saveloadfunctions";
   import { formatNumber } from "../gamelogic/util/utils";
   import Button from "smelte/src/components/Button";
+  import Coin from "./coin.svelte";
 
   let gameModelInstance: GameModel;
   gameModel.subscribe((m) => (gameModelInstance = m));
@@ -23,9 +24,9 @@
 <div class="resource-container bg-secondary-400">
   <div class="money bg-secondary-400 whitespace-nowrap">
     {money}
-    <div class="coin" />
+    <Coin />
   </div>
-  <div class="whitespace-nowrap">
+  <div class="whitespace-nowrap mt-auto mb-auto">
     <Button color="secondary" on:click={saveGame}>Save</Button>
     <Button color="secondary" on:click={hardReset}>Hard Reset</Button>
   </div>
@@ -41,14 +42,6 @@
   .money {
     width: 300px;
     padding: 10px;
-  }
-  .coin {
-    width: 15px;
-    height: 15px;
-    background-color: rgb(221, 184, 67);
-    display: inline-block;
-    border-radius: 100px;
-    box-shadow: 1px 1px;
   }
   .save {
     margin-left: auto;

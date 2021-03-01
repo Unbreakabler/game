@@ -5,6 +5,7 @@
   import { formatNumber } from "../../gamelogic/util/utils";
 
   import ProgressBar from "../../components/progress_bar.svelte";
+  import Coin from "../../components/coin.svelte";
 
   let gameModelInstance: GameModel;
   gameModel.subscribe((m) => (gameModelInstance = m));
@@ -28,19 +29,29 @@
   }
 </script>
 
-<row on:click={handleClick}>
-  <div><ProgressBar current={current_exp} total={total_exp_for_level} name={job.getDisplayName()} /></div>
-  <div>{current_level}</div>
-  <div>{formatNumber(current_income, 2)}</div>
-  <div>{formatNumber(total_exp_for_level - current_exp, 2)}</div>
-  <div>{max_level_reached}</div>
-</row>
+<tr class="w-full" on:click={handleClick}>
+  <td><ProgressBar current={current_exp} total={total_exp_for_level} name={job.getDisplayName()} /></td>
+  <td>{current_level}</td>
+  <td>{formatNumber(current_income, 2)}<Coin /></td>
+  <td>{formatNumber(total_exp_for_level - current_exp, 2)}</td>
+  <td>{max_level_reached}</td>
+</tr>
 
 <style>
-  row {
+  tr {
     display: flex;
   }
-  div {
+  td {
     flex: 1;
+    padding: 4px;
+    border: none;
+  }
+
+  td:first-child {
+    flex-basis: 25%;
+  }
+
+  td:nth-child(2) {
+    flex-basis: 8%;
   }
 </style>

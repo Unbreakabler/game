@@ -8,46 +8,76 @@
   $: jobs = Array.from(gameModelInstance.farm_jobs.values());
 </script>
 
-<div class="pt-4 config-container"><div>Config settings here</div></div>
+<div class="info-container">
+  <div>Farm Status Here</div>
+</div>
+<div class="info-container mt-4">
+  <div>Config settings here</div>
+</div>
 
-<header class="pt-4">
-  <div>Name</div>
-  <div>Current Level</div>
-  <div>Income</div>
-  <div>Required Xp</div>
-  <div>Max level Reached</div>
-</header>
+<table class="w-full mt-4 info-container">
+  <tr class="w-full text-left bg-primary-500 text-white rounded-t">
+    <th>Job</th>
+    <th>Level</th>
+    <th>Income/s</th>
+    <th>Xp to level</th>
+    <th>Max level</th>
+  </tr>
 
-{#each jobs as job}
-  {#if job.areRequirementsMet(gameModelInstance.achievables)}
-    <FarmJobComponenent {job} />
-  {:else}
-    <row>
-      <div>
-        {#each job.requirements as r}
-          Requires {gameModelInstance.achievables.get(r.achievable_name).getDisplayName()} level {r.level_required}
-        {/each}
-      </div>
-    </row>
-  {/if}
-{/each}
+  {#each jobs as job}
+    {#if job.areRequirementsMet(gameModelInstance.achievables)}
+      <FarmJobComponenent {job} />
+    {:else}
+      <tr class="w-full">
+        <td>
+          {job.getDisplayName()}
+          {#each job.requirements as r}
+            requires {gameModelInstance.achievables.get(r.achievable_name).getDisplayName()} level {r.level_required}
+          {/each}
+        </td>
+        <td /> <td /><td /><td />
+      </tr>
+    {/if}
+  {/each}
+</table>
 
 <style>
-  .config-container {
+  .info-container {
     display: flex;
     flex-flow: row wrap;
     justify-content: space-around;
+    background-color: white;
+    border-radius: 0.25rem;
+    --tw-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
   }
-  .config-container > div {
+  .info-container > div {
     justify-content: center;
     align-items: center;
   }
-  header {
+  th:first-child,
+  td:first-child {
+    flex-basis: 25%;
+  }
+  th:nth-child(2),
+  td:nth-child(2) {
+    flex-basis: 8%;
+  }
+  th {
+    font-size: 110%;
+    font-weight: normal;
+  }
+  tr {
     display: flex;
     flex-flow: row nowrap;
+    padding: 2px;
   }
-  header > div,
-  row > div {
+  td {
+    margin: 4px;
+  }
+  th,
+  td {
     flex: 1;
+    border: none;
   }
 </style>
