@@ -81,6 +81,10 @@ class TD extends Phaser.Scene {
     setupModelSubscriptions() {
         const unsubscribe_store = gameModel.subscribe((model) => {
             const selection_type = model.tower_defense.selection?.type || null;
+            // TODO(jon): This needs to operate by selecting tower_id's
+            // These ids need to be saved in the instantiated game object
+            // When the gameobject is slected in phaser that selection can then propogate up
+            // to the svelte store.
             if (selection_type !== this.selection_type) {
                 this.selection?.destroy();
                 if (selection_type === 'basic') {
@@ -139,6 +143,9 @@ class TD extends Phaser.Scene {
         }
         this.turrets.add(t, true);
         t.enableBulletCollisions(this.enemies);
+        if (gameModelInstance.tower_defense.selection) {
+            gameModelInstance.tower_defense.placeTower(gameModelInstance.tower_defense.selection.id, place_x, place_y);
+        }
         this.selection = null;
         gameModelInstance.tower_defense.selection = null;
         return true;

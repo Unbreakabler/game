@@ -1,5 +1,4 @@
 import { __decorate } from '../../../node_modules/tslib/tslib.es6.js';
-import { Expose } from '../../../node_modules/class-transformer/esm5/decorators/expose.decorator.js';
 import { Exclude } from '../../../node_modules/class-transformer/esm5/decorators/exclude.decorator.js';
 
 const BasicTowerInfoDefaults = {
@@ -59,10 +58,7 @@ class TowerDefense {
             const tower = this.getTower(tower_id);
             if (!tower)
                 return;
-            const not_placed = !tower.is_placed;
-            if (not_placed)
-                tower.is_placed = true;
-            return not_placed;
+            return !tower.is_placed;
         });
         if (!highest_tier_available_tower_id)
             return;
@@ -81,15 +77,6 @@ class TowerDefense {
 __decorate([
     Exclude()
 ], TowerDefense.prototype, "selection", void 0);
-__decorate([
-    Expose()
-], TowerDefense.prototype, "towers", void 0);
-__decorate([
-    Expose()
-], TowerDefense.prototype, "tower_map", void 0);
-__decorate([
-    Expose()
-], TowerDefense.prototype, "slots", void 0);
 // By default you have a single "basic" tower and a single "machine_gun" tower.
 const get_default_towers = () => {
     return {
