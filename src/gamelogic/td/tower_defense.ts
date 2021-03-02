@@ -55,9 +55,9 @@ export class TowerDefense {
   @Exclude() public selection: { type: TowerType, id: TowerId } | null = null;
 
   // Need to expose below but it breaks
-  @Expose() public towers: { [K in TowerType]: TowerId[][]};
-  @Expose() private tower_map: { [tower_id: string]: TowerInfo };
-  @Expose() public slots: Array<string | null>
+  public towers: { [K in TowerType]: TowerId[][]};
+  private tower_map: { [tower_id: string]: TowerInfo };
+  public slots: Array<string | null>
 
   public constructor() {
     this.towers = get_default_towers();
@@ -87,9 +87,7 @@ export class TowerDefense {
     const highest_tier_available_tower_id = highest_tier_available_tower_list.find(tower_id => {
       const tower = this.getTower(tower_id)
       if (!tower) return
-      const not_placed = !tower.is_placed
-      if (not_placed) tower.is_placed = true
-      return not_placed
+      return !tower.is_placed
     })
     if (!highest_tier_available_tower_id) return
 
