@@ -8,20 +8,10 @@ class Main extends Phaser.Scene {
         super({ key: 'main', active: true });
     }
     create() {
-        this.add.text(10, 10, "", {
-            font: "64px Courier",
-            backgroundColor: "#00ff00",
-        });
         const model = loadFromStorage();
         gameModel.set(model);
         calculateOfflineProgress();
         saveToStorage(model);
-        // const unsubscribe_store = gameModel.subscribe((model) => {
-        //   scoreboard.setText(["Money: " + model.wallet.money]);
-        // });
-        // this.events.on("destroy", function () {
-        //   unsubscribe_store();
-        // });
         // GAME LOOP INTEGRATION TO SVELTE
         this.game.events.on("step", function (time, delta_t) {
             svelte_game_loop(time, delta_t);

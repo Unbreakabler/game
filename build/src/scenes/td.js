@@ -80,12 +80,13 @@ class TD extends Phaser.Scene {
     }
     setupModelSubscriptions() {
         const unsubscribe_store = gameModel.subscribe((model) => {
-            if (model.tower_defense.selection !== this.selection_type) {
+            const selection_type = model.tower_defense.selection?.type || null;
+            if (selection_type !== this.selection_type) {
                 this.selection?.destroy();
-                if (model.tower_defense.selection === 'basic') {
+                if (selection_type === 'basic') {
                     this.selection = this.turrets?.get();
                 }
-                else if (model.tower_defense.selection === 'machine_gun') {
+                else if (selection_type === 'machine_gun') {
                     this.selection = this.machine_guns?.get();
                 }
                 else {
@@ -94,7 +95,7 @@ class TD extends Phaser.Scene {
                 if (this.selection) {
                     this.selection.setVisible(false);
                 }
-                this.selection_type = model.tower_defense.selection;
+                this.selection_type = selection_type;
             }
         });
         this.events.on("destroy", function () {
