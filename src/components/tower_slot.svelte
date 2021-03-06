@@ -5,14 +5,15 @@
   let gameModelInstance: GameModel;
   gameModel.subscribe((m) => (gameModelInstance = m));
 
-  const toggleTowerSelection = (tower_type: TowerType) => {
-    if (gameModelInstance.tower_defense.selection?.type == tower_type) {
-      gameModelInstance.tower_defense.selection = null
+  const toggleTowerSelection = (tower_id: string | null) => {
+    if (tower_id && gameModelInstance.tower_defense.selection?.id != tower_id) {
+      gameModelInstance.tower_defense.setSelection(tower_id)
     } else {
-      gameModelInstance.tower_defense.selectHighestTierForPlacement(tower_type);
+      gameModelInstance.tower_defense.selection = null  
     }
   }
 
+  // Why doesn't this guard work on line 32?
   function isTower(tower: TowerInfo | undefined | null | string): tower is TowerInfo {
     return tower ? (tower as TowerInfo).tier !== undefined : false
   }
@@ -26,7 +27,7 @@
 <div class:bb={tower_id && selection_id === tower_id} class="item">
   {#if isTower(tower_info)}
     <span>Tier: {tower_info.tier}</span>
-    <button class={tower_info.type} on:click={() => toggleTowerSelection(tower_info.type)}></button>
+    <button class={tower_info.type} on:click={() => toggleTowerSelection(tower_id)}></button>
   {:else if tower_info === null}
     X <!-- Empty slot - TODO(jon): use a "lock" icon -->
   {:else}

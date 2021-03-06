@@ -34,7 +34,7 @@ const BasicTowerInfoDefaults: TowerInfo = {
 const MachineGunTowerInfoDefaults: TowerInfo = {
   tier: 0,
   type: 'machine_gun',
-  range: 50,
+  range: 100,
   damage: 2,
   attack_speed: 100,
   projectiles: 1,
@@ -51,8 +51,10 @@ const MACHINE_GUN_TOWER_DEFAULT_ID = 'machine_gun_1'
 
 export type TowerType = 'basic' | 'machine_gun'
 
+export type SelectionCursor = 'placement' | 'selected'
+
 export class TowerDefense {
-  @Exclude() public selection: { type: TowerType, id: TowerId } | null = null;
+  @Exclude() public selection: { type: TowerType, id: TowerId, cursor: SelectionCursor } | null = null;
 
   // Need to expose below but it breaks
   public towers: { [K in TowerType]: TowerId[][]};
@@ -69,10 +71,10 @@ export class TowerDefense {
     return this.tower_map[id]
   }
 
-  public setSelection(id: TowerId) {
+  public setSelection(id: TowerId, cursor: SelectionCursor = 'selected') {
     if (id in this.tower_map) {
       const type = this.tower_map[id].type
-      this.selection = { type, id }
+      this.selection = { type, id, cursor }
     }
   }
 
@@ -103,10 +105,6 @@ export class TowerDefense {
     tower.is_placed = true;
     tower.is_selected = false;
   }
-
-  // public bindTowerToSlot(slot_index: number: id: TowerId) {
-  //   this.slots[slot_index] = 
-  // }
 }
 
 // By default you have a single "basic" tower and a single "machine_gun" tower.

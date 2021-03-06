@@ -7,6 +7,7 @@ const PLACEABLE_MIN_DISTANCE_FROM_PATH = 50;
 import type TD from "../../td";
 import Bullet from "../tower_bullet";
 import type Enemy from "../enemies/enemy";
+import type { TowerInfo } from "../../../gamelogic/td/tower_defense";
 
 type displayType = 'range' | 'placement'
 
@@ -18,7 +19,7 @@ export default class Turret extends Phaser.GameObjects.Image {
   public is_selected = true;
   public show_range = false;
   
-  private is_placed = false;
+  public is_placed = false;
   private projectiles: BetterGroup<Bullet>;
   public display_range:  Phaser.GameObjects.Arc;
   private td_scene: TD;
@@ -41,16 +42,15 @@ export default class Turret extends Phaser.GameObjects.Image {
     this.damage = damage;
     this.projectiles = this.td_scene.add.group({ classType: Bullet, active: true, runChildUpdate: true }) as BetterGroup<Bullet>;
     this.display_range = this.td_scene.add.circle(0, 0, this.range, 0xff0000, 0.5);
+    this.display_range.setVisible(false);
   }
 
+  public preUpdate() { this.displayRange() }
+
   public update(time: number, delta: number): void {
-    //Look at near enemies
-    this.display_range.x = this.x;
-    this.display_range.y = this.y;
-    this.displayRange()
-    
     if (!this.is_placed) return;
 
+    //Look at near enemies
     const e = this.findClosestEnemyInRange(20);
 
     if (e) {
@@ -63,9 +63,6 @@ export default class Turret extends Phaser.GameObjects.Image {
       //If fired at enemy, start cooldown
       if (this.attemptToFire()) this.next_tick = time + this.attack_speed;
     }
-    this.display_range.x = this.x;
-    this.display_range.y = this.y;
-    this.displayRange()
   }
 
   public preDestroy() {
@@ -85,8 +82,8 @@ export default class Turret extends Phaser.GameObjects.Image {
       return false;
     }
 
-    for (const t of this.td_scene.turrets.getChildren()) {
-      if (t == this.td_scene.selection) continue; // current turret on cursor
+    for (const t of this.td_scene.tower_map.values()) {
+      if (t == this.td_scene.selected_turret) continue; // current turret on cursor
 
       const min_x = t.x - t.width/2
       const max_x = t.x + t.width/2
@@ -122,6 +119,7 @@ export default class Turret extends Phaser.GameObjects.Image {
     console.log(`placing turret @ x:${place_x}, y:${place_y}`);
     this.is_placed = true;
     this.is_selected = false;
+    this.enableBulletCollisions();
     return true;
   }
 
@@ -129,6 +127,8 @@ export default class Turret extends Phaser.GameObjects.Image {
     const red = 0xff0000
     const green = 0x00ff00
     const blue = 0x0000ff
+    this.display_range.x = this.x;
+    this.display_range.y = this.y;
     if (this.is_selected && this.show_range) {
       this.display_range.setVisible(true);
       if (!this.is_placed) {
@@ -188,7 +188,7 @@ export default class Turret extends Phaser.GameObjects.Image {
     b.fire(x, y, angle, this.range, this.damage);
   }
 
-  public enableBulletCollisions(enemies: BetterGroup<Enemy>): void {
-    this.scene.physics.add.overlap(enemies, this.projectiles, this.td_scene.damageEnemy as ArcadePhysicsCallback);
+  public enableBulletCollisions(): void {
+    this.scene.physics.add.overlap(this.td_scene.enemies, this.projectiles, this.td_scene.damageEnemy as ArcadePhysicsCallback);
   }
 }
