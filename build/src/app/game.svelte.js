@@ -1,6 +1,7 @@
 import { SvelteComponent, init, safe_not_equal, element, append, space, create_component, attr, insert, mount_component, noop, transition_in, transition_out, detach, destroy_component, onMount, binding_callbacks } from '../../node_modules/svelte/internal/index.mjs.js';
 import '../../node_modules/phaser/dist/phaser.js';
 import Slot_controls from '../components/slot_controls.svelte.js';
+import Tower_details from '../components/tower_details.svelte.js';
 import { gameModel } from '../gamelogic/gamemodel.js';
 import Main from '../scenes/main.js';
 import TD from '../scenes/td.js';
@@ -17,17 +18,22 @@ function add_css() {
 function create_fragment(ctx) {
 	let div;
 	let canvas_1;
-	let t;
+	let t0;
 	let slotcontrols;
+	let t1;
+	let towerdetails;
 	let current;
 	slotcontrols = new Slot_controls({});
+	towerdetails = new Tower_details({});
 
 	return {
 		c() {
 			div = element("div");
 			canvas_1 = element("canvas");
-			t = space();
+			t0 = space();
 			create_component(slotcontrols.$$.fragment);
+			t1 = space();
+			create_component(towerdetails.$$.fragment);
 			attr(canvas_1, "id", "game-container");
 			attr(canvas_1, "class", "svelte-1spt8rc");
 			attr(div, "class", "svelte-1spt8rc");
@@ -36,24 +42,29 @@ function create_fragment(ctx) {
 			insert(target, div, anchor);
 			append(div, canvas_1);
 			/*canvas_1_binding*/ ctx[1](canvas_1);
-			append(div, t);
+			append(div, t0);
 			mount_component(slotcontrols, div, null);
+			append(div, t1);
+			mount_component(towerdetails, div, null);
 			current = true;
 		},
 		p: noop,
 		i(local) {
 			if (current) return;
 			transition_in(slotcontrols.$$.fragment, local);
+			transition_in(towerdetails.$$.fragment, local);
 			current = true;
 		},
 		o(local) {
 			transition_out(slotcontrols.$$.fragment, local);
+			transition_out(towerdetails.$$.fragment, local);
 			current = false;
 		},
 		d(detaching) {
 			if (detaching) detach(div);
 			/*canvas_1_binding*/ ctx[1](null);
 			destroy_component(slotcontrols);
+			destroy_component(towerdetails);
 		}
 	};
 }
