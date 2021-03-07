@@ -6,9 +6,14 @@ import type Enemy from "./entities/enemies/enemy";
 import type Bullet from "./entities/tower_bullet";
 
 import GreenKnight from "./entities/enemies/green_knight";
-import BaseTurret from "./entities/towers/base_turret";
-import MachineGun from "./entities/towers/machine_gun";
-import type Turret from "./entities/towers/turret";
+import Turret from './entities/towers/turret';
+import type { SelectionCursor, TowerType } from "../gamelogic/td/tower_defense";
+
+type Selection = {
+  type: TowerType;
+  id: string;
+  cursor: SelectionCursor;
+} | null
 
 let gameModelInstance: GameModel;
 gameModel.subscribe((m) => (gameModelInstance = m));
@@ -17,17 +22,22 @@ export default class TD extends Phaser.Scene {
   public path!: Phaser.Curves.Path;
   private nextEnemy = 0;
   public enemies!: BetterGroup<Enemy>;
-  public turrets!: BetterGroup<Turret>;
-  public machine_guns!: BetterGroup<MachineGun>;
-  public selection!: Turret | null;
-  private selection_type: string | null = null;
+  public selection: {
+      type: TowerType;
+      id: string;
+      cursor: SelectionCursor;
+  } | null = null
+  public selected_turret: Turret | null = null;
+
+  private slots: Array<string | null> = [];
+  public tower_map: Map<string, Turret> = new Map<string, Turret>();
 
   public constructor() {
     super({ key: "td", active: true });
   }
 
   public preload(): void {
-    this.load.image("turret", "static/shotgun.png");
+    this.load.image("basic", "static/shotgun.png");
     this.load.image("machine_gun", "static/machine_gun.png");
     this.load.image("small_bullet", "static/small_bullet.png");
     this.load.spritesheet("green-knight", "static/green_knight.png", {
@@ -40,9 +50,8 @@ export default class TD extends Phaser.Scene {
     this.generateAnimations();
     this.drawPath();
     this.setupEntities();
-    this.setupModelSubscriptions();
     this.setupInputHandlers();
-
+    this.newTurretManagement();
   }
 
   private generateAnimations() {
@@ -93,34 +102,131 @@ export default class TD extends Phaser.Scene {
     this.path.draw(graphics);
   }
 
-  private setupEntities() {
-    // Add gameobject groups for towers and enemies, these manage interactions and collisions
-    this.turrets = this.add.group({ classType: BaseTurret, runChildUpdate: true }) as BetterGroup<Turret>;
-    this.machine_guns = this.add.group({ classType: MachineGun, runChildUpdate: true }) as BetterGroup<Turret>;
-    this.enemies = this.add.group({ classType: GreenKnight, runChildUpdate: true }) as BetterGroup<Enemy>;
+  private newTurretManagement() {
+    // Subscribe to model.tower_defense.slots
+    // For each id, generate a "turret" using the tower_info from tower_maps,
+    // This can happen on initial launch to replace turrets if is_placed is true;
+    // Store this list of tower_ids -> turret game objects in a hashmap in td.ts;
+    this.setupTurrets();
+
+    // Subscribe to model.tower_defense.selection
+    // When the selection changes from null -> Selection,
+    // set the selected tower by finding it in the hashmap by id.
+    // if it's not placed, allow it to be placed, otherwise "highlight" the turret.
+    this.setupSelection();
   }
 
-  private setupModelSubscriptions() {
-    const unsubscribe_store = gameModel.subscribe((model) => {    
-      if (model.tower_defense.selection !== this.selection_type) {
-        this.selection?.destroy();
-        if (model.tower_defense.selection === 'basic') {
-          this.selection = this.turrets?.get();
-        } else if (model.tower_defense.selection === 'machine_gun') {
-          this.selection = this.machine_guns?.get();
-        } else {
+  private setupTurrets() {
+    const unsubscribe_store = gameModel.subscribe((model) => {
+      model.tower_defense.slots.forEach((model_tower_id, index) => {
+        const phaser_slot_tower_id = this.slots[index]
+        if (model_tower_id && model_tower_id !== this.slots[index]) {
+          // tower was added to slot
+          const tower_info = model.tower_defense.getTower(model_tower_id)
+          if (tower_info) {
+            const new_turret = new Turret(
+              this,
+              model_tower_id, 
+              tower_info.x,
+              tower_info.y,
+              tower_info.type,
+            )
+            if (tower_info.is_placed) {
+              this.add.existing(new_turret)
+              new_turret.place(tower_info.x, tower_info.y)
+            }
+            this.tower_map.set(model_tower_id, new_turret)
+          }
+        } else if (phaser_slot_tower_id && !model_tower_id) {
+          // slot was cleared from the bar, destroy tower
+          const turret_to_delete = this.tower_map.get(phaser_slot_tower_id)
+          if (this.selected_turret == turret_to_delete) {
+            this.selected_turret = null;
+          }
+          turret_to_delete?.destroy();
+        }
+      })
+      this.slots = model.tower_defense.slots;
+    })
+    this.events.on("destroy", function () {
+      unsubscribe_store();
+    });
+  }
+
+  private setupSelection() {
+    let cur_selection: Selection = null;
+    const unsubscribe_store = gameModel.subscribe((model) => {   
+      if (cur_selection !== model.tower_defense.selection) {
+        // Selection changed
+        cur_selection = model.tower_defense.selection
+        const new_selection_tower_info = model.tower_defense.getTower(cur_selection?.id || '')
+        const active_selection_tower_info = model.tower_defense.getTower(this.selection?.id || '')
+        if (cur_selection && this.selection !== cur_selection) {
+          // New selection, deselect previously selected turret
+          this.selected_turret?.select(false);
+
+          // Hide turret and deselect before updating selection, this allows the user to toggle
+          // between multiple unplaced turrets
+          if (this.selection && active_selection_tower_info?.is_placed == false) {
+            if (this.selected_turret) {
+              this.selected_turret.setVisible(false);
+            }
+            this.selected_turret = null;
+            this.selection = null;
+          }
+
+          // Update selection
+          this.selection = cur_selection
+          if (new_selection_tower_info?.is_placed) {
+            // selecting tower already placed, highlight range
+            // Allows a user to select a tower to see details or take actions
+            console.log('SELECT PLACED TURRET')
+            this.selection.cursor = 'selected'
+            this.selected_turret = this.tower_map.get(this.selection.id) || null;
+            this.selected_turret?.select(true);
+          } else {
+            // selecting a tower that is not yet placed, make placeable
+            // Allows a user to select a tower for placement
+            console.log('SELECT UNPLACED TURRET')
+            this.selection.cursor = 'placement'
+            this.selected_turret = this.tower_map.get(this.selection.id) || null;
+            if (this.selected_turret) {
+              this.add.existing(this.selected_turret);
+              this.selected_turret.setVisible(false);
+            }
+          }
+
+        } else if (cur_selection && this.selection === cur_selection) {
+          // reselecting - i don't think this ever happens, you can only toggle selection currently.
+          console.log('RESELECT TURRET')
+        } else if (!cur_selection && this.selection && active_selection_tower_info?.is_placed == false) {
+          // deselecting unplaced turret, hide gameobject
+          // Allows a user to unselect a turret that is currently on their cursor for placement
+          console.log('DESELECT UNPLACED TURRET')
+          if (this.selected_turret) {
+            this.selected_turret?.select(false);
+            this.selected_turret.setVisible(false);
+          }
+          this.selected_turret = null;
+          this.selection = null;
+        } else if (!cur_selection && this.selection && active_selection_tower_info?.is_placed) {
+          // Deselecting a turret that is already placed
+          // Allows a user to deselect a placed turret that was selected to highlight range or take action
+          console.log('DESELECT PLACED TURRET')
+          this.selected_turret?.select(false);
+          this.selected_turret = null;
           this.selection = null;
         }
-
-        if (this.selection) {
-          this.selection.setVisible(false);
-        }
-        this.selection_type = model.tower_defense.selection
       }
     });
     this.events.on("destroy", function () {
       unsubscribe_store();
     });
+  }
+  
+
+  private setupEntities() {
+    this.enemies = this.add.group({ classType: GreenKnight, runChildUpdate: true }) as BetterGroup<Enemy>;
   }
 
   private setupInputHandlers() {
@@ -139,29 +245,34 @@ export default class TD extends Phaser.Scene {
       enemy.startOnPath(this.path);
       this.nextEnemy = time + 2000;
     }
+
+    this.tower_map.forEach((tower) => {
+      if (tower.is_placed) {
+        tower.update(time, delta)
+      }
+    })
   }
 
   public testTurretPlacement(pointer: Phaser.Input.Pointer, game_objects_under_pointer: Phaser.GameObjects.GameObject[]) {
-    if (!this.selection) return;
-    this.selection.setVisible(true);
-    this.selection.show_range = true;
-    this.selection.x = pointer.x;
-    this.selection.y = pointer.y;
+    if (!this.selection || this.selection.cursor !== 'placement' || !this.selected_turret) return;
+    this.selected_turret.setVisible(true);
+    this.selected_turret.select();
+    this.selected_turret.x = pointer.x;
+    this.selected_turret.y = pointer.y;
   }
 
   public placeTurret(pointer: Phaser.Input.Pointer, game_objects_under_pointer: Phaser.GameObjects.GameObject[]): boolean {
-    if (!this.selection) return false;
+    if (!this.selection || this.selection.cursor !== 'placement' || !this.selected_turret) return false;
     const place_x = Math.floor(pointer.x);
     const place_y = Math.floor(pointer.y);
     
-    // if (game_objects_under_pointer.length === 0) {
-    const t = this.selection;
+    const t = this.selected_turret;
     if (!t.place(place_x, place_y)) {
-      t.destroy();
       return false;
     }
-    this.turrets.add(t, true);
-    t.enableBulletCollisions(this.enemies);
+    if (gameModelInstance.tower_defense.selection) {
+      gameModelInstance.tower_defense.placeTower(gameModelInstance.tower_defense.selection.id, place_x, place_y)
+    }
     this.selection = null;
     gameModelInstance.tower_defense.selection = null;
     return true;
