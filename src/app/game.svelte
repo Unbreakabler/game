@@ -2,6 +2,7 @@
   import "phaser";
   import { onMount } from "svelte";
   import SlotControls from "../components/slot_controls.svelte";
+  import TowerDetails from '../components/tower_details.svelte'
   import { GameModel, gameModel } from "../gamelogic/gamemodel";
   import Main from "../scenes/main";
   import TD from "../scenes/td";
@@ -33,6 +34,7 @@
 <div>
   <canvas bind:this={canvas} id="game-container" />
   <SlotControls />
+  <TowerDetails />
 </div>
 
 <style>
