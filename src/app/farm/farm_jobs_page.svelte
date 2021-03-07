@@ -6,6 +6,10 @@
   gameModel.subscribe((m) => (gameModelInstance = m));
   let jobs: FarmJob[];
   $: jobs = Array.from(gameModelInstance.farm_jobs.values());
+  $: {
+    let i = jobs.findIndex((job) => !job.areRequirementsMet(gameModelInstance.achievables));
+    jobs = jobs.slice(0, i + 1);
+  }
 </script>
 
 <div class="info-container">
@@ -30,9 +34,8 @@
     {:else}
       <tr class="w-full">
         <td>
-          {job.getDisplayName()}
           {#each job.requirements as r}
-            requires {gameModelInstance.achievables.get(r.achievable_name).getDisplayName()} level {r.level_required}
+            <span>Requires {gameModelInstance.achievables.get(r.achievable_name).getDisplayName()} level {r.level_required}</span>
           {/each}
         </td>
         <td /> <td /><td /><td />

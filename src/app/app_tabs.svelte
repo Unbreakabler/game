@@ -1,10 +1,10 @@
 <script lang="ts">
   import { Tabs, Tab } from "smelte/src/components/Tabs";
-  import Laboratory from "../app/laboratory.svelte";
-  import Blacksmith from "../app/blacksmith.svelte";
-  import Farm from "../app/farm/farm.svelte";
-  import Village from "../app/village/village.svelte";
-  import Workshop from "../app/workshop.svelte";
+  import Laboratory from "./laboratory.svelte";
+  import Blacksmith from "./blacksmith.svelte";
+  import Farm from "./farm/farm.svelte";
+  import Village from "./village/village.svelte";
+  import Workshop from "./workshop.svelte";
 
   import { gameModel, GameModel } from "../gamelogic/gamemodel";
 
@@ -35,7 +35,7 @@
 <Tabs bind:selected items={filtered} class="bg-primary-500 text-white">
   <div slot="content">
     {#each filtered as item}
-      <Tab id={item.id} bind:selected><svelte:component this={item.component} /></Tab>
+      <Tab id={item.id} bind:selected><svelte:component this={item.component} bind:selected /></Tab>
     {/each}
   </div>
 </Tabs>

@@ -31,6 +31,8 @@ export class GameModel {
   @Transform(villageBuildingTransformer, { toClassOnly: true })
   public village_buildings: Map<string, VillageBuilding> = new Map();
 
+  public active_building: VillageBuilding | null = null;
+
   @Exclude()
   public achievables: Map<string, Achievable> = new Map();
 
@@ -44,7 +46,7 @@ export class GameModel {
   }
 
   public reloadAchievables(): void {
-    this.achievables = new Map([...this.farm_jobs]);
+    this.achievables = new Map<string, Achievable>([...this.farm_jobs, ...this.village_buildings]);
   }
 
   public update(delta_t_s: number): void {

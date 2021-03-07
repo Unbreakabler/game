@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Tabs from "../components/tabs.svelte";
+  import Tabs from "./app_tabs.svelte";
   import Resources from "../components/resources.svelte";
 
   import Game from "./game.svelte";
