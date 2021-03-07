@@ -1,4 +1,4 @@
-import { Exclude, Expose } from "class-transformer";
+import { Exclude } from "class-transformer";
 
 type TowerId = string
 export interface TowerInfo {

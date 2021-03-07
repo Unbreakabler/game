@@ -1,6 +1,6 @@
 <script lang='ts'>
   import { GameModel, gameModel } from "../gamelogic/gamemodel";
-  import type { TowerType, TowerInfo } from "../gamelogic/td/tower_defense";
+  import type { TowerInfo } from "../gamelogic/td/tower_defense";
 
   let gameModelInstance: GameModel;
   gameModel.subscribe((m) => (gameModelInstance = m));
@@ -101,15 +101,6 @@
     &::before {
       animation-delay: $anime-time * -.5;
     }
-
-    // // for debug
-    // &:hover {
-    //   &::after,
-    //   &::before {
-    //     background-color: rgba(#f00, .3);
-    //   }
-    // }
-
   }
 
   @keyframes clipMe {

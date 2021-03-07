@@ -1,7 +1,7 @@
 import type TD from "../../td";
 import Bullet from "../tower_bullet";
 import type Enemy from "../enemies/enemy";
-import { gameModel } from "../../../gamelogic/gamemodel";
+import { gameModel, GameModel } from "../../../gamelogic/gamemodel";
 
 const DEFAULT_RANGE = 200;
 const DEFAULT_ATTACK_SPEED = 1000;
@@ -18,12 +18,14 @@ export default class Turret extends Phaser.GameObjects.Image {
   public damage = DEFAULT_DAMAGE;
   public is_selected = false;
   public show_range = false;
-  
   public is_placed = false;
+  public tower_id: string;
+  
   private projectiles: BetterGroup<Bullet>;
   public display_range:  Phaser.GameObjects.Arc;
   private td_scene: TD;
   private next_tick = 0;
+  private gameModelInstance!: GameModel;
 
   public constructor(
     td_scene: TD,
@@ -34,6 +36,8 @@ export default class Turret extends Phaser.GameObjects.Image {
   ) {
     super(td_scene, x, y, sprite_name);
     this.td_scene = td_scene;
+    this.tower_id = tower_id;
+    // TODO(jon): Projectiles will have to be managed different to allow differently projectiles for each turret.
     this.projectiles = this.td_scene.add.group({ classType: Bullet, active: true, runChildUpdate: true }) as BetterGroup<Bullet>;
     this.display_range = this.td_scene.add.circle(0, 0, this.range, 0xff0000, 0.5);
     this.display_range.setVisible(false);
@@ -42,6 +46,7 @@ export default class Turret extends Phaser.GameObjects.Image {
 
   private setupTowerSubscription(tower_id: string) {
     const unsubscribe_store = gameModel.subscribe((model) => {
+      this.gameModelInstance = model;
       const tower_info = model.tower_defense.getTower(tower_id)
   
       if (tower_info) {
@@ -49,8 +54,18 @@ export default class Turret extends Phaser.GameObjects.Image {
           this.range = tower_info.range
           this.display_range.setRadius(this.range)
         }
-        this.attack_speed = tower_info.attack_speed
-        this.damage = tower_info.damage
+        if (this.attack_speed !== tower_info.attack_speed) {
+          this.attack_speed = tower_info.attack_speed
+        }
+        if (this.damage !== tower_info.damage) {
+          this.damage = tower_info.damage
+        }
+        if (this.is_selected !== tower_info.is_selected) {
+          this.is_selected = tower_info.is_selected
+        }
+        if (this.is_placed !== tower_info.is_placed) {
+          this.is_placed = tower_info.is_placed;
+        }
       }
     })
     this.td_scene.events.on("destroy", function () {
@@ -79,7 +94,11 @@ export default class Turret extends Phaser.GameObjects.Image {
   }
 
   public preDestroy() {
-    this.is_selected = false;
+    const tower_info = this.gameModelInstance.tower_defense.getTower(this.tower_id);
+    if (tower_info) {
+      tower_info.is_selected = false;
+      tower_info.is_placed = false;
+    }
     this.displayRange();
   }
 
@@ -124,6 +143,7 @@ export default class Turret extends Phaser.GameObjects.Image {
       console.error(`Error placing turret @ x:${place_x}, y:${place_y}`);
       return false;
     }
+    const tower_info = this.gameModelInstance.tower_defense.getTower(this.tower_id);
     this.x = place_x;
     this.y = place_y;
     this.setActive(true);
@@ -131,7 +151,11 @@ export default class Turret extends Phaser.GameObjects.Image {
     this.setInteractive();
     console.log(`placing turret @ x:${place_x}, y:${place_y}`);
     this.is_placed = true;
-    this.is_selected = false;
+    if (tower_info) {
+      tower_info.is_selected = false;
+      tower_info.is_placed = true;
+    }
+    this.select(false);
     this.enableBulletCollisions();
     return true;
   }
@@ -203,5 +227,12 @@ export default class Turret extends Phaser.GameObjects.Image {
 
   public enableBulletCollisions(): void {
     this.scene.physics.add.overlap(this.td_scene.enemies, this.projectiles, this.td_scene.damageEnemy as ArcadePhysicsCallback);
+  }
+
+  public select(is_selected = true): void {
+    const tower_info = this.gameModelInstance.tower_defense.getTower(this.tower_id);
+    if (tower_info) {
+      tower_info.is_selected = is_selected;
+    }
   }
 }
