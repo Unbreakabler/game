@@ -10,7 +10,7 @@ function add_css() {
 	append(document.head, style);
 }
 
-// (27:2) {:else}
+// (28:2) {:else}
 function create_else_block(ctx) {
 	let t;
 
@@ -28,7 +28,7 @@ function create_else_block(ctx) {
 	};
 }
 
-// (25:32) 
+// (26:32) 
 function create_if_block_1(ctx) {
 	let t;
 
@@ -46,7 +46,7 @@ function create_if_block_1(ctx) {
 	};
 }
 
-// (22:2) {#if isTower(tower_info)}
+// (23:2) {#if isTower(tower_info)}
 function create_if_block(ctx) {
 	let span;
 	let t0;
@@ -157,17 +157,17 @@ function instance($$self, $$props, $$invalidate) {
 	let gameModelInstance;
 	gameModel.subscribe(m => $$invalidate(4, gameModelInstance = m));
 
-	const toggleTowerSelection = tower_type => {
-		if (gameModelInstance.tower_defense.selection?.type == tower_type) {
-			$$invalidate(4, gameModelInstance.tower_defense.selection = null, gameModelInstance);
+	const toggleTowerSelection = tower_id => {
+		if (tower_id && gameModelInstance.tower_defense.selection?.id != tower_id) {
+			gameModelInstance.tower_defense.setSelection(tower_id);
 		} else {
-			gameModelInstance.tower_defense.selectHighestTierForPlacement(tower_type);
+			$$invalidate(4, gameModelInstance.tower_defense.selection = null, gameModelInstance);
 		}
 	};
 
 	let { tower_info } = $$props;
 	let { tower_id } = $$props;
-	const click_handler = () => toggleTowerSelection(tower_info.type);
+	const click_handler = () => toggleTowerSelection(tower_id);
 
 	$$self.$$set = $$props => {
 		if ("tower_info" in $$props) $$invalidate(0, tower_info = $$props.tower_info);

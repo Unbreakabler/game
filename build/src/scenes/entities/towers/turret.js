@@ -1,34 +1,47 @@
 import Bullet from '../tower_bullet.js';
+import { gameModel } from '../../../gamelogic/gamemodel.js';
 
 const DEFAULT_RANGE = 200;
 const DEFAULT_ATTACK_SPEED = 1000;
 const DEFAULT_DAMAGE = 50;
 const PLACEABLE_MIN_DISTANCE_FROM_PATH = 50;
 class Turret extends Phaser.GameObjects.Image {
-    constructor(td_scene, x = 0, y = 0, sprite_name = "turret", range = DEFAULT_RANGE, attack_speed = DEFAULT_ATTACK_SPEED, damage = DEFAULT_DAMAGE) {
+    constructor(td_scene, tower_id, x = 0, y = 0, sprite_name = "turret") {
         super(td_scene, x, y, sprite_name);
         this.range = DEFAULT_RANGE;
         this.attack_speed = DEFAULT_ATTACK_SPEED;
         this.damage = DEFAULT_DAMAGE;
-        this.display_type = 'range';
-        this.is_selected = true;
+        this.is_selected = false;
         this.show_range = false;
         this.is_placed = false;
         this.next_tick = 0;
         this.td_scene = td_scene;
-        this.range = range;
-        this.attack_speed = attack_speed;
-        this.damage = damage;
         this.projectiles = this.td_scene.add.group({ classType: Bullet, active: true, runChildUpdate: true });
         this.display_range = this.td_scene.add.circle(0, 0, this.range, 0xff0000, 0.5);
+        this.display_range.setVisible(false);
+        this.setupTowerSubscription(tower_id);
     }
+    setupTowerSubscription(tower_id) {
+        const unsubscribe_store = gameModel.subscribe((model) => {
+            const tower_info = model.tower_defense.getTower(tower_id);
+            if (tower_info) {
+                if (this.range !== tower_info.range) {
+                    this.range = tower_info.range;
+                    this.display_range.setRadius(this.range);
+                }
+                this.attack_speed = tower_info.attack_speed;
+                this.damage = tower_info.damage;
+            }
+        });
+        this.td_scene.events.on("destroy", function () {
+            unsubscribe_store();
+        });
+    }
+    preUpdate() { this.displayRange(); }
     update(time, delta) {
-        //Look at near enemies
-        this.display_range.x = this.x;
-        this.display_range.y = this.y;
-        this.displayRange();
         if (!this.is_placed)
             return;
+        //Look at near enemies
         const e = this.findClosestEnemyInRange(20);
         if (e) {
             this.targetEnemy(e);
@@ -42,9 +55,6 @@ class Turret extends Phaser.GameObjects.Image {
             if (this.attemptToFire())
                 this.next_tick = time + this.attack_speed;
         }
-        this.display_range.x = this.x;
-        this.display_range.y = this.y;
-        this.displayRange();
     }
     preDestroy() {
         this.is_selected = false;
@@ -58,8 +68,8 @@ class Turret extends Phaser.GameObjects.Image {
             // console.error('Can not place turret next to path')
             return false;
         }
-        for (const t of this.td_scene.turrets.getChildren()) {
-            if (t == this.td_scene.selection)
+        for (const t of this.td_scene.tower_map.values()) {
+            if (t == this.td_scene.selected_turret)
                 continue; // current turret on cursor
             const min_x = t.x - t.width / 2;
             const max_x = t.x + t.width / 2;
@@ -91,13 +101,16 @@ class Turret extends Phaser.GameObjects.Image {
         console.log(`placing turret @ x:${place_x}, y:${place_y}`);
         this.is_placed = true;
         this.is_selected = false;
+        this.enableBulletCollisions();
         return true;
     }
     displayRange() {
         const red = 0xff0000;
         const green = 0x00ff00;
         const blue = 0x0000ff;
-        if (this.is_selected && this.show_range) {
+        this.display_range.x = this.x;
+        this.display_range.y = this.y;
+        if (this.is_selected) {
             this.display_range.setVisible(true);
             if (!this.is_placed) {
                 if (this.isPlaceable(this.x, this.y)) {
@@ -153,8 +166,8 @@ class Turret extends Phaser.GameObjects.Image {
         //TODO - Make bullets smart so they follow units and delete selves when enemy is dead
         b.fire(x, y, angle, this.range, this.damage);
     }
-    enableBulletCollisions(enemies) {
-        this.scene.physics.add.overlap(enemies, this.projectiles, this.td_scene.damageEnemy);
+    enableBulletCollisions() {
+        this.scene.physics.add.overlap(this.td_scene.enemies, this.projectiles, this.td_scene.damageEnemy);
     }
 }
 

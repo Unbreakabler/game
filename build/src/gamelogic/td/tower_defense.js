@@ -18,7 +18,7 @@ const BasicTowerInfoDefaults = {
 const MachineGunTowerInfoDefaults = {
     tier: 0,
     type: 'machine_gun',
-    range: 50,
+    range: 100,
     damage: 2,
     attack_speed: 100,
     projectiles: 1,
@@ -41,10 +41,10 @@ class TowerDefense {
     getTower(id) {
         return this.tower_map[id];
     }
-    setSelection(id) {
+    setSelection(id, cursor = 'selected') {
         if (id in this.tower_map) {
             const type = this.tower_map[id].type;
-            this.selection = { type, id };
+            this.selection = { type, id, cursor };
         }
     }
     selectHighestTierForPlacement(tower_type) {
