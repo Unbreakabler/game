@@ -128,12 +128,10 @@ export default class TD extends Phaser.Scene {
           if (tower_info) {
             const new_turret = new Turret(
               this,
+              model_tower_id, 
               tower_info.x,
               tower_info.y,
               tower_info.type,
-              tower_info.range,
-              tower_info.attack_speed,
-              tower_info.damage
             )
             if (tower_info.is_placed) {
               this.add.existing(new_turret)
@@ -164,32 +162,36 @@ export default class TD extends Phaser.Scene {
         const active_selection_tower_info = model.tower_defense.getTower(this.selection?.id || '')
         if (cur_selection && this.selection !== cur_selection) {
 
+          if (this.selected_turret) {
+            this.selected_turret.is_selected = false;
+          }
+
           if (this.selection && active_selection_tower_info?.is_placed == false) {
             if (this.selected_turret) {
               this.selected_turret.setVisible(false);
-              this.selected_turret.show_range = false;
             }
             this.selected_turret = null;
             this.selection = null;
           }
-          // selecting a new turret
           this.selection = cur_selection
           if (new_selection_tower_info?.is_placed) {
             console.log('SELECT PLACED TURRET')
             // selecting tower already placed
             this.selection.cursor = 'selected'
             this.selected_turret = this.tower_map.get(this.selection.id) || null;
+            if (this.selected_turret) {
+              this.selected_turret.is_selected = true;
+            }
           } else {
             console.log('SELECT UNPLACED TURRET')
             // selecting a tower that is not yet placed
             this.selection.cursor = 'placement'
             this.selected_turret = this.tower_map.get(this.selection.id) || null;
             if (this.selected_turret) {
-              this.selected_turret.is_selected = true;
               this.add.existing(this.selected_turret);
+              this.selected_turret.setVisible(false);
             }
           }
-          this.selected_turret?.setVisible(false);
         } else if (cur_selection && this.selection === cur_selection) {
           // reselecting - i don't think this ever happens, you can only toggle selection currently.
           console.log('RESELECT TURRET')
@@ -197,14 +199,19 @@ export default class TD extends Phaser.Scene {
           // deselecting unplaced turret
           console.log('DESELECT UNPLACED TURRET')
           if (this.selected_turret) {
+            this.selected_turret.is_selected = false;
             this.selected_turret.setVisible(false);
-            this.selected_turret.show_range = false;
+          }
+          this.selected_turret = null;
+          this.selection = null;
+        } else if (!cur_selection && this.selection && active_selection_tower_info?.is_placed) {
+          console.log('DESELECT PLACED TURRET')
+          if (this.selected_turret) {
+            this.selected_turret.is_selected = false;
           }
           this.selected_turret = null;
           this.selection = null;
         }
-
-        console.log('test', this.selection, this.selected_turret)
       }
     });
     this.events.on("destroy", function () {
@@ -245,7 +252,7 @@ export default class TD extends Phaser.Scene {
   public testTurretPlacement(pointer: Phaser.Input.Pointer, game_objects_under_pointer: Phaser.GameObjects.GameObject[]) {
     if (!this.selection || this.selection.cursor !== 'placement' || !this.selected_turret) return;
     this.selected_turret.setVisible(true);
-    this.selected_turret.show_range = true;
+    this.selected_turret.is_selected = true;
     this.selected_turret.x = pointer.x;
     this.selected_turret.y = pointer.y;
   }
@@ -257,7 +264,6 @@ export default class TD extends Phaser.Scene {
     
     const t = this.selected_turret;
     if (!t.place(place_x, place_y)) {
-      // t.destroy();
       return false;
     }
     if (gameModelInstance.tower_defense.selection) {
@@ -277,7 +283,6 @@ export default class TD extends Phaser.Scene {
 
   public damageEnemy(enemy: Enemy, bullet: Bullet): void {
     // only if both enemy and bullet are alive
-    console.log('damaging enemy?', enemy, bullet)
     if (enemy.active === true && bullet.active === true) {
       // we remove the bullet right away
       bullet.destroy();

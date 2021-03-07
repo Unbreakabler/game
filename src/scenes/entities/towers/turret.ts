@@ -1,13 +1,14 @@
+import type TD from "../../td";
+import Bullet from "../tower_bullet";
+import type Enemy from "../enemies/enemy";
+import { gameModel } from "../../../gamelogic/gamemodel";
+
 const DEFAULT_RANGE = 200;
 const DEFAULT_ATTACK_SPEED = 1000;
 const DEFAULT_DAMAGE = 50;
 
 const PLACEABLE_MIN_DISTANCE_FROM_PATH = 50;
 
-import type TD from "../../td";
-import Bullet from "../tower_bullet";
-import type Enemy from "../enemies/enemy";
-import type { TowerInfo } from "../../../gamelogic/td/tower_defense";
 
 type displayType = 'range' | 'placement'
 
@@ -15,8 +16,7 @@ export default class Turret extends Phaser.GameObjects.Image {
   public range = DEFAULT_RANGE;
   public attack_speed = DEFAULT_ATTACK_SPEED;
   public damage = DEFAULT_DAMAGE;
-  public display_type: displayType = 'range';
-  public is_selected = true;
+  public is_selected = false;
   public show_range = false;
   
   public is_placed = false;
@@ -24,25 +24,38 @@ export default class Turret extends Phaser.GameObjects.Image {
   public display_range:  Phaser.GameObjects.Arc;
   private td_scene: TD;
   private next_tick = 0;
-  
 
   public constructor(
     td_scene: TD,
+    tower_id: string,
     x: number = 0,
     y: number = 0,
     sprite_name: string = "turret",
-    range: number = DEFAULT_RANGE,
-    attack_speed: number = DEFAULT_ATTACK_SPEED,
-    damage: number = DEFAULT_DAMAGE,
   ) {
     super(td_scene, x, y, sprite_name);
     this.td_scene = td_scene;
-    this.range = range;
-    this.attack_speed = attack_speed;
-    this.damage = damage;
     this.projectiles = this.td_scene.add.group({ classType: Bullet, active: true, runChildUpdate: true }) as BetterGroup<Bullet>;
     this.display_range = this.td_scene.add.circle(0, 0, this.range, 0xff0000, 0.5);
     this.display_range.setVisible(false);
+    this.setupTowerSubscription(tower_id)
+  }
+
+  private setupTowerSubscription(tower_id: string) {
+    const unsubscribe_store = gameModel.subscribe((model) => {
+      const tower_info = model.tower_defense.getTower(tower_id)
+  
+      if (tower_info) {
+        if (this.range !== tower_info.range) {
+          this.range = tower_info.range
+          this.display_range.setRadius(this.range)
+        }
+        this.attack_speed = tower_info.attack_speed
+        this.damage = tower_info.damage
+      }
+    })
+    this.td_scene.events.on("destroy", function () {
+      unsubscribe_store();
+    });
   }
 
   public preUpdate() { this.displayRange() }
@@ -129,7 +142,7 @@ export default class Turret extends Phaser.GameObjects.Image {
     const blue = 0x0000ff
     this.display_range.x = this.x;
     this.display_range.y = this.y;
-    if (this.is_selected && this.show_range) {
+    if (this.is_selected) {
       this.display_range.setVisible(true);
       if (!this.is_placed) {
         if (this.isPlaceable(this.x, this.y)) {
