@@ -14,6 +14,8 @@ const BasicTowerInfoDefaults = {
     y: 0,
     is_placed: false,
     is_selected: false,
+    damage_dealt_lifetime: 0,
+    damage_dealt_this_prestige: 0,
 };
 const MachineGunTowerInfoDefaults = {
     tier: 0,
@@ -28,6 +30,8 @@ const MachineGunTowerInfoDefaults = {
     y: 0,
     is_placed: false,
     is_selected: false,
+    damage_dealt_lifetime: 0,
+    damage_dealt_this_prestige: 0,
 };
 const BASIC_TOWER_DEFAULT_ID = 'basic_1';
 const MACHINE_GUN_TOWER_DEFAULT_ID = 'machine_gun_1';

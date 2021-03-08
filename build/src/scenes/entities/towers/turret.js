@@ -4,7 +4,7 @@ import { gameModel } from '../../../gamelogic/gamemodel.js';
 const DEFAULT_RANGE = 200;
 const DEFAULT_ATTACK_SPEED = 1000;
 const DEFAULT_DAMAGE = 50;
-const PLACEABLE_MIN_DISTANCE_FROM_PATH = 50;
+const PLACEABLE_MIN_DISTANCE_FROM_PATH = 25;
 class Turret extends Phaser.GameObjects.Image {
     constructor(td_scene, tower_id, x = 0, y = 0, sprite_name = "turret") {
         super(td_scene, x, y, sprite_name);
@@ -25,24 +25,23 @@ class Turret extends Phaser.GameObjects.Image {
     }
     setupTowerSubscription(tower_id) {
         const unsubscribe_store = gameModel.subscribe((model) => {
-            this.gameModelInstance = model;
-            const tower_info = model.tower_defense.getTower(tower_id);
-            if (tower_info) {
-                if (this.range !== tower_info.range) {
-                    this.range = tower_info.range;
+            this.tower_info = model.tower_defense.getTower(tower_id);
+            if (this.tower_info) {
+                if (this.range !== this.tower_info.range) {
+                    this.range = this.tower_info.range;
                     this.display_range.setRadius(this.range);
                 }
-                if (this.attack_speed !== tower_info.attack_speed) {
-                    this.attack_speed = tower_info.attack_speed;
+                if (this.attack_speed !== this.tower_info.attack_speed) {
+                    this.attack_speed = this.tower_info.attack_speed;
                 }
-                if (this.damage !== tower_info.damage) {
-                    this.damage = tower_info.damage;
+                if (this.damage !== this.tower_info.damage) {
+                    this.damage = this.tower_info.damage;
                 }
-                if (this.is_selected !== tower_info.is_selected) {
-                    this.is_selected = tower_info.is_selected;
+                if (this.is_selected !== this.tower_info.is_selected) {
+                    this.is_selected = this.tower_info.is_selected;
                 }
-                if (this.is_placed !== tower_info.is_placed) {
-                    this.is_placed = tower_info.is_placed;
+                if (this.is_placed !== this.tower_info.is_placed) {
+                    this.is_placed = this.tower_info.is_placed;
                 }
             }
         });
@@ -70,10 +69,9 @@ class Turret extends Phaser.GameObjects.Image {
         }
     }
     preDestroy() {
-        const tower_info = this.gameModelInstance.tower_defense.getTower(this.tower_id);
-        if (tower_info) {
-            tower_info.is_selected = false;
-            tower_info.is_placed = false;
+        if (this.tower_info) {
+            this.tower_info.is_selected = false;
+            this.tower_info.is_placed = false;
         }
         this.displayRange();
     }
@@ -110,7 +108,6 @@ class Turret extends Phaser.GameObjects.Image {
             console.error(`Error placing turret @ x:${place_x}, y:${place_y}`);
             return false;
         }
-        const tower_info = this.gameModelInstance.tower_defense.getTower(this.tower_id);
         this.x = place_x;
         this.y = place_y;
         this.setActive(true);
@@ -118,9 +115,9 @@ class Turret extends Phaser.GameObjects.Image {
         this.setInteractive();
         console.log(`placing turret @ x:${place_x}, y:${place_y}`);
         this.is_placed = true;
-        if (tower_info) {
-            tower_info.is_selected = false;
-            tower_info.is_placed = true;
+        if (this.tower_info) {
+            this.tower_info.is_selected = false;
+            this.tower_info.is_placed = true;
         }
         this.select(false);
         this.enableBulletCollisions();
@@ -186,15 +183,14 @@ class Turret extends Phaser.GameObjects.Image {
     fireBullet(x, y, angle) {
         const b = this.projectiles.get();
         //TODO - Make bullets smart so they follow units and delete selves when enemy is dead
-        b.fire(x, y, angle, this.range, this.damage);
+        b.fire(this.tower_id, x, y, angle, this.range, this.damage);
     }
     enableBulletCollisions() {
         this.scene.physics.add.overlap(this.td_scene.enemies, this.projectiles, this.td_scene.damageEnemy);
     }
     select(is_selected = true) {
-        const tower_info = this.gameModelInstance.tower_defense.getTower(this.tower_id);
-        if (tower_info) {
-            tower_info.is_selected = is_selected;
+        if (this.tower_info) {
+            this.tower_info.is_selected = is_selected;
         }
     }
 }

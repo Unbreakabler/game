@@ -1,3 +1,5 @@
+import { gameModel } from '../../gamelogic/gamemodel.js';
+
 class Bullet extends Phaser.GameObjects.Image {
     constructor(scene) {
         super(scene, 0, 0, "small_bullet");
@@ -12,8 +14,13 @@ class Bullet extends Phaser.GameObjects.Image {
         this.dy = 0;
         this.lifespan = 0;
         this.speed = Phaser.Math.GetSpeed(600, 1);
+        gameModel.subscribe((m) => {
+            this.tower = m.tower_defense.getTower(this.tower_id);
+            // TODO(jon): move this damage tracking into the tower state object
+        });
     }
-    fire(x, y, angle, range, damage) {
+    fire(tower_id, x, y, angle, range, damage) {
+        this.tower_id = tower_id;
         this.setActive(true);
         this.setVisible(true);
         this.setPosition(x, y);
@@ -31,6 +38,17 @@ class Bullet extends Phaser.GameObjects.Image {
             this.setActive(false);
             this.setVisible(false);
         }
+    }
+    // returns damage
+    hit() {
+        if (this.tower) {
+            if (!this.tower.damage_dealt_this_prestige) {
+                this.tower.damage_dealt_this_prestige = 0;
+            }
+            this.tower.damage_dealt_this_prestige += this.damage;
+        }
+        this.destroy();
+        return this.damage;
     }
 }
 

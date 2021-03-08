@@ -13,6 +13,7 @@ class TD extends Phaser.Scene {
         this.selected_turret = null;
         this.slots = [];
         this.tower_map = new Map();
+        this.delta_to_next_enemy = 0;
     }
     preload() {
         this.load.image("basic", "static/shotgun.png");
@@ -199,18 +200,14 @@ class TD extends Phaser.Scene {
     }
     update(time, delta) {
         // if its time for the next enemy
-        if (time > this.nextEnemy) {
-            const enemy = new GreenKnight(this);
-            this.enemies.add(enemy, true);
+        this.delta_to_next_enemy -= delta;
+        if (this.delta_to_next_enemy <= 0) {
+            const enemy = this.enemies.get();
             // place the enemy at the start of the path
             enemy.startOnPath(this.path);
-            this.nextEnemy = time + 2000;
+            this.delta_to_next_enemy = 2000;
         }
-        this.tower_map.forEach((tower) => {
-            if (tower.is_placed) {
-                tower.update(time, delta);
-            }
-        });
+        this.tower_map.forEach(tower => tower.update(time, delta));
     }
     testTurretPlacement(pointer, game_objects_under_pointer) {
         if (!this.selection || this.selection.cursor !== 'placement' || !this.selected_turret)
@@ -245,10 +242,8 @@ class TD extends Phaser.Scene {
     damageEnemy(enemy, bullet) {
         // only if both enemy and bullet are alive
         if (enemy.active === true && bullet.active === true) {
-            // we remove the bullet right away
-            bullet.destroy();
             // decrease the enemy hp with BULLET_DAMAGE
-            enemy.receiveDamage(bullet.damage);
+            enemy.receiveDamage(bullet.hit());
         }
     }
 }

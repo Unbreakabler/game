@@ -1,5 +1,11 @@
+import { CombatText } from '../combat_text.js';
+import { HealthBar } from '../health_bar.js';
+
 const DEFAULT_ENEMY_SPEED = 1 / 10;
 const DEFAULT_ENEMY_HP = 100;
+// TODO(jon): show health bar when hp is below 100%
+// TODO(jon): show floating combat text when an enemy takes damage.
+// potentially also show the combat text on the tower? probably at least show the log when you select the tower.
 class Enemy extends Phaser.GameObjects.Sprite {
     constructor(td_scene, x = 0, y = 0, sprite_name, speed = DEFAULT_ENEMY_SPEED, health_points = DEFAULT_ENEMY_HP) {
         super(td_scene, x, y, sprite_name);
@@ -8,6 +14,7 @@ class Enemy extends Phaser.GameObjects.Sprite {
         this.health_points = DEFAULT_ENEMY_HP;
         this.prev_ang = 0;
         td_scene.physics.add.existing(this);
+        this.td_scene = td_scene;
         this.sprite_name = sprite_name;
         this.follower = { t: 0, vec: new Phaser.Math.Vector2() };
         this.speed = speed;
@@ -15,6 +22,7 @@ class Enemy extends Phaser.GameObjects.Sprite {
         this.original_health_points = this.health_points; // health_points will need to be set for each enemy
         this.setActive(true);
         this.setVisible(true);
+        this.health_bar = new HealthBar(td_scene, x, y - this.height, this.width, this.health_points);
     }
     resetEnemy() {
         if (!this.path) {
@@ -40,6 +48,8 @@ class Enemy extends Phaser.GameObjects.Sprite {
         if (!this.path) {
             return; // skip updates if path has not be set by startOnPath
         }
+        this.health_bar.setCurrentHp(this.health_points);
+        this.health_bar.setPosition(this.x, this.y - this.height);
         this.follower.t += (this.speed / this.path.getLength()) * delta;
         // get the new x and y coordinates in vec
         this.path.getPoint(this.follower.t, this.follower.vec);
@@ -74,13 +84,32 @@ class Enemy extends Phaser.GameObjects.Sprite {
             console.log("Enemy reached end.");
         }
     }
+    preDestroy() {
+        this.health_bar.destroy();
+    }
     receiveDamage(damage) {
         this.health_points -= damage;
+        // this.updateHealthbar();
         if (this.health_points < 0) {
             this.setActive(false);
             this.setVisible(false);
             this.destroy();
         }
+        // Generates a new floating combat text instance for each instance of damage
+        // combat text is self managed and destroys itself from the scene after it's lifespan (default 250ms) has expired.
+        new CombatText(this.td_scene, this.x, this.y - this.height, `${damage}`);
+    }
+    updateHealthbar() {
+        // initialize a healthbar at unit creation
+        // start with healthbar not visible
+        // on first damage instance show health bar
+        // create two rectangles for the health
+        // both are the width of the sprite + a little bit
+        // length of black BAR 1 is always sprite width + a little bit
+        // length of BAR 2 is ratio of current hp vs full
+        // colour of BAR 2 changes from green to red as HP is reduced.
+        // Could do multiple HP bars for enemies with a ton of HP, this makes it not seem like you are doing 0 damage
+        // and creates clear "breakpoints" on boss enemies where we could give a reward.
     }
 }
 
