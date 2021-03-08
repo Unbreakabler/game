@@ -14,6 +14,9 @@ export interface TowerInfo {
   y: number;
   is_placed: boolean;
   is_selected: boolean;
+
+  damage_dealt_lifetime: number;
+  damage_dealt_this_prestige: number;
 }
 
 const BasicTowerInfoDefaults: TowerInfo = {
@@ -29,6 +32,8 @@ const BasicTowerInfoDefaults: TowerInfo = {
   y: 0,
   is_placed: false,
   is_selected: false,
+  damage_dealt_lifetime: 0,
+  damage_dealt_this_prestige: 0,
 }
 
 const MachineGunTowerInfoDefaults: TowerInfo = {
@@ -44,6 +49,8 @@ const MachineGunTowerInfoDefaults: TowerInfo = {
   y: 0,
   is_placed: false,
   is_selected: false,
+  damage_dealt_lifetime: 0,
+  damage_dealt_this_prestige: 0,
 }
 
 const BASIC_TOWER_DEFAULT_ID = 'basic_1'

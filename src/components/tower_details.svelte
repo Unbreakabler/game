@@ -22,9 +22,11 @@ import type { TowerInfo } from "../gamelogic/td/tower_defense";
 {#if tower_info}
   <div class='details'>
     <div class='description'></div>
+    <div>lifetime damage: {tower_info.damage_dealt_this_prestige}</div>
     <div>{tower_info.type}</div>
     <div>dps: {dps}</div>
-    <div>attack time: {tower_info.attack_speed}</div>
+    <div>damage per hit: {tower_info.damage}</div>
+    <div>attack time: {tower_info.attack_speed/1000}s</div>
   </div>
 {/if}
 

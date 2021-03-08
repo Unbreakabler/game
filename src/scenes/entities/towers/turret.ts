@@ -2,15 +2,12 @@ import type TD from "../../td";
 import Bullet from "../tower_bullet";
 import type Enemy from "../enemies/enemy";
 import { gameModel, GameModel } from "../../../gamelogic/gamemodel";
+import type { TowerInfo } from "../../../gamelogic/td/tower_defense";
 
 const DEFAULT_RANGE = 200;
 const DEFAULT_ATTACK_SPEED = 1000;
 const DEFAULT_DAMAGE = 50;
-
-const PLACEABLE_MIN_DISTANCE_FROM_PATH = 50;
-
-
-type displayType = 'range' | 'placement'
+const PLACEABLE_MIN_DISTANCE_FROM_PATH = 25;
 
 export default class Turret extends Phaser.GameObjects.Image {
   public range = DEFAULT_RANGE;
@@ -25,7 +22,7 @@ export default class Turret extends Phaser.GameObjects.Image {
   public display_range:  Phaser.GameObjects.Arc;
   private td_scene: TD;
   private next_tick = 0;
-  private gameModelInstance!: GameModel;
+  private tower_info!: TowerInfo | undefined;
 
   public constructor(
     td_scene: TD,
@@ -46,25 +43,24 @@ export default class Turret extends Phaser.GameObjects.Image {
 
   private setupTowerSubscription(tower_id: string) {
     const unsubscribe_store = gameModel.subscribe((model) => {
-      this.gameModelInstance = model;
-      const tower_info = model.tower_defense.getTower(tower_id)
+      this.tower_info = model.tower_defense.getTower(tower_id)
   
-      if (tower_info) {
-        if (this.range !== tower_info.range) {
-          this.range = tower_info.range
+      if (this.tower_info) {
+        if (this.range !== this.tower_info.range) {
+          this.range = this.tower_info.range
           this.display_range.setRadius(this.range)
         }
-        if (this.attack_speed !== tower_info.attack_speed) {
-          this.attack_speed = tower_info.attack_speed
+        if (this.attack_speed !== this.tower_info.attack_speed) {
+          this.attack_speed = this.tower_info.attack_speed
         }
-        if (this.damage !== tower_info.damage) {
-          this.damage = tower_info.damage
+        if (this.damage !== this.tower_info.damage) {
+          this.damage = this.tower_info.damage
         }
-        if (this.is_selected !== tower_info.is_selected) {
-          this.is_selected = tower_info.is_selected
+        if (this.is_selected !== this.tower_info.is_selected) {
+          this.is_selected = this.tower_info.is_selected
         }
-        if (this.is_placed !== tower_info.is_placed) {
-          this.is_placed = tower_info.is_placed;
+        if (this.is_placed !== this.tower_info.is_placed) {
+          this.is_placed = this.tower_info.is_placed;
         }
       }
     })
@@ -94,10 +90,9 @@ export default class Turret extends Phaser.GameObjects.Image {
   }
 
   public preDestroy() {
-    const tower_info = this.gameModelInstance.tower_defense.getTower(this.tower_id);
-    if (tower_info) {
-      tower_info.is_selected = false;
-      tower_info.is_placed = false;
+    if (this.tower_info) {
+      this.tower_info.is_selected = false;
+      this.tower_info.is_placed = false;
     }
     this.displayRange();
   }
@@ -143,7 +138,6 @@ export default class Turret extends Phaser.GameObjects.Image {
       console.error(`Error placing turret @ x:${place_x}, y:${place_y}`);
       return false;
     }
-    const tower_info = this.gameModelInstance.tower_defense.getTower(this.tower_id);
     this.x = place_x;
     this.y = place_y;
     this.setActive(true);
@@ -151,9 +145,9 @@ export default class Turret extends Phaser.GameObjects.Image {
     this.setInteractive();
     console.log(`placing turret @ x:${place_x}, y:${place_y}`);
     this.is_placed = true;
-    if (tower_info) {
-      tower_info.is_selected = false;
-      tower_info.is_placed = true;
+    if (this.tower_info) {
+      this.tower_info.is_selected = false;
+      this.tower_info.is_placed = true;
     }
     this.select(false);
     this.enableBulletCollisions();
@@ -222,7 +216,7 @@ export default class Turret extends Phaser.GameObjects.Image {
   public fireBullet(x: number, y: number, angle: number): void {
     const b = this.projectiles.get();
     //TODO - Make bullets smart so they follow units and delete selves when enemy is dead
-    b.fire(x, y, angle, this.range, this.damage);
+    b.fire(this.tower_id, x, y, angle, this.range, this.damage);
   }
 
   public enableBulletCollisions(): void {
@@ -230,9 +224,8 @@ export default class Turret extends Phaser.GameObjects.Image {
   }
 
   public select(is_selected = true): void {
-    const tower_info = this.gameModelInstance.tower_defense.getTower(this.tower_id);
-    if (tower_info) {
-      tower_info.is_selected = is_selected;
+    if (this.tower_info) {
+      this.tower_info.is_selected = is_selected;
     }
   }
 }

@@ -1,7 +1,13 @@
 import type TD from "../../td";
+import { CombatText } from '../combat_text';
+import { HealthBar } from '../health_bar';
 
 const DEFAULT_ENEMY_SPEED = 1 / 10;
 const DEFAULT_ENEMY_HP = 100;
+
+// TODO(jon): show health bar when hp is below 100%
+// TODO(jon): show floating combat text when an enemy takes damage.
+// potentially also show the combat text on the tower? probably at least show the log when you select the tower.
 
 export default class Enemy extends Phaser.GameObjects.Sprite {
   public follower: { t: number; vec: Phaser.Math.Vector2 };
@@ -11,6 +17,9 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
   private original_health_points;
   private sprite_name: string;
   private prev_ang: number = 0;
+  private td_scene: Phaser.Scene;
+  private health_bar: HealthBar;
+
   public constructor(
     td_scene: TD,
     x: number = 0,
@@ -21,6 +30,7 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
   ) {
     super(td_scene as Phaser.Scene, x, y, sprite_name);
     td_scene.physics.add.existing(this);
+    this.td_scene = td_scene;
     this.sprite_name = sprite_name;
     this.follower = { t: 0, vec: new Phaser.Math.Vector2() };
     this.speed = speed;
@@ -28,6 +38,8 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
     this.original_health_points = this.health_points; // health_points will need to be set for each enemy
     this.setActive(true);
     this.setVisible(true);
+
+    this.health_bar = new HealthBar(td_scene, x, y - this.height, this.width, this.health_points)
   }
 
   private resetEnemy(): void {
@@ -60,6 +72,8 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
     if (!this.path) {
       return; // skip updates if path has not be set by startOnPath
     }
+    this.health_bar.setCurrentHp(this.health_points)
+    this.health_bar.setPosition(this.x, this.y - this.height)
     this.follower.t += (this.speed / this.path.getLength()) * delta;
 
     // get the new x and y coordinates in vec
@@ -97,12 +111,33 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
     }
   }
 
+  public preDestroy() {
+    this.health_bar.destroy();
+  }
+
   public receiveDamage(damage: number): void {
     this.health_points -= damage;
+    // this.updateHealthbar();
     if (this.health_points < 0) {
       this.setActive(false);
       this.setVisible(false);
       this.destroy();
     }
+    // Generates a new floating combat text instance for each instance of damage
+    // combat text is self managed and destroys itself from the scene after it's lifespan (default 250ms) has expired.
+    new CombatText(this.td_scene, this.x, this.y - this.height, `${damage}`);
+  }
+
+  private updateHealthbar() {
+    // initialize a healthbar at unit creation
+    // start with healthbar not visible
+    // on first damage instance show health bar
+    // create two rectangles for the health
+    // both are the width of the sprite + a little bit
+    // length of black BAR 1 is always sprite width + a little bit
+    // length of BAR 2 is ratio of current hp vs full
+    // colour of BAR 2 changes from green to red as HP is reduced.
+    // Could do multiple HP bars for enemies with a ton of HP, this makes it not seem like you are doing 0 damage
+    // and creates clear "breakpoints" on boss enemies where we could give a reward.
   }
 }

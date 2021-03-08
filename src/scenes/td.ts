@@ -31,6 +31,7 @@ export default class TD extends Phaser.Scene {
 
   private slots: Array<string | null> = [];
   public tower_map: Map<string, Turret> = new Map<string, Turret>();
+  private delta_to_next_enemy: number = 0;
 
   public constructor() {
     super({ key: "td", active: true });
@@ -238,19 +239,15 @@ export default class TD extends Phaser.Scene {
 
   public update(time: number, delta: number): void {
     // if its time for the next enemy
-    if (time > this.nextEnemy) {
-      const enemy = new GreenKnight(this);
-      this.enemies.add(enemy, true);
+    this.delta_to_next_enemy -= delta;
+    if (this.delta_to_next_enemy <= 0) {
+      const enemy = this.enemies.get();
       // place the enemy at the start of the path
       enemy.startOnPath(this.path);
-      this.nextEnemy = time + 2000;
+      this.delta_to_next_enemy = 2000;
     }
 
-    this.tower_map.forEach((tower) => {
-      if (tower.is_placed) {
-        tower.update(time, delta)
-      }
-    })
+    this.tower_map.forEach(tower => tower.update(time, delta))
   }
 
   public testTurretPlacement(pointer: Phaser.Input.Pointer, game_objects_under_pointer: Phaser.GameObjects.GameObject[]) {
@@ -288,11 +285,8 @@ export default class TD extends Phaser.Scene {
   public damageEnemy(enemy: Enemy, bullet: Bullet): void {
     // only if both enemy and bullet are alive
     if (enemy.active === true && bullet.active === true) {
-      // we remove the bullet right away
-      bullet.destroy();
-
       // decrease the enemy hp with BULLET_DAMAGE
-      enemy.receiveDamage(bullet.damage);
+      enemy.receiveDamage(bullet.hit());
     }
   }
 }
