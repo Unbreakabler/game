@@ -8,6 +8,7 @@ import type Bullet from "./entities/tower_bullet";
 import GreenKnight from "./entities/enemies/green_knight";
 import Turret from './entities/towers/turret';
 import type { SelectionCursor, TowerType } from "../gamelogic/td/tower_defense";
+import { Path } from "./entities/path";
 
 type Selection = {
   type: TowerType;
@@ -19,7 +20,7 @@ let gameModelInstance: GameModel;
 gameModel.subscribe((m) => (gameModelInstance = m));
 
 export default class TD extends Phaser.Scene {
-  public path!: Phaser.Curves.Path;
+  public path!: Path;
   private nextEnemy = 0;
   public enemies!: BetterGroup<Enemy>;
   public selection: {
@@ -84,23 +85,37 @@ export default class TD extends Phaser.Scene {
   }
 
   private drawPath() {
-    const graphics = this.add.graphics();    
+    // const graphics = this.add.graphics();    
     
     // The path for the current level, the coorodinates should be stored as a list
     // of tuples and be loaded on level start.
-    this.path = this.add.path(96, -32);
-    this.path.lineTo(96, 264);
-    this.path.lineTo(500, 264);
-    this.path.lineTo(500, 114);
-    this.path.lineTo(300, 114);
-    this.path.lineTo(300, 514);
-    this.path.lineTo(96, 514);
-    this.path.lineTo(96, 380);
-    this.path.lineTo(850, 380);
+    // this.path = this.add.path(96, -32);
+    // this.path.lineTo(96, 264);
+    // this.path.lineTo(500, 264);
+    // this.path.lineTo(500, 114);
+    // this.path.lineTo(300, 114);
+    // this.path.lineTo(300, 514);
+    // this.path.lineTo(96, 514);
+    // this.path.lineTo(96, 380);
+    // this.path.lineTo(850, 380);
+
+    const points: integer[][] = [
+      [96, -32],
+      [96, 264],
+      [500, 264],
+      [500, 114],
+      [300, 114],
+      [300, 514],
+      [96, 514],
+      [96, 380],
+      [850, 380],
+    ]
+
+    this.path = new Path(this, points)
 
     // This will be swapped out for tiles eventually but for now we'll draw a white line.
-    graphics.lineStyle(3, 0xffffff, 1);
-    this.path.draw(graphics);
+    // graphics.lineStyle(3, 0xffffff, 1);
+    // this.path.draw(graphics);
   }
 
   private newTurretManagement() {
@@ -248,6 +263,8 @@ export default class TD extends Phaser.Scene {
     }
 
     this.tower_map.forEach(tower => tower.update(time, delta))
+    this.path.debug.clear();
+    this.path.debug.lineStyle(1, 0x00ff00);
   }
 
   public testTurretPlacement(pointer: Phaser.Input.Pointer, game_objects_under_pointer: Phaser.GameObjects.GameObject[]) {
@@ -286,7 +303,10 @@ export default class TD extends Phaser.Scene {
     // only if both enemy and bullet are alive
     if (enemy.active === true && bullet.active === true) {
       // decrease the enemy hp with BULLET_DAMAGE
-      enemy.receiveDamage(bullet.hit());
+      const bullet_damage = bullet.hit();
+      gameModelInstance.tower_defense.recordTowerDamage(bullet.tower_id, bullet_damage)
+      const still_alive = enemy.receiveDamage(bullet_damage);
+      gameModelInstance.tower_defense.recordTowerKill(bullet.tower_id, enemy.name)
     }
   }
 }

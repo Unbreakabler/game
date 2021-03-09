@@ -19,6 +19,19 @@ export interface TowerInfo {
   damage_dealt_this_prestige: number;
 }
 
+type DamageType = 'normal'
+
+interface DamageInstance {
+  tower_id: TowerId;
+  damage: number;
+  damage_type: DamageType;
+  // more info as it's added, elemental type of damage, crits, etc.
+}
+
+interface DamageTracker {
+
+}
+
 const BasicTowerInfoDefaults: TowerInfo = {
   tier: 0,
   type: 'basic',
@@ -71,6 +84,8 @@ export class TowerDefense {
   public constructor() {
     this.towers = get_default_towers();
     this.tower_map = get_default_tower_map();
+
+    // Should probably add a getter for slots that returns a copy of the slot array
     this.slots = [BASIC_TOWER_DEFAULT_ID, MACHINE_GUN_TOWER_DEFAULT_ID, null, null, null]
   }
 
@@ -111,6 +126,23 @@ export class TowerDefense {
     tower.y = y;
     tower.is_placed = true;
     tower.is_selected = false;
+  }
+
+  public recordTowerDamage(tower_id: string, damage: number) {
+    const tower = this.getTower(tower_id)
+    if (!tower) return
+
+    if (!tower.damage_dealt_this_prestige) {
+      tower.damage_dealt_this_prestige = 0
+    }
+    tower.damage_dealt_this_prestige += damage;
+  }
+
+  public recordTowerKill(tower_id: string, enemy_name: string) {
+    const tower = this.getTower(tower_id)
+    if (!tower) return
+    
+    // tower.kills.current_run
   }
 }
 

@@ -10,10 +10,22 @@
 
   let gameModelInstance: GameModel;
   gameModel.subscribe((m) => (gameModelInstance = m));
+
+  const contextCreationConfig = {
+    alpha: false,
+    depth: false,
+    antialias: true,
+    premultipliedAlpha: true,
+    stencil: true,
+    preserveDrawingBuffer: false,
+    failIfMajorPerformanceCaveat: false,
+    powerPreference: 'default'
+  };
+
   
   onMount(() => {
     const config: Phaser.Types.Core.GameConfig = {
-      type: Phaser.CANVAS,
+      type: Phaser.WEBGL,
       width: 800,
       height: 600,
       physics: {
@@ -25,6 +37,9 @@
         Main,
       ]
     };
+
+    const context = canvas.getContext('webgl', contextCreationConfig);
+    if (context) config.context = context as CanvasRenderingContext2D;
     
     game = new Phaser.Game(config);
   });

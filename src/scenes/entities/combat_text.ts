@@ -1,10 +1,10 @@
 const DEFAULT_STYLE = {
   fontFamily: 'Courier',
-  fontSize: '16px',
+  fontSize: '18px',
   fontStyle: '',
   backgroundColor: '',
   color: '#fff',
-  stroke: '#fff',
+  stroke: '#aaa',
   strokeThickness: 0,
   align: 'center',
   maxLines: 0,
@@ -26,7 +26,7 @@ export class CombatText extends Phaser.GameObjects.Text {
               x: number, 
               y: number, 
               text: string, 
-              style: Phaser.GameObjects.TextStyle = (DEFAULT_STYLE as unknown) as Phaser.GameObjects.TextStyle, 
+              style: Phaser.GameObjects.TextStyle = DEFAULT_STYLE as Phaser.GameObjects.TextStyle, 
               lifespan: number = 250
   ) {
     super(scene, x, y, text, style);

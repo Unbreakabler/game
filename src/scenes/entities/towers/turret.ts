@@ -101,7 +101,7 @@ export default class Turret extends Phaser.GameObjects.Image {
     place_x: number,
     place_y: number,
   ): boolean {
-    const min_dist = this.td_scene.path.getPoints(this.td_scene.path.getLength() / 20).reduce((acc, point) => {
+    const min_dist = this.td_scene.path.getSpacedPoints(this.td_scene.path.getLength() / 20).reduce((acc, point) => {
       return Math.min(Phaser.Math.Distance.Between(place_x, place_y, point.x, point.y), acc);
     }, 1000);
     if (min_dist < PLACEABLE_MIN_DISTANCE_FROM_PATH) {
