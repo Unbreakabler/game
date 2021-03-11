@@ -7,8 +7,8 @@ class HealthBar extends Phaser.GameObjects.Rectangle {
         this.current_hp = this.starting_hp;
         this.starting_width = width;
         this.background_bar = scene.add.rectangle(x, y - 1, width, height + 2, 0x000000);
-        this.background_bar.setStrokeStyle(1, 0xffffff);
-        this.background_bar.setDepth(-1);
+        this.background_bar.setStrokeStyle(2, 0xffffff);
+        this.setDepth(2);
         this.setVisible(false);
         this.background_bar.setVisible(false);
     }
@@ -30,9 +30,7 @@ class HealthBar extends Phaser.GameObjects.Rectangle {
     setPosition(x, y) {
         this.x = x;
         this.y = y;
-        if (this.background_bar) {
-            this.background_bar.setPosition(x, y);
-        }
+        this.background_bar?.setPosition(x, y);
         return this;
     }
 }
