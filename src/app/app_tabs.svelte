@@ -35,7 +35,7 @@
 <Tabs bind:selected items={filtered} class="bg-primary-500 text-white">
   <div slot="content">
     {#each filtered as item}
-      <Tab id={item.id} bind:selected><svelte:component this={item.component} bind:selected /></Tab>
+      <Tab id={item.id} {selected}><svelte:component this={item.component} bind:selected /></Tab>
     {/each}
   </div>
 </Tabs>
