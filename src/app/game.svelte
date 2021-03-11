@@ -2,7 +2,7 @@
   import "phaser";
   import { onMount } from "svelte";
   import SlotControls from "../components/slot_controls.svelte";
-  import TowerDetails from '../components/tower_details.svelte'
+  import TowerDetails from "../components/tower_details.svelte";
   import { GameModel, gameModel } from "../gamelogic/gamemodel";
   import Main from "../scenes/main";
   import TD from "../scenes/td";
@@ -10,26 +10,22 @@
 
   let gameModelInstance: GameModel;
   gameModel.subscribe((m) => (gameModelInstance = m));
-  
+
   onMount(() => {
     const config: Phaser.Types.Core.GameConfig = {
-      type: Phaser.CANVAS,
+      type: Phaser.WEBGL,
       width: 800,
       height: 600,
       physics: {
-        default: 'arcade'
+        default: "arcade",
       },
       canvas: canvas,
-      scene: [
-        TD,
-        Main,
-      ]
+      scene: [TD, Main],
     };
-    
+
     game = new Phaser.Game(config);
   });
 </script>
-
 
 <div>
   <canvas bind:this={canvas} id="game-container" />
