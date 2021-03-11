@@ -63,18 +63,6 @@ class TD extends Phaser.Scene {
         });
     }
     drawPath() {
-        // const graphics = this.add.graphics();
-        // The path for the current level, the coorodinates should be stored as a list
-        // of tuples and be loaded on level start.
-        // this.path = this.add.path(96, -32);
-        // this.path.lineTo(96, 264);
-        // this.path.lineTo(500, 264);
-        // this.path.lineTo(500, 114);
-        // this.path.lineTo(300, 114);
-        // this.path.lineTo(300, 514);
-        // this.path.lineTo(96, 514);
-        // this.path.lineTo(96, 380);
-        // this.path.lineTo(850, 380);
         const points = [
             [96, -32],
             [96, 264],
