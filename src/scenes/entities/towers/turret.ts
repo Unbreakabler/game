@@ -79,8 +79,6 @@ export default class Turret extends Phaser.GameObjects.Image {
 
     if (e) {
       this.targetEnemy(e);
-    } else {
-      this.angle = 90;
     }
     // time to shoot
     if (time > this.next_tick) {
@@ -215,8 +213,13 @@ export default class Turret extends Phaser.GameObjects.Image {
 
   public fireBullet(x: number, y: number, angle: number): void {
     const b = this.projectiles.get();
-    //TODO - Make bullets smart so they follow units and delete selves when enemy is dead
-    b.fire(this.tower_id, x, y, angle, this.range, this.damage);
+    //TODO - Make bullets smart so they follow units
+    const dx = Math.cos(angle);
+    const dy = Math.sin(angle);
+    // position the bullet in front of the tower "cannon". If the tower is not a cannon this will cause the projectile to
+    // spawn in front of the turret. Another approach here is to have all projectiles spawn at the turret center, but render
+    // under the tower sprite.
+    b.fire(this.tower_id, x + (dx * (this.width - 10)), y + (dy * (this.height - 10)), angle, this.range, this.damage);
   }
 
   public enableBulletCollisions(): void {

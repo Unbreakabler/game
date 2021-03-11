@@ -12,6 +12,12 @@ import type { TowerInfo } from "../gamelogic/td/tower_defense";
   } else {
     tower_info = undefined;
   }
+  let tower_stats: any = undefined;
+  $: if (selection) {
+    tower_stats = gameModelInstance.tower_defense.getTowerStats(selection.id)
+  } else {
+    tower_stats = undefined;
+  }
 
   let dps: number = 0;
   $: if (tower_info) {
@@ -21,8 +27,10 @@ import type { TowerInfo } from "../gamelogic/td/tower_defense";
 
 {#if tower_info}
   <div class='details'>
-    <div class='description'></div>
-    <div>lifetime damage: {tower_info.damage_dealt_this_prestige}</div>
+    <div>lifetime kills: {tower_stats.kills.lifetime + tower_stats.kills.prestige}</div>
+    <div>prestige kills: {tower_stats.kills.prestige}</div>
+    <div>lifetime damage: {tower_stats.damage.lifetime + tower_stats.damage.prestige}</div>
+    <div>prestige damage: {tower_stats.damage.prestige}</div>
     <div>{tower_info.type}</div>
     <div>dps: {dps}</div>
     <div>damage per hit: {tower_info.damage}</div>
@@ -32,18 +40,6 @@ import type { TowerInfo } from "../gamelogic/td/tower_defense";
 
 <style>
   .details {
-
-  }
-  .description {
-    
-  }
-  .name {
-
-  }
-  .dps {
-
-  }
-  .attack_speed {
 
   }
 </style>

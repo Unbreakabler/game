@@ -286,7 +286,11 @@ export default class TD extends Phaser.Scene {
     // only if both enemy and bullet are alive
     if (enemy.active === true && bullet.active === true) {
       // decrease the enemy hp with BULLET_DAMAGE
-      enemy.receiveDamage(bullet.hit());
+      const bullet_damage = bullet.hit();
+      gameModelInstance.tower_defense.recordTowerDamage(bullet.tower_id, bullet_damage)
+      const still_alive = enemy.receiveDamage(bullet_damage);
+      if (still_alive) return
+      gameModelInstance.tower_defense.recordTowerKill(bullet.tower_id, enemy.name)
     }
   }
 }
