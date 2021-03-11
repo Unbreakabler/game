@@ -16,7 +16,6 @@ class Enemy extends Phaser.GameObjects.Sprite {
         td_scene.physics.add.existing(this);
         this.td_scene = td_scene;
         this.sprite_name = sprite_name;
-        this.name = this.sprite_name; // Likely the enemy name and sprite_name will differ in future
         this.follower = { t: 0, vec: new Phaser.Math.Vector2() };
         this.speed = speed;
         this.health_points = health_points;
@@ -25,10 +24,10 @@ class Enemy extends Phaser.GameObjects.Sprite {
         this.setVisible(true);
         this.health_bar = new HealthBar(td_scene, x, y - this.height, this.width, this.health_points);
     }
-    // Allows reuse of enemy sprites
     resetEnemy() {
-        if (!this.path)
+        if (!this.path) {
             return;
+        }
         // set the t parameter at the start of the path
         this.follower.t = 0;
         // get x and y of the given t point
@@ -46,8 +45,9 @@ class Enemy extends Phaser.GameObjects.Sprite {
     }
     update(time, delta) {
         // move the t point along the path, 0 is the start and 0 is the end
-        if (!this.path)
+        if (!this.path) {
             return; // skip updates if path has not be set by startOnPath
+        }
         this.health_bar.setCurrentHp(this.health_points);
         this.health_bar.setPosition(this.x, this.y - this.height);
         this.follower.t += (this.speed / this.path.getLength()) * delta;
@@ -89,15 +89,27 @@ class Enemy extends Phaser.GameObjects.Sprite {
     }
     receiveDamage(damage) {
         this.health_points -= damage;
-        // combat text is self managed and destroys itself from the scene after it's lifespan (default 250ms) has expired.
+        // this.updateHealthbar();
+        if (this.health_points < 0) {
+            this.setActive(false);
+            this.setVisible(false);
+            this.destroy();
+        }
         // Generates a new floating combat text instance for each instance of damage
+        // combat text is self managed and destroys itself from the scene after it's lifespan (default 250ms) has expired.
         new CombatText(this.td_scene, this.x, this.y - this.height, `${damage}`);
-        if (this.health_points > 0)
-            return true;
-        this.setActive(false);
-        this.setVisible(false);
-        this.destroy();
-        return false;
+    }
+    updateHealthbar() {
+        // initialize a healthbar at unit creation
+        // start with healthbar not visible
+        // on first damage instance show health bar
+        // create two rectangles for the health
+        // both are the width of the sprite + a little bit
+        // length of black BAR 1 is always sprite width + a little bit
+        // length of BAR 2 is ratio of current hp vs full
+        // colour of BAR 2 changes from green to red as HP is reduced.
+        // Could do multiple HP bars for enemies with a ton of HP, this makes it not seem like you are doing 0 damage
+        // and creates clear "breakpoints" on boss enemies where we could give a reward.
     }
 }
 

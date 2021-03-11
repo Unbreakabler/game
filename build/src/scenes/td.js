@@ -2,6 +2,7 @@ import '../../node_modules/phaser/dist/phaser.js';
 import { gameModel } from '../gamelogic/gamemodel.js';
 import GreenKnight from './entities/enemies/green_knight.js';
 import Turret from './entities/towers/turret.js';
+import { Path } from './entities/path.js';
 
 let gameModelInstance;
 gameModel.subscribe((m) => (gameModelInstance = m));
@@ -19,6 +20,9 @@ class TD extends Phaser.Scene {
         this.load.image("basic", "static/shotgun.png");
         this.load.image("machine_gun", "static/machine_gun.png");
         this.load.image("small_bullet", "static/small_bullet.png");
+        this.load.image("dirt0", "static/dirt0.png");
+        this.load.image("grass0", "static/grass0.png");
+        this.load.image("sand0", "static/sand0.png");
         this.load.spritesheet("green-knight", "static/green_knight.png", {
             frameWidth: 329 / 16,
             frameHeight: 30,
@@ -34,46 +38,64 @@ class TD extends Phaser.Scene {
     generateAnimations() {
         // Set up animations
         this.anims.create({
-            key: 'green-knight-walking-down',
-            frames: this.anims.generateFrameNames('green-knight', { start: 0, end: 3 }),
+            key: "green-knight-walking-down",
+            frames: this.anims.generateFrameNames("green-knight", { start: 0, end: 3 }),
             frameRate: 3,
-            repeat: -1
+            repeat: -1,
         });
         this.anims.create({
-            key: 'green-knight-walking-right',
-            frames: this.anims.generateFrameNames('green-knight', { start: 4, end: 7 }),
+            key: "green-knight-walking-right",
+            frames: this.anims.generateFrameNames("green-knight", { start: 4, end: 7 }),
             frameRate: 3,
-            repeat: -1
+            repeat: -1,
         });
         this.anims.create({
-            key: 'green-knight-walking-left',
-            frames: this.anims.generateFrameNames('green-knight', { start: 8, end: 11 }),
+            key: "green-knight-walking-left",
+            frames: this.anims.generateFrameNames("green-knight", { start: 8, end: 11 }),
             frameRate: 3,
-            repeat: -1
+            repeat: -1,
         });
         this.anims.create({
-            key: 'green-knight-walking-up',
-            frames: this.anims.generateFrameNames('green-knight', { start: 12, end: 15 }),
+            key: "green-knight-walking-up",
+            frames: this.anims.generateFrameNames("green-knight", { start: 12, end: 15 }),
             frameRate: 3,
-            repeat: -1
+            repeat: -1,
         });
     }
     drawPath() {
-        const graphics = this.add.graphics();
+        // const graphics = this.add.graphics();
         // The path for the current level, the coorodinates should be stored as a list
         // of tuples and be loaded on level start.
-        this.path = this.add.path(96, -32);
-        this.path.lineTo(96, 264);
-        this.path.lineTo(500, 264);
-        this.path.lineTo(500, 114);
-        this.path.lineTo(300, 114);
-        this.path.lineTo(300, 514);
-        this.path.lineTo(96, 514);
-        this.path.lineTo(96, 380);
-        this.path.lineTo(850, 380);
-        // This will be swapped out for tiles eventually but for now we'll draw a white line.
-        graphics.lineStyle(3, 0xffffff, 1);
-        this.path.draw(graphics);
+        // this.path = this.add.path(96, -32);
+        // this.path.lineTo(96, 264);
+        // this.path.lineTo(500, 264);
+        // this.path.lineTo(500, 114);
+        // this.path.lineTo(300, 114);
+        // this.path.lineTo(300, 514);
+        // this.path.lineTo(96, 514);
+        // this.path.lineTo(96, 380);
+        // this.path.lineTo(850, 380);
+        const points = [
+            [96, -32],
+            [96, 264],
+            [500, 264],
+            [500, 114],
+            [300, 114],
+            [300, 514],
+            [96, 514],
+            [96, 380],
+            [850, 380],
+        ];
+        this.path = new Path(this, points);
+        this.path_border = new Path(this, points, 34);
+        this.bg_sprite = this.add.tileSprite(0, 0, 800, 600, "grass0");
+        this.bg_sprite.setOrigin(0, 0);
+        this.path_border_sprite = this.add.tileSprite(0, 0, 800, 600, "sand0");
+        this.path_border_sprite.setOrigin(0, 0);
+        this.path_sprite = this.add.tileSprite(0, 0, 800, 600, "dirt0");
+        this.path_sprite.setOrigin(0, 0);
+        this.path_sprite.setMask(this.path.graphics.createGeometryMask());
+        this.path_border_sprite.setMask(this.path_border.graphics.createGeometryMask());
     }
     newTurretManagement() {
         // Subscribe to model.tower_defense.slots
@@ -124,8 +146,8 @@ class TD extends Phaser.Scene {
             if (cur_selection !== model.tower_defense.selection) {
                 // Selection changed
                 cur_selection = model.tower_defense.selection;
-                const new_selection_tower_info = model.tower_defense.getTower(cur_selection?.id || '');
-                const active_selection_tower_info = model.tower_defense.getTower(this.selection?.id || '');
+                const new_selection_tower_info = model.tower_defense.getTower(cur_selection?.id || "");
+                const active_selection_tower_info = model.tower_defense.getTower(this.selection?.id || "");
                 if (cur_selection && this.selection !== cur_selection) {
                     // New selection, deselect previously selected turret
                     this.selected_turret?.select(false);
@@ -143,16 +165,16 @@ class TD extends Phaser.Scene {
                     if (new_selection_tower_info?.is_placed) {
                         // selecting tower already placed, highlight range
                         // Allows a user to select a tower to see details or take actions
-                        console.log('SELECT PLACED TURRET');
-                        this.selection.cursor = 'selected';
+                        console.log("SELECT PLACED TURRET");
+                        this.selection.cursor = "selected";
                         this.selected_turret = this.tower_map.get(this.selection.id) || null;
                         this.selected_turret?.select(true);
                     }
                     else {
                         // selecting a tower that is not yet placed, make placeable
                         // Allows a user to select a tower for placement
-                        console.log('SELECT UNPLACED TURRET');
-                        this.selection.cursor = 'placement';
+                        console.log("SELECT UNPLACED TURRET");
+                        this.selection.cursor = "placement";
                         this.selected_turret = this.tower_map.get(this.selection.id) || null;
                         if (this.selected_turret) {
                             this.add.existing(this.selected_turret);
@@ -162,12 +184,12 @@ class TD extends Phaser.Scene {
                 }
                 else if (cur_selection && this.selection === cur_selection) {
                     // reselecting - i don't think this ever happens, you can only toggle selection currently.
-                    console.log('RESELECT TURRET');
+                    console.log("RESELECT TURRET");
                 }
                 else if (!cur_selection && this.selection && active_selection_tower_info?.is_placed == false) {
                     // deselecting unplaced turret, hide gameobject
                     // Allows a user to unselect a turret that is currently on their cursor for placement
-                    console.log('DESELECT UNPLACED TURRET');
+                    console.log("DESELECT UNPLACED TURRET");
                     if (this.selected_turret) {
                         this.selected_turret?.select(false);
                         this.selected_turret.setVisible(false);
@@ -178,7 +200,7 @@ class TD extends Phaser.Scene {
                 else if (!cur_selection && this.selection && active_selection_tower_info?.is_placed) {
                     // Deselecting a turret that is already placed
                     // Allows a user to deselect a placed turret that was selected to highlight range or take action
-                    console.log('DESELECT PLACED TURRET');
+                    console.log("DESELECT PLACED TURRET");
                     this.selected_turret?.select(false);
                     this.selected_turret = null;
                     this.selection = null;
@@ -196,7 +218,7 @@ class TD extends Phaser.Scene {
         // Place turrets on click, this will be changed to be a drag/drop from a tower menu
         this.input.on("pointerdown", this.selectUnderCursor.bind(this));
         this.input.on("pointerdown", this.placeTurret.bind(this));
-        this.input.on('pointermove', this.testTurretPlacement.bind(this));
+        this.input.on("pointermove", this.testTurretPlacement.bind(this));
     }
     update(time, delta) {
         // if its time for the next enemy
@@ -207,10 +229,10 @@ class TD extends Phaser.Scene {
             enemy.startOnPath(this.path);
             this.delta_to_next_enemy = 2000;
         }
-        this.tower_map.forEach(tower => tower.update(time, delta));
+        this.tower_map.forEach((tower) => tower.update(time, delta));
     }
     testTurretPlacement(pointer, game_objects_under_pointer) {
-        if (!this.selection || this.selection.cursor !== 'placement' || !this.selected_turret)
+        if (!this.selection || this.selection.cursor !== "placement" || !this.selected_turret)
             return;
         this.selected_turret.setVisible(true);
         this.selected_turret.select();
@@ -218,7 +240,7 @@ class TD extends Phaser.Scene {
         this.selected_turret.y = pointer.y;
     }
     placeTurret(pointer, game_objects_under_pointer) {
-        if (!this.selection || this.selection.cursor !== 'placement' || !this.selected_turret)
+        if (!this.selection || this.selection.cursor !== "placement" || !this.selected_turret)
             return false;
         const place_x = Math.floor(pointer.x);
         const place_y = Math.floor(pointer.y);
@@ -234,13 +256,6 @@ class TD extends Phaser.Scene {
         return true;
     }
     selectUnderCursor(pointer, game_objects_under_pointer) {
-        if (!game_objects_under_pointer.length)
-            gameModelInstance.tower_defense.setSelection(null);
-        game_objects_under_pointer.forEach(g => {
-            if (g.hasOwnProperty('tower_id')) {
-                gameModelInstance.tower_defense.setSelection(g.tower_id);
-            }
-        });
         // broadcast game object out of phaser to game model
         // in order to do this the game objects real state should be stored in svelte/js instead of phaser
         // and then a "selected" flag or similar should be toggled by this method.
@@ -250,12 +265,7 @@ class TD extends Phaser.Scene {
         // only if both enemy and bullet are alive
         if (enemy.active === true && bullet.active === true) {
             // decrease the enemy hp with BULLET_DAMAGE
-            const bullet_damage = bullet.hit();
-            gameModelInstance.tower_defense.recordTowerDamage(bullet.tower_id, bullet_damage);
-            const still_alive = enemy.receiveDamage(bullet_damage);
-            if (still_alive)
-                return;
-            gameModelInstance.tower_defense.recordTowerKill(bullet.tower_id, enemy.name);
+            enemy.receiveDamage(bullet.hit());
         }
     }
 }
