@@ -184,9 +184,9 @@ class Turret extends Phaser.GameObjects.Image {
         }
         if (!this.tower_info?.is_selected) {
             this.target_indicator.setVisible(false);
-            return;
+            // return;
         }
-        if (this.target != enemy) {
+        if (this.target != enemy && this.tower_info?.is_selected) {
             // this.target = enemy
             this.target_indicator.width = enemy.width;
             this.target_indicator.setVisible(true);
