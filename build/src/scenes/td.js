@@ -234,6 +234,13 @@ class TD extends Phaser.Scene {
         return true;
     }
     selectUnderCursor(pointer, game_objects_under_pointer) {
+        if (!game_objects_under_pointer.length)
+            gameModelInstance.tower_defense.setSelection(null);
+        game_objects_under_pointer.forEach(g => {
+            if (g.hasOwnProperty('tower_id')) {
+                gameModelInstance.tower_defense.setSelection(g.tower_id);
+            }
+        });
         // broadcast game object out of phaser to game model
         // in order to do this the game objects real state should be stored in svelte/js instead of phaser
         // and then a "selected" flag or similar should be toggled by this method.
@@ -243,7 +250,12 @@ class TD extends Phaser.Scene {
         // only if both enemy and bullet are alive
         if (enemy.active === true && bullet.active === true) {
             // decrease the enemy hp with BULLET_DAMAGE
-            enemy.receiveDamage(bullet.hit());
+            const bullet_damage = bullet.hit();
+            gameModelInstance.tower_defense.recordTowerDamage(bullet.tower_id, bullet_damage);
+            const still_alive = enemy.receiveDamage(bullet_damage);
+            if (still_alive)
+                return;
+            gameModelInstance.tower_defense.recordTowerKill(bullet.tower_id, enemy.name);
         }
     }
 }

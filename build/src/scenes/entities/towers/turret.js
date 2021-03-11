@@ -58,8 +58,8 @@ class Turret extends Phaser.GameObjects.Image {
         if (e) {
             this.targetEnemy(e);
         }
-        else {
-            this.angle = 90;
+        else if (this.target_indicator) {
+            this.target_indicator.setVisible(false);
         }
         // time to shoot
         if (time > this.next_tick) {
@@ -131,6 +131,7 @@ class Turret extends Phaser.GameObjects.Image {
         this.display_range.y = this.y;
         if (this.is_selected) {
             this.display_range.setVisible(true);
+            this.display_range.setStrokeStyle(2, 0xffffff);
             if (!this.is_placed) {
                 if (this.isPlaceable(this.x, this.y)) {
                     this.display_range.setFillStyle(green, 0.3);
@@ -140,7 +141,7 @@ class Turret extends Phaser.GameObjects.Image {
                 }
             }
             else {
-                this.display_range.setFillStyle(blue, 0.3);
+                this.display_range.setFillStyle(blue, 0.15);
             }
         }
         else {
@@ -178,12 +179,32 @@ class Turret extends Phaser.GameObjects.Image {
         return Phaser.Math.Angle.Between(this.x, this.y, enemy.x, enemy.y);
     }
     targetEnemy(enemy) {
+        if (!this.target_indicator) {
+            this.target_indicator = this.td_scene.add.circle(enemy.x, enemy.y, enemy.width, 0xff0000);
+        }
+        if (!this.tower_info?.is_selected) {
+            this.target_indicator.setVisible(false);
+            return;
+        }
+        if (this.target != enemy) {
+            // this.target = enemy
+            this.target_indicator.width = enemy.width;
+            this.target_indicator.setVisible(true);
+            this.target_indicator.setStrokeStyle(2, 0xffffff);
+            this.target_indicator.setAlpha(0.2);
+        }
+        this.target_indicator.setPosition(enemy.x, enemy.y);
         this.rotation = this.getAngleToEnemy(enemy) + Math.PI / 2;
     }
     fireBullet(x, y, angle) {
         const b = this.projectiles.get();
-        //TODO - Make bullets smart so they follow units and delete selves when enemy is dead
-        b.fire(this.tower_id, x, y, angle, this.range, this.damage);
+        //TODO - Make bullets smart so they follow units
+        const dx = Math.cos(angle);
+        const dy = Math.sin(angle);
+        // position the bullet in front of the tower "cannon". If the tower is not a cannon this will cause the projectile to
+        // spawn in front of the turret. Another approach here is to have all projectiles spawn at the turret center, but render
+        // under the tower sprite.
+        b.fire(this.tower_id, x + (dx * (this.width - 10)), y + (dy * (this.height - 10)), angle, this.range, this.damage);
     }
     enableBulletCollisions() {
         this.scene.physics.add.overlap(this.td_scene.enemies, this.projectiles, this.td_scene.damageEnemy);
