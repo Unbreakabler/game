@@ -57,16 +57,18 @@ const MachineGunTowerInfoDefaults: TowerInfo = {
 }
 
 interface Stats {
-  [tower_id: string] : { 
-    kills: { lifetime: number, prestige: number, [enemy_name: string]: number },
-    damage: {
-      lifetime: number,
-      prestige: number,
-      types?: {
-        fire?: number,
-        ice?: number,
-        //etc
-      }
+  [tower_id: string] : TowerStats
+}
+
+interface TowerStats { 
+  kills: { lifetime: number, prestige: number, [enemy_name: string]: number },
+  damage: {
+    lifetime: number,
+    prestige: number,
+    types?: {
+      fire?: number,
+      ice?: number,
+      //etc
     }
   }
 }
@@ -112,7 +114,7 @@ export class TowerDefense {
   public towers: { [K in TowerType]: TowerId[][]};
   private tower_map: { [tower_id: string]: TowerInfo };
   public slots: Array<string | null>
-  public stats: Stats = defaultStats
+  public stats!: Stats = {}
 
   public constructor() {
     this.towers = get_default_towers();
@@ -120,7 +122,7 @@ export class TowerDefense {
     this.slots = [BASIC_TOWER_DEFAULT_ID, MACHINE_GUN_TOWER_DEFAULT_ID, null, null, null]
     this.slots.forEach(tower_id => {
       if (tower_id) {
-        this.stats[tower_id] = generate_default_stats(tower_id)
+        this.stats[tower_id] = generate_default_stats()
       }
     })
   }
@@ -129,11 +131,10 @@ export class TowerDefense {
     return this.tower_map[id]
   }
 
-  public getTowerStats(id: TowerId) {
+  public getTowerStats(id: TowerId): TowerStats {
     const tower_stats = this.stats[id]
     if (tower_stats) return this.stats[id]
-    const new_stats = generate_default_stats(id)
-    this.stats[id] = new_stats
+    this.stats[id] = generate_default_stats()
     return this.stats[id]
   }
 
@@ -213,7 +214,7 @@ const get_default_tower_map = () => {
   }
 }
 
-const generate_default_stats = (tower_id: string) => {
+const generate_default_stats = () => {
   return {
     kills: {
       lifetime: 0,

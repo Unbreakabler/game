@@ -225,7 +225,7 @@ export default class Turret extends Phaser.GameObjects.Image {
       this.target_indicator.width = enemy.width;
       this.target_indicator.setVisible(true);
       this.target_indicator.setStrokeStyle(2, 0xffffff)
-      this.target_indicator.setAlpha(0.2)
+      this.target_indicator.setAlpha(0.4)
     }
     this.target_indicator.setPosition(enemy.x, enemy.y)
     this.rotation = this.getAngleToEnemy(enemy) + Math.PI / 2;
