@@ -137,7 +137,11 @@ export class TowerDefense {
     return this.stats[id]
   }
 
-  public setSelection(id: TowerId, cursor: SelectionCursor = 'selected') {
+  public setSelection(id: TowerId | null, cursor: SelectionCursor = 'selected') {
+    if (!id) {
+      this.selection = null; 
+      return;
+    }
     if (id in this.tower_map) {
       const type = this.tower_map[id].type
       this.selection = { type, id, cursor }

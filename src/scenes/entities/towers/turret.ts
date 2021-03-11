@@ -23,6 +23,8 @@ export default class Turret extends Phaser.GameObjects.Image {
   private td_scene: TD;
   private next_tick = 0;
   private tower_info!: TowerInfo | undefined;
+  private target!: Enemy | null;
+  private target_indicator!: Phaser.GameObjects.Arc;
 
   public constructor(
     td_scene: TD,
@@ -79,6 +81,8 @@ export default class Turret extends Phaser.GameObjects.Image {
 
     if (e) {
       this.targetEnemy(e);
+    } else if (this.target_indicator) {
+      this.target_indicator.setVisible(false);
     }
     // time to shoot
     if (time > this.next_tick) {
@@ -160,6 +164,7 @@ export default class Turret extends Phaser.GameObjects.Image {
     this.display_range.y = this.y;
     if (this.is_selected) {
       this.display_range.setVisible(true);
+      this.display_range.setStrokeStyle(2, 0xffffff);
       if (!this.is_placed) {
         if (this.isPlaceable(this.x, this.y)) {
           this.display_range.setFillStyle(green, 0.3);
@@ -167,7 +172,7 @@ export default class Turret extends Phaser.GameObjects.Image {
           this.display_range.setFillStyle(red, 0.3);
         }
       } else {
-        this.display_range.setFillStyle(blue, 0.3);
+        this.display_range.setFillStyle(blue, 0.15);
       }
     } else {
       this.display_range.setVisible(false);
@@ -208,6 +213,21 @@ export default class Turret extends Phaser.GameObjects.Image {
   }
 
   private targetEnemy(enemy: Enemy): void {
+    if (!this.target_indicator) {
+      this.target_indicator = this.td_scene.add.circle(enemy.x, enemy.y, enemy.width, 0xff0000)
+    }
+    if (!this.tower_info?.is_selected) {
+      this.target_indicator.setVisible(false);
+      return;
+    }
+    if (this.target != enemy) {
+      // this.target = enemy
+      this.target_indicator.width = enemy.width;
+      this.target_indicator.setVisible(true);
+      this.target_indicator.setStrokeStyle(2, 0xffffff)
+      this.target_indicator.setAlpha(0.2)
+    }
+    this.target_indicator.setPosition(enemy.x, enemy.y)
     this.rotation = this.getAngleToEnemy(enemy) + Math.PI / 2;
   }
 

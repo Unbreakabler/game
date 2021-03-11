@@ -276,6 +276,12 @@ export default class TD extends Phaser.Scene {
   }
 
   public selectUnderCursor(pointer: Phaser.Input.Pointer, game_objects_under_pointer: Phaser.GameObjects.GameObject[]) {
+    if (!game_objects_under_pointer.length) gameModelInstance.tower_defense.setSelection(null)
+    game_objects_under_pointer.forEach(g => {
+      if (g.hasOwnProperty('tower_id')) {
+        gameModelInstance.tower_defense.setSelection((g as Turret).tower_id)
+      }
+    })
     // broadcast game object out of phaser to game model
     // in order to do this the game objects real state should be stored in svelte/js instead of phaser
     // and then a "selected" flag or similar should be toggled by this method.
