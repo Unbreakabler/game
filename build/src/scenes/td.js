@@ -33,7 +33,8 @@ class TD extends Phaser.Scene {
         this.drawPath();
         this.setupEntities();
         this.setupInputHandlers();
-        this.newTurretManagement();
+        this.setupTurrets();
+        this.setupSelectionSubscription();
     }
     generateAnimations() {
         // Set up animations
@@ -85,19 +86,11 @@ class TD extends Phaser.Scene {
         this.path_sprite.setMask(this.path.graphics.createGeometryMask());
         this.path_border_sprite.setMask(this.path_border.graphics.createGeometryMask());
     }
-    newTurretManagement() {
+    setupTurrets() {
         // Subscribe to model.tower_defense.slots
         // For each id, generate a "turret" using the tower_info from tower_maps,
         // This can happen on initial launch to replace turrets if is_placed is true;
         // Store this list of tower_ids -> turret game objects in a hashmap in td.ts;
-        this.setupTurrets();
-        // Subscribe to model.tower_defense.selection
-        // When the selection changes from null -> Selection,
-        // set the selected tower by finding it in the hashmap by id.
-        // if it's not placed, allow it to be placed, otherwise "highlight" the turret.
-        this.setupSelection();
-    }
-    setupTurrets() {
         const unsubscribe_store = gameModel.subscribe((model) => {
             model.tower_defense.slots.forEach((model_tower_id, index) => {
                 const phaser_slot_tower_id = this.slots[index];
@@ -128,7 +121,11 @@ class TD extends Phaser.Scene {
             unsubscribe_store();
         });
     }
-    setupSelection() {
+    setupSelectionSubscription() {
+        // Subscribe to model.tower_defense.selection
+        // When the selection changes from null -> Selection,
+        // set the selected tower by finding it in the hashmap by id.
+        // if it's not placed, allow it to be placed, otherwise "highlight" the turret.
         let cur_selection = null;
         const unsubscribe_store = gameModel.subscribe((model) => {
             if (cur_selection !== model.tower_defense.selection) {
@@ -142,9 +139,7 @@ class TD extends Phaser.Scene {
                     // Hide turret and deselect before updating selection, this allows the user to toggle
                     // between multiple unplaced turrets
                     if (this.selection && active_selection_tower_info?.is_placed == false) {
-                        if (this.selected_turret) {
-                            this.selected_turret.setVisible(false);
-                        }
+                        this.selected_turret?.setVisible(false);
                         this.selected_turret = null;
                         this.selection = null;
                     }
@@ -177,11 +172,9 @@ class TD extends Phaser.Scene {
                 else if (!cur_selection && this.selection && active_selection_tower_info?.is_placed == false) {
                     // deselecting unplaced turret, hide gameobject
                     // Allows a user to unselect a turret that is currently on their cursor for placement
-                    console.log("DESELECT UNPLACED TURRET");
-                    if (this.selected_turret) {
-                        this.selected_turret?.select(false);
-                        this.selected_turret.setVisible(false);
-                    }
+                    console.log('DESELECT UNPLACED TURRET');
+                    this.selected_turret?.select(false);
+                    this.selected_turret?.setVisible(false);
                     this.selected_turret = null;
                     this.selection = null;
                 }
@@ -206,7 +199,8 @@ class TD extends Phaser.Scene {
         // Place turrets on click, this will be changed to be a drag/drop from a tower menu
         this.input.on("pointerdown", this.selectUnderCursor.bind(this));
         this.input.on("pointerdown", this.placeTurret.bind(this));
-        this.input.on("pointermove", this.testTurretPlacement.bind(this));
+        this.input.on('pointermove', this.checkUnderCursor.bind(this));
+        this.input.on('pointermove', this.testTurretPlacement.bind(this));
     }
     update(time, delta) {
         // if its time for the next enemy
@@ -219,8 +213,19 @@ class TD extends Phaser.Scene {
         }
         this.tower_map.forEach((tower) => tower.update(time, delta));
     }
-    testTurretPlacement(pointer, game_objects_under_pointer) {
-        if (!this.selection || this.selection.cursor !== "placement" || !this.selected_turret)
+    checkUnderCursor(pointer, game_objects_under_pointer) {
+        if (game_objects_under_pointer.length) {
+            // change cursor to hand
+            document.body.style.cursor = 'pointer';
+        }
+        else {
+            document.body.style.cursor = 'auto';
+            // pointer
+        }
+        this.testTurretPlacement(pointer);
+    }
+    testTurretPlacement(pointer) {
+        if (!this.selection || this.selection.cursor !== 'placement' || !this.selected_turret)
             return;
         this.selected_turret.setVisible(true);
         this.selected_turret.select();
@@ -244,16 +249,24 @@ class TD extends Phaser.Scene {
         return true;
     }
     selectUnderCursor(pointer, game_objects_under_pointer) {
-        // broadcast game object out of phaser to game model
-        // in order to do this the game objects real state should be stored in svelte/js instead of phaser
-        // and then a "selected" flag or similar should be toggled by this method.
-        // This means creating and managing a player inventory of towers.
+        if (!game_objects_under_pointer.length)
+            gameModelInstance.tower_defense.setSelection(null);
+        game_objects_under_pointer.forEach(g => {
+            if (g.hasOwnProperty('tower_id')) {
+                gameModelInstance.tower_defense.setSelection(g.tower_id);
+            }
+        });
     }
     damageEnemy(enemy, bullet) {
         // only if both enemy and bullet are alive
         if (enemy.active === true && bullet.active === true) {
             // decrease the enemy hp with BULLET_DAMAGE
-            enemy.receiveDamage(bullet.hit());
+            const bullet_damage = bullet.hit();
+            gameModelInstance.tower_defense.recordTowerDamage(bullet.tower_id, bullet_damage);
+            const still_alive = enemy.receiveDamage(bullet_damage);
+            if (still_alive)
+                return;
+            gameModelInstance.tower_defense.recordTowerKill(bullet.tower_id, enemy.name);
         }
     }
 }

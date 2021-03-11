@@ -1,6 +1,8 @@
 import { __decorate } from '../../../node_modules/tslib/tslib.es6.js';
 import { Exclude } from '../../../node_modules/class-transformer/esm5/decorators/exclude.decorator.js';
 
+const BASIC_TOWER_DEFAULT_ID = 'basic_1';
+const MACHINE_GUN_TOWER_DEFAULT_ID = 'machine_gun_1';
 const BasicTowerInfoDefaults = {
     tier: 0,
     type: 'basic',
@@ -33,19 +35,34 @@ const MachineGunTowerInfoDefaults = {
     damage_dealt_lifetime: 0,
     damage_dealt_this_prestige: 0,
 };
-const BASIC_TOWER_DEFAULT_ID = 'basic_1';
-const MACHINE_GUN_TOWER_DEFAULT_ID = 'machine_gun_1';
 class TowerDefense {
     constructor() {
         this.selection = null;
+        this.stats = {};
         this.towers = get_default_towers();
         this.tower_map = get_default_tower_map();
         this.slots = [BASIC_TOWER_DEFAULT_ID, MACHINE_GUN_TOWER_DEFAULT_ID, null, null, null];
+        this.slots.forEach(tower_id => {
+            if (tower_id) {
+                this.stats[tower_id] = generate_default_stats();
+            }
+        });
     }
     getTower(id) {
         return this.tower_map[id];
     }
+    getTowerStats(id) {
+        const tower_stats = this.stats[id];
+        if (tower_stats)
+            return this.stats[id];
+        this.stats[id] = generate_default_stats();
+        return this.stats[id];
+    }
     setSelection(id, cursor = 'selected') {
+        if (!id) {
+            this.selection = null;
+            return;
+        }
         if (id in this.tower_map) {
             const type = this.tower_map[id].type;
             this.selection = { type, id, cursor };
@@ -77,6 +94,26 @@ class TowerDefense {
         tower.is_placed = true;
         tower.is_selected = false;
     }
+    recordTowerDamage(tower_id, damage) {
+        const tower = this.getTower(tower_id);
+        if (!tower)
+            return;
+        const tower_stats = this.getTowerStats(tower_id);
+        tower_stats.damage.prestige += damage;
+        // TODO(jon): track tower accuracy, projectiles fired, etc etc
+    }
+    recordTowerKill(tower_id, enemy_name) {
+        const tower = this.getTower(tower_id);
+        if (!tower)
+            return;
+        const tower_stats = this.getTowerStats(tower_id);
+        if (!tower_stats.kills)
+            tower_stats.kills = { lifetime: 0, prestige: 0 };
+        if (!tower_stats.kills[enemy_name])
+            tower_stats.kills[enemy_name] = 0;
+        tower_stats.kills.prestige++;
+        tower_stats.kills[enemy_name]++;
+    }
 }
 __decorate([
     Exclude()
@@ -92,6 +129,18 @@ const get_default_tower_map = () => {
     return {
         [BASIC_TOWER_DEFAULT_ID]: BasicTowerInfoDefaults,
         [MACHINE_GUN_TOWER_DEFAULT_ID]: MachineGunTowerInfoDefaults
+    };
+};
+const generate_default_stats = () => {
+    return {
+        kills: {
+            lifetime: 0,
+            prestige: 0,
+        },
+        damage: {
+            lifetime: 0,
+            prestige: 0,
+        }
     };
 };
 // Tower data structure.

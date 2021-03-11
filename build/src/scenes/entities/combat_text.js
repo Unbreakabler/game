@@ -1,11 +1,11 @@
 const DEFAULT_STYLE = {
     fontFamily: 'Courier',
-    fontSize: '16px',
+    fontSize: '18px',
     fontStyle: '',
     backgroundColor: '',
     color: '#fff',
-    stroke: '#fff',
-    strokeThickness: 0,
+    stroke: '#E64A47',
+    strokeThickness: 2,
     align: 'center',
     maxLines: 0,
     fixedWidth: 0,
@@ -16,8 +16,9 @@ const DEFAULT_STYLE = {
 // fire can be red, ice blue, etc
 // crits should be larger and "shake" or something for impact
 class CombatText extends Phaser.GameObjects.Text {
-    constructor(scene, x, y, text, style = DEFAULT_STYLE, lifespan = 250) {
+    constructor(scene, x, y, text, style = DEFAULT_STYLE, lifespan = 500) {
         super(scene, x, y, text, style);
+        this.float_increase = 0;
         scene.add.existing(this);
         this.starting_lifespan = lifespan;
         this.remaining_lifespawn = lifespan;
@@ -36,7 +37,8 @@ class CombatText extends Phaser.GameObjects.Text {
     }
     float() {
         // Slowly float combat text up over lifespan
-        this.y -= 1;
+        this.y -= this.float_increase;
+        this.float_increase += 0.01;
     }
     // Slowly fade the alpha of the text to 0 over the lifespan of the combat text
     fade() {
