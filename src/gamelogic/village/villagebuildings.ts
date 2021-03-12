@@ -8,6 +8,7 @@ export enum VILLAGE_BUILDING {
   workshop = "workshop",
   blacksmith = "blacksmith",
   laboratory = "laboratory",
+  mine = "mine",
 }
 
 export interface Upgrade {
@@ -21,11 +22,18 @@ const farm_name = `${pre}_${VILLAGE_BUILDING.farm}`;
 const workshop_name = `${pre}_${VILLAGE_BUILDING.workshop}`;
 const blacksmith_name = `${pre}_${VILLAGE_BUILDING.blacksmith}`;
 const laboratory_name = `${pre}_${VILLAGE_BUILDING.laboratory}`;
+const mine_name = `${pre}_${VILLAGE_BUILDING.mine}`;
 
 const farm_upgrades: Upgrade[] = [
   { build_time: 10, money_cost: 0 },
   { build_time: 60, money_cost: 1_000, requirement: { achievable_name: farm_name, level_required: 1 } },
   { build_time: 120, money_cost: 10_000, requirement: { achievable_name: farm_name, level_required: 2 } },
+];
+
+const mine_upgrades: Upgrade[] = [
+  { build_time: 10, money_cost: 1_000, requirement: { achievable_name: farm_name, level_required: 1 } },
+  { build_time: 60, money_cost: 10_000, requirement: { achievable_name: farm_name, level_required: 2 } },
+  { build_time: 120, money_cost: 100_000, requirement: { achievable_name: farm_name, level_required: 3 } },
 ];
 
 const workshop_upgrades: Upgrade[] = [

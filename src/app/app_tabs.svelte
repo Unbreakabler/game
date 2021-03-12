@@ -3,6 +3,7 @@
   import Laboratory from "./laboratory.svelte";
   import Blacksmith from "./blacksmith.svelte";
   import Farm from "./farm/farm.svelte";
+  import Mine from "./mine/mine.svelte";
   import Village from "./village/village.svelte";
   import Workshop from "./workshop.svelte";
 
@@ -12,11 +13,12 @@
   gameModel.subscribe((m) => (gameModelInstance = m));
 
   let items = [
-    { id: "village", component: Village, text: "Village", locked: false },
-    { id: "farm", component: Farm, text: "Farm", name: "villagebuilding_farm", locked: false },
-    { id: "workshop", component: Workshop, text: "Workshop", name: "villagebuilding_workshop", locked: false },
-    { id: "blacksmith", component: Blacksmith, text: "Blacksmith", name: "villagebuilding_blacksmith", locked: false },
-    { id: "laboratory", component: Laboratory, text: "Laboratory", name: "villagebuilding_laboratory", locked: false },
+    { id: "village", component: Village, text: "Village" },
+    { id: "farm", component: Farm, text: "Farm", name: "villagebuilding_farm" },
+    { id: "mine", component: Mine, text: "Mine", name: "villagebuilding_mine" },
+    { id: "workshop", component: Workshop, text: "Workshop", name: "villagebuilding_workshop" },
+    { id: "blacksmith", component: Blacksmith, text: "Blacksmith", name: "villagebuilding_blacksmith" },
+    { id: "laboratory", component: Laboratory, text: "Laboratory", name: "villagebuilding_laboratory" },
   ];
 
   let filtered = items;

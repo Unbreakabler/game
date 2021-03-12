@@ -1,8 +1,8 @@
 <script lang="ts">
   import { Tabs, Tab } from "smelte/src/components/Tabs";
 
-  import MineSkills from "./farm_skill_page.svelte";
-  import FarmJobs from "./farm_jobs_page.svelte";
+  import MineSkills from "./mine_skill_page.svelte";
+  import FarmJobs from "./mine_mine_page.svelte";
 
   let items = [
     { id: "farm_jobs", component: FarmJobs, text: "Jobs" },

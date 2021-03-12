@@ -7,7 +7,7 @@
 
   onMount(() => {
     const config: Phaser.Types.Core.GameConfig = {
-      type: Phaser.CANVAS,
+      type: Phaser.WEBGL,
       width: 800,
       height: 600,
       physics: {
