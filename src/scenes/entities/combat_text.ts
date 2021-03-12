@@ -1,11 +1,11 @@
 const DEFAULT_STYLE = {
   fontFamily: 'Courier',
-  fontSize: '16px',
+  fontSize: '18px',
   fontStyle: '',
   backgroundColor: '',
   color: '#fff',
-  stroke: '#fff',
-  strokeThickness: 0,
+  stroke: '#E64A47',
+  strokeThickness: 2,
   align: 'center',
   maxLines: 0,
   fixedWidth: 0,
@@ -21,13 +21,14 @@ const DEFAULT_STYLE = {
 export class CombatText extends Phaser.GameObjects.Text {
   private starting_lifespan: number;
   private remaining_lifespawn: number;
+  private float_increase: number = 0;
 
   constructor(scene: Phaser.Scene, 
               x: number, 
               y: number, 
               text: string, 
-              style: Phaser.GameObjects.TextStyle = (DEFAULT_STYLE as unknown) as Phaser.GameObjects.TextStyle, 
-              lifespan: number = 250
+              style: Phaser.GameObjects.TextStyle = DEFAULT_STYLE as Phaser.GameObjects.TextStyle, 
+              lifespan: number = 500
   ) {
     super(scene, x, y, text, style);
     scene.add.existing(this);
@@ -51,7 +52,8 @@ export class CombatText extends Phaser.GameObjects.Text {
 
   private float() {
     // Slowly float combat text up over lifespan
-    this.y -= 1
+    this.y -= this.float_increase
+    this.float_increase += 0.01
   }
   
   // Slowly fade the alpha of the text to 0 over the lifespan of the combat text
