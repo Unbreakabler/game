@@ -1,5 +1,8 @@
 import { Exclude } from "class-transformer";
 
+const BASIC_TOWER_DEFAULT_ID = 'basic_1'
+const MACHINE_GUN_TOWER_DEFAULT_ID = 'machine_gun_1'
+
 type TowerId = string
 export interface TowerInfo {
   tier: integer;
@@ -53,8 +56,52 @@ const MachineGunTowerInfoDefaults: TowerInfo = {
   damage_dealt_this_prestige: 0,
 }
 
-const BASIC_TOWER_DEFAULT_ID = 'basic_1'
-const MACHINE_GUN_TOWER_DEFAULT_ID = 'machine_gun_1'
+interface Stats {
+  [tower_id: string] : TowerStats
+}
+
+interface TowerStats { 
+  kills: { lifetime: number, prestige: number, [enemy_name: string]: number },
+  damage: {
+    lifetime: number,
+    prestige: number,
+    types?: {
+      fire?: number,
+      ice?: number,
+      //etc
+    }
+  }
+}
+
+
+// TODO(jon): Need to generate default stats objects when a the slot tower_id's change?
+// Actually, we need to gen these stat objects when a tower is placed for the first time.
+// If a tower is removed, we need to keep the stats. If a tower is merged with another tower
+// should we combine the stats? Should we record a history of merges?
+const defaultStats: Stats = {
+  [BASIC_TOWER_DEFAULT_ID]: {
+    kills: {
+      lifetime: 0,
+      prestige: 0,
+      green_knight: 0,
+    },
+    damage: {
+      lifetime: 0,
+      prestige: 0,
+    }
+  },
+  [MACHINE_GUN_TOWER_DEFAULT_ID]: {
+    kills: {
+      lifetime: 0,
+      prestige: 0,
+      green_knight: 0,
+    },
+    damage: {
+      lifetime: 0,
+      prestige: 0,
+    }
+  }
+}
 
 export type TowerType = 'basic' | 'machine_gun'
 
@@ -67,18 +114,35 @@ export class TowerDefense {
   public towers: { [K in TowerType]: TowerId[][]};
   private tower_map: { [tower_id: string]: TowerInfo };
   public slots: Array<string | null>
+  public stats!: Stats = {}
 
   public constructor() {
     this.towers = get_default_towers();
     this.tower_map = get_default_tower_map();
     this.slots = [BASIC_TOWER_DEFAULT_ID, MACHINE_GUN_TOWER_DEFAULT_ID, null, null, null]
+    this.slots.forEach(tower_id => {
+      if (tower_id) {
+        this.stats[tower_id] = generate_default_stats()
+      }
+    })
   }
 
   public getTower(id: TowerId): TowerInfo | undefined {
     return this.tower_map[id]
   }
 
-  public setSelection(id: TowerId, cursor: SelectionCursor = 'selected') {
+  public getTowerStats(id: TowerId): TowerStats {
+    const tower_stats = this.stats[id]
+    if (tower_stats) return this.stats[id]
+    this.stats[id] = generate_default_stats()
+    return this.stats[id]
+  }
+
+  public setSelection(id: TowerId | null, cursor: SelectionCursor = 'selected') {
+    if (!id) {
+      this.selection = null; 
+      return;
+    }
     if (id in this.tower_map) {
       const type = this.tower_map[id].type
       this.selection = { type, id, cursor }
@@ -112,6 +176,27 @@ export class TowerDefense {
     tower.is_placed = true;
     tower.is_selected = false;
   }
+
+  public recordTowerDamage(tower_id: string, damage: number) {
+    const tower = this.getTower(tower_id)
+    if (!tower) return
+
+    const tower_stats = this.getTowerStats(tower_id)
+    tower_stats.damage.prestige += damage;
+
+    // TODO(jon): track tower accuracy, projectiles fired, etc etc
+  }
+
+  public recordTowerKill(tower_id: string, enemy_name: string) {
+    const tower = this.getTower(tower_id)
+    if (!tower) return
+
+    const tower_stats = this.getTowerStats(tower_id)
+    if (!tower_stats.kills) tower_stats.kills = { lifetime: 0, prestige: 0 }
+    if (!tower_stats.kills[enemy_name]) tower_stats.kills[enemy_name] = 0;
+    tower_stats.kills.prestige++;
+    tower_stats.kills[enemy_name]++;
+  }
 }
 
 // By default you have a single "basic" tower and a single "machine_gun" tower.
@@ -126,6 +211,19 @@ const get_default_tower_map = () => {
   return {
     [BASIC_TOWER_DEFAULT_ID]: BasicTowerInfoDefaults,
     [MACHINE_GUN_TOWER_DEFAULT_ID]: MachineGunTowerInfoDefaults
+  }
+}
+
+const generate_default_stats = () => {
+  return {
+    kills: {
+      lifetime: 0,
+      prestige: 0,
+    },
+    damage: {
+      lifetime: 0,
+      prestige: 0,
+    }
   }
 }
 
