@@ -58,19 +58,19 @@ class Enemy extends Phaser.GameObjects.Sprite {
         if (ang != this.prev_ang) {
             if (ang < 1 / 4 * Math.PI || ang >= 7 / 4 * Math.PI) {
                 // right
-                this.anims.play(`${this.sprite_name}-walking-left`);
+                this.anims.play(`${this.sprite_name}-walking-left`, true);
             }
             else if (ang < 7 / 4 * Math.PI && ang >= 5 / 4 * Math.PI) {
                 // down
-                this.anims.play(`${this.sprite_name}-walking-down`);
+                this.anims.play(`${this.sprite_name}-walking-down`, true);
             }
             else if (ang < 5 / 4 * Math.PI && ang >= 3 / 4 * Math.PI) {
                 // left
-                this.anims.play(`${this.sprite_name}-walking-right`);
+                this.anims.play(`${this.sprite_name}-walking-right`, true);
             }
             else if (ang < 3 / 4 * Math.PI && ang >= 1 / 4 * Math.PI) {
                 // up
-                this.anims.play(`${this.sprite_name}-walking-up`);
+                this.anims.play(`${this.sprite_name}-walking-up`, true);
             }
         }
         this.prev_ang = ang;
