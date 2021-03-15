@@ -10,7 +10,8 @@
     "noImplicitReturns": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "types": ["jest"]
   },
   "typedef": [true, "call-signature", "property-declaration"],
   "include": ["src/**/*"],

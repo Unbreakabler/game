@@ -114,7 +114,7 @@ export class TowerDefense {
   public towers: { [K in TowerType]: TowerId[][]};
   private tower_map: { [tower_id: string]: TowerInfo };
   public slots: Array<string | null>
-  public stats!: Stats = {}
+  public stats: Stats = {}
 
   public constructor() {
     this.towers = get_default_towers();
