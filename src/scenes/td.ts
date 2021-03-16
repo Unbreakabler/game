@@ -9,6 +9,7 @@ import GreenKnight from "./entities/enemies/green_knight";
 import Turret from "./entities/towers/turret";
 import type { SelectionCursor, TowerType } from "../gamelogic/td/tower_defense";
 import { Path } from "./entities/path";
+import { WaveManager } from "./wave_manager";
 
 type Selection = {
   type: TowerType;
@@ -25,6 +26,7 @@ export default class TD extends Phaser.Scene {
   private bg_sprite!: Phaser.GameObjects.TileSprite;
   private path_sprite!: Phaser.GameObjects.TileSprite;
   private path_border_sprite!: Phaser.GameObjects.TileSprite;
+  private wave_manager!: any;
 
   private nextEnemy = 0;
   public enemies!: BetterGroup<Enemy>;
@@ -64,6 +66,7 @@ export default class TD extends Phaser.Scene {
     this.setupInputHandlers();
     this.setupTurrets();
     this.setupSelectionSubscription();
+    this.setupWaveManager();
   }
 
   private generateAnimations(): void {
@@ -229,6 +232,10 @@ export default class TD extends Phaser.Scene {
     this.enemies = this.add.group({ classType: GreenKnight, runChildUpdate: true }) as BetterGroup<Enemy>;
   }
 
+  private setupWaveManager(): void {
+    this.wave_manager = new WaveManager();
+  }
+
   private setupInputHandlers(): void {
     // Place turrets on click, this will be changed to be a drag/drop from a tower menu
     this.input.on("pointerdown", this.selectUnderCursor.bind(this));
@@ -248,6 +255,14 @@ export default class TD extends Phaser.Scene {
     }
 
     this.tower_map.forEach((tower) => tower.update(time, delta));
+
+    // wave manager
+    // if waves.length < 10, generate a new wave
+    // take the oldest wave (next up) and start it in the wave manager
+    // wave manager creates the enemies, spawns them on the path, and watches for wave completion
+    // once all enemies in the wave are destroyed, repeat.
+    // wave manager will subscribe to the tower defense svelte store and manage the waves itself.
+    this.wave_manager.update(time, delta)
   }
 
   public checkUnderCursor(pointer: Phaser.Input.Pointer, game_objects_under_pointer: Phaser.GameObjects.GameObject[]) {

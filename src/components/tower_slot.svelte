@@ -24,10 +24,10 @@
   $: selection_id = gameModelInstance.tower_defense.selection?.id || null;
 </script>
 
-<div class:bb={tower_id && selection_id === tower_id} class="item">
+<div class:bb={tower_id && selection_id === tower_id} class="item" on:click={() => toggleTowerSelection(tower_id)}>
   {#if isTower(tower_info)}
     <span>Tier: {tower_info.tier}</span>
-    <button class={tower_info.type} on:click={() => toggleTowerSelection(tower_id)}></button>
+    <button class={tower_info.type}></button>
   {:else if tower_info === null}
     X <!-- Empty slot - TODO(jon): use a "lock" icon -->
   {:else}
@@ -41,6 +41,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
   }
   button {
     border: none;

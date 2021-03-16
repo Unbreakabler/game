@@ -97,9 +97,10 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
     }
     this.prev_ang = ang;
 
-
     // update enemy x and y to the newly obtained x and y
     this.setPosition(this.follower.vec.x, this.follower.vec.y);
+    // We should probably add a small amount of left/right movement based on the forward vector so that every
+    // enemy isn't following an identical path
 
     // if we have reached the end of the path, remove the enemy
     if (this.follower.t >= 1) {
