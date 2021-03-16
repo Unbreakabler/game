@@ -1,0 +1,1 @@
+{"version":3,"file":"wave_manager.js","sources":["../../../../src/scenes/wave_manager.ts"],"sourcesContent":["export class WaveManager {\n\n  public update(time, delta) {}\n}"],"names":[],"mappings":"MAAa,WAAW;IAEf,MAAM,CAAC,IAAI,EAAE,KAAK,KAAI;;;;;"}

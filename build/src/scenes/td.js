@@ -3,6 +3,7 @@ import { gameModel } from '../gamelogic/gamemodel.js';
 import GreenKnight from './entities/enemies/green_knight.js';
 import Turret from './entities/towers/turret.js';
 import { Path } from './entities/path.js';
+import { WaveManager } from './wave_manager.js';
 
 let gameModelInstance;
 gameModel.subscribe((m) => (gameModelInstance = m));
@@ -35,6 +36,7 @@ class TD extends Phaser.Scene {
         this.setupInputHandlers();
         this.setupTurrets();
         this.setupSelectionSubscription();
+        this.setupWaveManager();
     }
     generateAnimations() {
         // Set up animations
@@ -195,6 +197,9 @@ class TD extends Phaser.Scene {
     setupEntities() {
         this.enemies = this.add.group({ classType: GreenKnight, runChildUpdate: true });
     }
+    setupWaveManager() {
+        this.wave_manager = new WaveManager();
+    }
     setupInputHandlers() {
         // Place turrets on click, this will be changed to be a drag/drop from a tower menu
         this.input.on("pointerdown", this.selectUnderCursor.bind(this));
@@ -212,6 +217,13 @@ class TD extends Phaser.Scene {
             this.delta_to_next_enemy = 2000;
         }
         this.tower_map.forEach((tower) => tower.update(time, delta));
+        // wave manager
+        // if waves.length < 10, generate a new wave
+        // take the oldest wave (next up) and start it in the wave manager
+        // wave manager creates the enemies, spawns them on the path, and watches for wave completion
+        // once all enemies in the wave are destroyed, repeat.
+        // wave manager will subscribe to the tower defense svelte store and manage the waves itself.
+        this.wave_manager.update(time, delta);
     }
     checkUnderCursor(pointer, game_objects_under_pointer) {
         if (game_objects_under_pointer.length) {
