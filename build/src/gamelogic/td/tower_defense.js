@@ -122,6 +122,10 @@ class TowerDefense {
         tower_stats.kills.prestige++;
         tower_stats.kills[enemy_name]++;
     }
+    recordEnemyLeak(enemy) {
+        // record leak count per wave?
+        this.current_wave_info.alive--;
+    }
     generateEnemyWave() {
         this.waves.push(generateWave(this.current_wave_difficulty));
         // TODO(jon): Figure out how to increase difficulty over time, 

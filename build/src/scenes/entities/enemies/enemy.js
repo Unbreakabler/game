@@ -133,7 +133,7 @@ class Enemy extends Phaser.GameObjects.Sprite {
             this.setActive(false);
             this.setVisible(false);
             this.destroy();
-            console.log("Enemy reached end.");
+            this.td_scene.wave_manager.recordEnemyLeak();
         }
     }
     preDestroy() {
