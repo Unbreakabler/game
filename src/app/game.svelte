@@ -6,6 +6,7 @@
   import { GameModel, gameModel } from "../gamelogic/gamemodel";
   import Main from "../scenes/main";
   import TD from "../scenes/td";
+  import WaveIndicator from '../components/wave_indicator.svelte'
   let canvas: HTMLCanvasElement, game: any;
 
   let gameModelInstance: GameModel;
@@ -27,8 +28,11 @@
   });
 </script>
 
-<div>
-  <canvas bind:this={canvas} id="game-container" />
+<div class="main">
+  <div class="wrapper">
+    <canvas bind:this={canvas} id="game-container" />
+    <WaveIndicator />
+  </div>
   <SlotControls />
   <TowerDetails />
 </div>
@@ -38,10 +42,14 @@
     width: 800px;
     height: 600px;
   }
-  div {
-    width: 800px;
+  .main {
+    /* width: 800px; */
     display: flex;
     flex-direction: column;
     justify-content: center;
+  }
+  .wrapper {
+    display: flex;
+    flex-direction: row;
   }
 </style>

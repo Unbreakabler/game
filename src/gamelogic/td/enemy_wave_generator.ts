@@ -140,6 +140,7 @@ export interface EnemyWave {
  * 4. apply modifiers to difficulty, add mobs until wave difficulty reaches max_difficulty
  */
 export const generateWave = (max_difficulty: number): EnemyWave => {
+  console.log('GENERATING WAVE WITH DIFFICULTY', max_difficulty)
   const { wave_type, max_modifiers } = chooseWaveType(max_difficulty);
 
   const max_mob_difficulty = calculateMaxMobDifficulty(wave_type, max_difficulty);
@@ -333,6 +334,7 @@ const generateEnemyList = (mob_with_mods_difficulty: number,
   // this could happen in the wave manager instead;
   modifiers.forEach(mod => {
     if (mod.name.startsWith('group_')) {
+      console.log('ADDING MOB COUNT MODIFIER', mod, mob_count)
       mob_difficulty = mob_difficulty / mod.difficulty_multiplier;
       if (mod.stat_multipliers?.group_size) {
         mob_count_multiplier *= mod.stat_multipliers.group_size
@@ -341,6 +343,8 @@ const generateEnemyList = (mob_with_mods_difficulty: number,
   })
 
   const mob_count = Math.floor((max_difficulty/mob_difficulty) * mob_count_multiplier)
+
+  console.log('wat', modifiers, mob_count, max_difficulty, mob_difficulty, mob_count_multiplier, mob_with_mods_difficulty)
 
   return { mob_count, mob_difficulty }
 }

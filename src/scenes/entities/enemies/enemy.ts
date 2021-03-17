@@ -20,7 +20,7 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
   private original_health_points: number;
   private sprite_name: string;
   private prev_ang: number = 0;
-  private td_scene: Phaser.Scene;
+  private td_scene: TD;
   private health_bar: HealthBar;
   private modifiers: EnemyModifier[] = [];
   private difficulty: number = 0;
@@ -167,7 +167,7 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
       this.setActive(false);
       this.setVisible(false);
       this.destroy();
-      console.log("Enemy reached end.");
+      this.td_scene.wave_manager.recordEnemyLeak();
     }
   }
 

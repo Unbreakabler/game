@@ -46,7 +46,7 @@ export class WaveManager {
     // If there are less then 10 waves avaiable, create a new wave.
     // When a new wave is created, difficulty should be automatically incremented.
 
-    if (this.tower_defense_state.current_wave_info.spawned < this.tower_defense_state.current_wave_info.total) {
+    if (this.current_wave && (this.tower_defense_state.current_wave_info.spawned < this.tower_defense_state.current_wave_info.total)) {
       this.spawnEnemy(time, delta);
     } else {
       this.spawnWave(time, delta);
@@ -81,13 +81,17 @@ export class WaveManager {
   }
 
   private spawnWave(time: number, delta: number) {
-    if (this.tower_defense_state.current_wave_info.spawned < this.tower_defense_state.current_wave_info.total || this.tower_defense_state.current_wave_info.alive) return
-    console.log('spawnWave', this.tower_defense_state.current_wave_info, this.current_wave)
-
+    if (this.current_wave && (this.tower_defense_state.current_wave_info.spawned < this.tower_defense_state.current_wave_info.total || this.tower_defense_state.current_wave_info.alive)) return
+    
     this.current_wave = this.tower_defense_state.getWave();
     this.tower_defense_state.current_wave_info.total = this.current_wave.mob_count;
     this.tower_defense_state.current_wave_info.spawned = 0;
     this.tower_defense_state.current_wave_info.alive = 0;
+    console.log('spawnWave', this.tower_defense_state.current_wave_info, this.current_wave)
+  }
 
+  public recordEnemyLeak() {
+    console.log("Enemy reached end.");
+    this.tower_defense_state.current_wave_info.alive--;
   }
 }
