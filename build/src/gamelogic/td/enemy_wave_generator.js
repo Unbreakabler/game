@@ -23,7 +23,7 @@ const ENEMY_MODIFIERS = {
     'movement_0': {
         name: 'Accelerated',
         stat_multipliers: {
-            movment_speed: 1.5,
+            movement_speed: 1.5,
         },
         difficulty_multiplier: 2,
     },

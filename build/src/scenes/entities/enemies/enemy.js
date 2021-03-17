@@ -13,12 +13,15 @@ class Enemy extends Phaser.GameObjects.Sprite {
         this.speed = DEFAULT_ENEMY_SPEED;
         this.health_points = DEFAULT_ENEMY_HP;
         this.prev_ang = 0;
+        this.modifiers = [];
+        this.difficulty = 0;
+        console.log('calling enemy constructor', x, y, sprite_name, speed, DEFAULT_ENEMY_SPEED, health_points);
         td_scene.physics.add.existing(this);
         this.td_scene = td_scene;
         this.sprite_name = sprite_name;
         this.name = this.sprite_name; // Likely the enemy name and sprite_name will differ in future
         this.follower = { t: 0, vec: new Phaser.Math.Vector2() };
-        this.speed = speed;
+        this.speed = speed || DEFAULT_ENEMY_SPEED;
         this.original_speed = this.speed;
         this.health_points = health_points;
         this.original_health_points = this.health_points; // health_points will need to be set for each enemy
@@ -50,6 +53,39 @@ class Enemy extends Phaser.GameObjects.Sprite {
         this.name = name;
         this.sprite_name = name;
         return this;
+    }
+    setHealthPoints(health_points) {
+        this.health_points = health_points;
+        this.original_health_points = this.health_points;
+    }
+    setDifficulty(difficulty) {
+        this.difficulty = difficulty;
+    }
+    setModifiers(modifiers) {
+        console.log('ADDING MODS TO ENEMY', modifiers);
+        this.modifiers = modifiers;
+        for (let i = 0; i < this.modifiers.length; i++) {
+            const mod = this.modifiers[i];
+            // group mods have already affected group size, skip, should be removed from list.
+            if (mod.name.startsWith('group_'))
+                continue;
+            this.difficulty *= mod.difficulty_multiplier;
+            if (mod.stat_multipliers?.health_points) {
+                this.original_health_points *= mod.stat_multipliers?.health_points;
+                this.health_points *= mod.stat_multipliers?.health_points;
+            }
+            if (mod.stat_multipliers?.movement_speed) {
+                this.speed *= mod.stat_multipliers?.movement_speed;
+            }
+            if (mod.visual_modifiers?.height) {
+                this.displayHeight = this.height;
+                this.displayHeight *= mod.visual_modifiers?.height;
+            }
+            if (mod.visual_modifiers?.width) {
+                this.displayWidth = this.width;
+                this.displayWidth *= mod.visual_modifiers?.width;
+            }
+        }
     }
     startOnPath(path) {
         this.path = path;
