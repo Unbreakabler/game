@@ -1,6 +1,7 @@
 import type TD from "../../td";
 import { CombatText } from '../combat_text';
 import { HealthBar } from '../health_bar';
+import type { EnemyModifier } from '../../../gamelogic/td/enemy_wave_generator'
 
 const DEFAULT_ENEMY_SPEED = 1 / 10;
 const DEFAULT_ENEMY_HP = 100;
@@ -21,6 +22,8 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
   private prev_ang: number = 0;
   private td_scene: Phaser.Scene;
   private health_bar: HealthBar;
+  private modifiers: EnemyModifier[] = [];
+  private difficulty: number = 0;
 
   public constructor(
     td_scene: TD,
@@ -31,12 +34,13 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
     health_points: number = DEFAULT_ENEMY_HP,
   ) {
     super(td_scene as Phaser.Scene, x, y, sprite_name);
+    console.log('calling enemy constructor', x, y, sprite_name, speed, DEFAULT_ENEMY_SPEED, health_points)
     td_scene.physics.add.existing(this);
     this.td_scene = td_scene;
     this.sprite_name = sprite_name;
     this.name = this.sprite_name // Likely the enemy name and sprite_name will differ in future
     this.follower = { t: 0, vec: new Phaser.Math.Vector2() };
-    this.speed = speed;
+    this.speed = speed || DEFAULT_ENEMY_SPEED;
     this.original_speed = this.speed;
     this.health_points = health_points;
     this.original_health_points = this.health_points; // health_points will need to be set for each enemy
@@ -72,6 +76,48 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
     this.name = name;
     this.sprite_name = name;
     return this;
+  }
+
+  public setHealthPoints(health_points: number): void {
+    this.health_points = health_points;
+    this.original_health_points = this.health_points;
+  }
+
+  public setDifficulty(difficulty: number): void {
+    this.difficulty = difficulty;
+  }
+
+  public setModifiers(modifiers: EnemyModifier[]): void {
+    console.log('ADDING MODS TO ENEMY', modifiers)
+    this.modifiers = modifiers;
+
+    for (let i = 0; i < this.modifiers.length; i ++) {
+      const mod = this.modifiers[i]
+      // group mods have already affected group size, skip, should be removed from list.
+      if (mod.name.startsWith('group_')) continue;
+
+      this.difficulty *= mod.difficulty_multiplier;
+
+      if (mod.stat_multipliers?.health_points) {
+        this.original_health_points *= mod.stat_multipliers?.health_points
+        this.health_points *= mod.stat_multipliers?.health_points
+      }
+
+      if (mod.stat_multipliers?.movement_speed) {
+        this.speed *= mod.stat_multipliers?.movement_speed
+      }
+
+      if (mod.visual_modifiers?.height) {
+        this.displayHeight = this.height
+        this.displayHeight *= mod.visual_modifiers?.height
+      }
+
+      if (mod.visual_modifiers?.width) {
+        this.displayWidth = this.width
+        this.displayWidth *= mod.visual_modifiers?.width
+      }
+      
+    }
   }
 
   public startOnPath(path: Phaser.Curves.Path): void {

@@ -8,7 +8,7 @@
 // // set `Math.random()` to be a PRNG seeded with DEFAULT_SEED
 // seedrandom(DEFAULT_SEED, {global: true });
 
-type EnemyType = 'green_knight'
+export type EnemyType = 'green_knight'
 
 type ModTier = 0 | 1 | 2
 
@@ -28,11 +28,11 @@ type EnemySizeModifierIds = 'size_0' | 'size_1'
 type EnemyGroupModifierIds = 'group_0'
 type EnemyMovementModifierIds = 'movement_0'
 
-interface EnemyModifier {
+export interface EnemyModifier {
   name: string,
   stat_multipliers?: {
     health_points?: number,
-    movment_speed?: number,
+    movement_speed?: number,
     group_size?: number,
   }
   visual_modifiers?: {
@@ -69,7 +69,7 @@ const ENEMY_MODIFIERS: EnemyModifierLibrary = {
   'movement_0': {
     name: 'Accelerated',
     stat_multipliers: {
-      movment_speed: 1.5,
+      movement_speed: 1.5,
     },
     difficulty_multiplier: 2,
   },
