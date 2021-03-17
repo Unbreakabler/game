@@ -4,6 +4,7 @@ import resolve from "@rollup/plugin-node-resolve";
 import typescript from "@rollup/plugin-typescript";
 import sveltePreprocess from "svelte-preprocess";
 import smelte from "smelte/rollup-plugin-smelte";
+import commonjs from '@rollup/plugin-commonjs';
 
 export default {
   input: "src/index.js",
@@ -88,6 +89,7 @@ export default {
         darkMode: true,
       }, // Any other props will be applied on top of default Smelte tailwind.config.js
     }),
+    commonjs(),
     // see NOTICE below
     resolve({ browser: true, dedupe: ["svelte"] }),
     // ...

@@ -1,5 +1,7 @@
 import { Exclude } from "class-transformer";
 
+import { EnemyWave, generateWave } from './enemy_wave_generator'
+
 const BASIC_TOWER_DEFAULT_ID = 'basic_1'
 const MACHINE_GUN_TOWER_DEFAULT_ID = 'machine_gun_1'
 
@@ -73,34 +75,10 @@ interface TowerStats {
   }
 }
 
-
-// TODO(jon): Need to generate default stats objects when a the slot tower_id's change?
-// Actually, we need to gen these stat objects when a tower is placed for the first time.
-// If a tower is removed, we need to keep the stats. If a tower is merged with another tower
-// should we combine the stats? Should we record a history of merges?
-const defaultStats: Stats = {
-  [BASIC_TOWER_DEFAULT_ID]: {
-    kills: {
-      lifetime: 0,
-      prestige: 0,
-      green_knight: 0,
-    },
-    damage: {
-      lifetime: 0,
-      prestige: 0,
-    }
-  },
-  [MACHINE_GUN_TOWER_DEFAULT_ID]: {
-    kills: {
-      lifetime: 0,
-      prestige: 0,
-      green_knight: 0,
-    },
-    damage: {
-      lifetime: 0,
-      prestige: 0,
-    }
-  }
+interface WaveInfo {
+  total: number,
+  spawned: number,
+  alive: number,
 }
 
 export type TowerType = 'basic' | 'machine_gun'
@@ -115,6 +93,9 @@ export class TowerDefense {
   private tower_map: { [tower_id: string]: TowerInfo };
   public slots: Array<string | null>
   public stats: Stats = {}
+  public waves: EnemyWave[] = [];
+  public current_wave_info: WaveInfo = { total: 0, spawned: 0, alive: 0 };
+  public current_wave_difficulty: number = 10;
 
   public constructor() {
     this.towers = get_default_towers();
@@ -124,7 +105,12 @@ export class TowerDefense {
       if (tower_id) {
         this.stats[tower_id] = generate_default_stats()
       }
-    })
+    });
+
+    for (let i = 0; i < 10; i++) {
+      // Generate the first 10 waves
+      this.generateEnemyWave()
+    }
   }
 
   public getTower(id: TowerId): TowerInfo | undefined {
@@ -196,6 +182,18 @@ export class TowerDefense {
     if (!tower_stats.kills[enemy_name]) tower_stats.kills[enemy_name] = 0;
     tower_stats.kills.prestige++;
     tower_stats.kills[enemy_name]++;
+  }
+
+  public generateEnemyWave() {
+    this.waves.push(generateWave(this.current_wave_difficulty));
+    // TODO(jon): Figure out how to increase difficulty over time, 
+    // a linear increase wont match item/drop/upgrade power spikes.
+    this.current_wave_difficulty++;
+  }
+
+  public getWave() {
+    this.generateEnemyWave();
+    return this.waves.shift()!;
   }
 }
 

@@ -14,8 +14,9 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
   public name: string;
   private path: Phaser.Curves.Path | null = null;
   private speed: number = DEFAULT_ENEMY_SPEED;
+  private original_speed: number;
   private health_points = DEFAULT_ENEMY_HP;
-  private original_health_points;
+  private original_health_points: number;
   private sprite_name: string;
   private prev_ang: number = 0;
   private td_scene: Phaser.Scene;
@@ -36,10 +37,11 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
     this.name = this.sprite_name // Likely the enemy name and sprite_name will differ in future
     this.follower = { t: 0, vec: new Phaser.Math.Vector2() };
     this.speed = speed;
+    this.original_speed = this.speed;
     this.health_points = health_points;
     this.original_health_points = this.health_points; // health_points will need to be set for each enemy
     this.setActive(true);
-    this.setVisible(true);
+    // this.setVisible(true);
 
     this.health_bar = new HealthBar(td_scene, x, y - this.height, this.width, this.health_points)
   }
@@ -47,6 +49,9 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
   // Allows reuse of enemy sprites
   private resetEnemy(): void {
     if (!this.path) return;
+    if (!this.speed) this.speed = DEFAULT_ENEMY_SPEED;
+    // this.setActive(true);
+    this.setVisible(true);
     // set the t parameter at the start of the path
     this.follower.t = 0;
 
@@ -54,13 +59,19 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
     this.path.getPoint(this.follower.t, this.follower.vec);
 
     // set the x and y of our enemy to the received from the previous step
-    
     this.setPosition(this.follower.vec.x, this.follower.vec.y);
     this.health_points = this.original_health_points;
+    this.speed = this.original_speed;
   }
 
   public setSpeed(speed: number): void {
     this.speed = speed;
+  }
+
+  public setName(name: string): this {
+    this.name = name;
+    this.sprite_name = name;
+    return this;
   }
 
   public startOnPath(path: Phaser.Curves.Path): void {
@@ -75,9 +86,11 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
     this.health_bar.setPosition(this.x, this.y - this.height)
     this.follower.t += (this.speed / this.path.getLength()) * delta;
 
+    const l = this.path.getLength()
+    // debugger;
     // get the new x and y coordinates in vec
     this.path.getPoint(this.follower.t, this.follower.vec);
-
+    
     // angle between 0 and 2*PI
     const ang = Phaser.Math.Angle.Between(this.x, this.y, this.follower.vec.x, this.follower.vec.y) + Math.PI;
     if (ang != this.prev_ang) {
@@ -98,6 +111,7 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
     this.prev_ang = ang;
 
     // update enemy x and y to the newly obtained x and y
+    // console.log('new pos', this.follower.vec.x, this.follower.vec.y) 
     this.setPosition(this.follower.vec.x, this.follower.vec.y);
     // We should probably add a small amount of left/right movement based on the forward vector so that every
     // enemy isn't following an identical path

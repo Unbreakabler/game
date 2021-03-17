@@ -193,7 +193,7 @@ export default class Turret extends Phaser.GameObjects.Image {
   }
 
   private findClosestEnemyInRange(range_bonus: number = 0): Enemy | undefined {
-    const enemies = this.td_scene.enemies;
+    const enemies = this.td_scene.wave_manager.enemies;
     let closest_enemy: Enemy | undefined;
     let closest_distance = Number.MAX_VALUE;
     for (const e of enemies.getChildren()) {
@@ -243,7 +243,7 @@ export default class Turret extends Phaser.GameObjects.Image {
   }
 
   public enableBulletCollisions(): void {
-    this.scene.physics.add.overlap(this.td_scene.enemies, this.projectiles, this.td_scene.damageEnemy as ArcadePhysicsCallback);
+    this.scene.physics.add.overlap(this.td_scene.wave_manager.enemies, this.projectiles, this.td_scene.damageEnemy as ArcadePhysicsCallback);
   }
 
   public select(is_selected = true): void {

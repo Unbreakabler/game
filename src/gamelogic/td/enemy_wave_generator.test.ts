@@ -1,13 +1,9 @@
-import seedrandom from 'seedrandom'
-const DEFAULT_SEED = 'babies'
-// set `Math.random()` to be a PRNG seeded with DEFAULT_SEED
-seedrandom(DEFAULT_SEED, {global: true });
-
 import { generateWave } from './enemy_wave_generator';
 
 describe('waves', () => {
   test('generate first enemy wave - difficulty 10', () => {
     const wave = generateWave(10)
+    console.log(wave)
     expect(wave?.enemy_type).toEqual('green_knight');
     expect(wave?.wave_difficulty).toBeLessThanOrEqual(10);
     expect(wave?.wave_type).toEqual('normal')

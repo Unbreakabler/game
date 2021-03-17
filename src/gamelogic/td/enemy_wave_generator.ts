@@ -1,10 +1,14 @@
-import seedrandom from 'seedrandom'
+// TODO(jon): FIX THIS
+// Loading module from “http://localhost:8000/public/build/_virtual/__node-resolve:empty.js_commonjs-proxy”
+// was blocked because of a disallowed MIME type (“application/octet-stream”).
+
+// import seedrandom from 'seedrandom'
+
+// const DEFAULT_SEED = 'babies'
+// // set `Math.random()` to be a PRNG seeded with DEFAULT_SEED
+// seedrandom(DEFAULT_SEED, {global: true });
 
 type EnemyType = 'green_knight'
-
-const DEFAULT_SEED = 'babies'
-// set `Math.random()` to be a PRNG seeded with DEFAULT_SEED
-seedrandom(DEFAULT_SEED, {global: true });
 
 type ModTier = 0 | 1 | 2
 
@@ -107,6 +111,16 @@ function weightedRandom<T>(items: T[], pop?: boolean): T {
   return ret_val[0];
 }
 
+export interface EnemyWave { 
+  wave_type: string, 
+  enemy_type: EnemyType, 
+  modifiers: EnemyModifier[],
+  mob_count: integer,
+  mob_difficulty: number,
+  wave_difficulty: number,
+  enemy_spawn_delta: number,
+}
+
 
 /**
  * Design thoughts:
@@ -125,17 +139,7 @@ function weightedRandom<T>(items: T[], pop?: boolean): T {
  * 3. Select modifiers at random until difficulty threshold is reach for individual mob
  * 4. apply modifiers to difficulty, add mobs until wave difficulty reaches max_difficulty
  */
-
-export const generateWave = (max_difficulty: number): { 
-  wave_type: string, 
-  enemy_type: EnemyType, 
-  modifiers: EnemyModifier[],
-  mob_count: integer,
-  mob_difficulty: number,
-  wave_difficulty: number,
-} | undefined => {
-  if (max_difficulty < 10) return;
-
+export const generateWave = (max_difficulty: number): EnemyWave => {
   const { wave_type, max_modifiers } = chooseWaveType(max_difficulty);
 
   const max_mob_difficulty = calculateMaxMobDifficulty(wave_type, max_difficulty);
@@ -148,7 +152,7 @@ export const generateWave = (max_difficulty: number): {
 
   const wave_difficulty = mob_count * mob_difficulty
 
-  return { wave_type, enemy_type, modifiers, mob_count, mob_difficulty, wave_difficulty}
+  return { wave_type, enemy_type, modifiers, mob_count, mob_difficulty, wave_difficulty, enemy_spawn_delta: 2000}
 }
 
 const chooseWaveType = (max_difficulty: number) => {
@@ -326,6 +330,7 @@ const generateEnemyList = (mob_with_mods_difficulty: number,
   let mob_count_multiplier = 1;
 
   // Multiply the mob count by any "group" stat modifiers which increase mob count.
+  // this could happen in the wave manager instead;
   modifiers.forEach(mod => {
     if (mod.name.startsWith('group_')) {
       mob_difficulty = mob_difficulty / mod.difficulty_multiplier;
