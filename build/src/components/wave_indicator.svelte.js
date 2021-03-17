@@ -5,8 +5,8 @@ import { gameModel } from '../gamelogic/gamemodel.js';
 
 function add_css() {
 	var style = element("style");
-	style.id = "svelte-19xzv3o-style";
-	style.textContent = ".indicator.svelte-19xzv3o{display:flex;flex-direction:column}.wave_type.svelte-19xzv3o{display:flex}.wave.svelte-19xzv3o{background:rgba(202, 202, 202, 0.521);padding:5px;margin:5px}.wave_normal.svelte-19xzv3o{color:#fff}.wave_magic.svelte-19xzv3o{color:blue}.wave_rare.svelte-19xzv3o{color:yellow}.green_knight.svelte-19xzv3o{display:inline-block;width:20px;height:32px;background-image:url('static/green_knight.png')}";
+	style.id = "svelte-fob1j-style";
+	style.textContent = ".main.svelte-fob1j{display:flex;flex-direction:column}.indicator.svelte-fob1j{display:flex;flex-direction:column;height:600px;overflow-y:scroll;min-width:200px}.wave_type.svelte-fob1j{display:flex}.wave.svelte-fob1j{background:rgba(202, 202, 202, 0.521);padding:5px;margin:5px}.wave_normal.svelte-fob1j{color:#fff}.wave_magic.svelte-fob1j{color:blue}.wave_rare.svelte-fob1j{color:yellow}.green_knight.svelte-fob1j{display:inline-block;width:20px;height:32px;background-image:url('static/green_knight.png')}";
 	append(document.head, style);
 }
 
@@ -22,7 +22,7 @@ function get_each_context_1(ctx, list, i) {
 	return child_ctx;
 }
 
-// (15:6) {#if wave.modifiers.length}
+// (16:8) {#if wave.modifiers.length}
 function create_if_block(ctx) {
 	let span;
 	let t;
@@ -36,7 +36,7 @@ function create_if_block(ctx) {
 	return {
 		c() {
 			span = element("span");
-			t = text("mods:\n          ");
+			t = text("mods:\n            ");
 
 			for (let i = 0; i < each_blocks.length; i += 1) {
 				each_blocks[i].c();
@@ -83,7 +83,7 @@ function create_if_block(ctx) {
 	};
 }
 
-// (18:10) {#each wave.modifiers as mod}
+// (19:12) {#each wave.modifiers as mod}
 function create_each_block_1(ctx) {
 	let t_value = /*mod*/ ctx[5].name + "";
 	let t;
@@ -104,7 +104,7 @@ function create_each_block_1(ctx) {
 	};
 }
 
-// (9:2) {#each waves as wave}
+// (10:4) {#each waves as wave}
 function create_each_block(ctx) {
 	let div3;
 	let div1;
@@ -153,11 +153,11 @@ function create_each_block(ctx) {
 			t9 = text("mob: ");
 			t10 = text(t10_value);
 			t11 = space();
-			attr(div0, "class", div0_class_value = "" + (null_to_empty(/*wave*/ ctx[2].enemy_type) + " svelte-19xzv3o"));
-			attr(div1, "class", div1_class_value = "wave_type wave_" + /*wave*/ ctx[2].wave_type + " svelte-19xzv3o");
+			attr(div0, "class", div0_class_value = "" + (null_to_empty(/*wave*/ ctx[2].enemy_type) + " svelte-fob1j"));
+			attr(div1, "class", div1_class_value = "wave_type wave_" + /*wave*/ ctx[2].wave_type + " svelte-fob1j");
 			attr(span0, "class", "modifiers");
 			attr(span1, "class", "modifiers");
-			attr(div3, "class", "wave svelte-19xzv3o");
+			attr(div3, "class", "wave svelte-fob1j");
 		},
 		m(target, anchor) {
 			insert(target, div3, anchor);
@@ -183,13 +183,13 @@ function create_each_block(ctx) {
 		p(ctx, dirty) {
 			if (dirty & /*waves*/ 1 && t0_value !== (t0_value = /*wave*/ ctx[2].enemy_type + "")) set_data(t0, t0_value);
 
-			if (dirty & /*waves*/ 1 && div0_class_value !== (div0_class_value = "" + (null_to_empty(/*wave*/ ctx[2].enemy_type) + " svelte-19xzv3o"))) {
+			if (dirty & /*waves*/ 1 && div0_class_value !== (div0_class_value = "" + (null_to_empty(/*wave*/ ctx[2].enemy_type) + " svelte-fob1j"))) {
 				attr(div0, "class", div0_class_value);
 			}
 
 			if (dirty & /*waves*/ 1 && t3_value !== (t3_value = /*wave*/ ctx[2].mob_count + "")) set_data(t3, t3_value);
 
-			if (dirty & /*waves*/ 1 && div1_class_value !== (div1_class_value = "wave_type wave_" + /*wave*/ ctx[2].wave_type + " svelte-19xzv3o")) {
+			if (dirty & /*waves*/ 1 && div1_class_value !== (div1_class_value = "wave_type wave_" + /*wave*/ ctx[2].wave_type + " svelte-fob1j")) {
 				attr(div1, "class", div1_class_value);
 			}
 
@@ -217,8 +217,9 @@ function create_each_block(ctx) {
 }
 
 function create_fragment(ctx) {
-	let div;
+	let div1;
 	let t;
+	let div0;
 	let each_value = /*waves*/ ctx[0];
 	let each_blocks = [];
 
@@ -228,21 +229,24 @@ function create_fragment(ctx) {
 
 	return {
 		c() {
-			div = element("div");
+			div1 = element("div");
 			t = text("Next wave:\n  ");
+			div0 = element("div");
 
 			for (let i = 0; i < each_blocks.length; i += 1) {
 				each_blocks[i].c();
 			}
 
-			attr(div, "class", "indicator svelte-19xzv3o");
+			attr(div0, "class", "indicator svelte-fob1j");
+			attr(div1, "class", "main svelte-fob1j");
 		},
 		m(target, anchor) {
-			insert(target, div, anchor);
-			append(div, t);
+			insert(target, div1, anchor);
+			append(div1, t);
+			append(div1, div0);
 
 			for (let i = 0; i < each_blocks.length; i += 1) {
-				each_blocks[i].m(div, null);
+				each_blocks[i].m(div0, null);
 			}
 		},
 		p(ctx, [dirty]) {
@@ -258,7 +262,7 @@ function create_fragment(ctx) {
 					} else {
 						each_blocks[i] = create_each_block(child_ctx);
 						each_blocks[i].c();
-						each_blocks[i].m(div, null);
+						each_blocks[i].m(div0, null);
 					}
 				}
 
@@ -272,7 +276,7 @@ function create_fragment(ctx) {
 		i: noop,
 		o: noop,
 		d(detaching) {
-			if (detaching) detach(div);
+			if (detaching) detach(div1);
 			destroy_each(each_blocks, detaching);
 		}
 	};
@@ -295,7 +299,7 @@ function instance($$self, $$props, $$invalidate) {
 class Wave_indicator extends SvelteComponent {
 	constructor(options) {
 		super();
-		if (!document.getElementById("svelte-19xzv3o-style")) add_css();
+		if (!document.getElementById("svelte-fob1j-style")) add_css();
 		init(this, options, instance, create_fragment, safe_not_equal, {});
 	}
 }

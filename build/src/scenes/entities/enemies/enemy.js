@@ -15,7 +15,6 @@ class Enemy extends Phaser.GameObjects.Sprite {
         this.prev_ang = 0;
         this.modifiers = [];
         this.difficulty = 0;
-        console.log('calling enemy constructor', x, y, sprite_name, speed, DEFAULT_ENEMY_SPEED, health_points);
         td_scene.physics.add.existing(this);
         this.td_scene = td_scene;
         this.sprite_name = sprite_name;
@@ -62,7 +61,6 @@ class Enemy extends Phaser.GameObjects.Sprite {
         this.difficulty = difficulty;
     }
     setModifiers(modifiers) {
-        console.log('ADDING MODS TO ENEMY', modifiers);
         this.modifiers = modifiers;
         for (let i = 0; i < this.modifiers.length; i++) {
             const mod = this.modifiers[i];
@@ -124,7 +122,6 @@ class Enemy extends Phaser.GameObjects.Sprite {
         }
         this.prev_ang = ang;
         // update enemy x and y to the newly obtained x and y
-        // console.log('new pos', this.follower.vec.x, this.follower.vec.y) 
         this.setPosition(this.follower.vec.x, this.follower.vec.y);
         // We should probably add a small amount of left/right movement based on the forward vector so that every
         // enemy isn't following an identical path

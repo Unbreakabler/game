@@ -36,7 +36,6 @@ class WaveManager {
         this.delta_to_next_enemy -= delta;
         if (!this.current_wave || this.delta_to_next_enemy > 0)
             return;
-        console.log('spawnEnemy', this.tower_defense_state.current_wave_info, this.current_wave);
         const enemy = this.enemies.get();
         enemy.setName(this.current_wave.enemy_type);
         // TODO(jon): Set enemy stats/sprite - need to create a library/map of enemy type ids to their base stats
@@ -61,7 +60,6 @@ class WaveManager {
         this.tower_defense_state.current_wave_info.total = this.current_wave.mob_count;
         this.tower_defense_state.current_wave_info.spawned = 0;
         this.tower_defense_state.current_wave_info.alive = 0;
-        console.log('spawnWave', this.tower_defense_state.current_wave_info, this.current_wave);
     }
     recordEnemyLeak() {
         console.log("Enemy reached end.");
