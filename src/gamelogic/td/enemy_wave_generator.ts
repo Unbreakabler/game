@@ -30,6 +30,8 @@ type EnemyMovementModifierIds = 'movement_0'
 
 export interface EnemyModifier {
   name: string,
+  mod_type: string,
+  mod_tier: integer,
   stat_multipliers?: {
     health_points?: number,
     movement_speed?: number,
@@ -50,6 +52,8 @@ type EnemyModifierLibrary = {
 const ENEMY_MODIFIERS: EnemyModifierLibrary = {
   'size_0': {
     name: 'Huge',
+    mod_type: 'size',
+    mod_tier: 0,
     stat_multipliers: {
       health_points: 1.25,
     },
@@ -61,6 +65,8 @@ const ENEMY_MODIFIERS: EnemyModifierLibrary = {
   },
   'group_0': {
     name: 'Mob',
+    mod_type: 'group',
+    mod_tier: 0,
     stat_multipliers: {
       group_size: 2,
     },
@@ -68,6 +74,8 @@ const ENEMY_MODIFIERS: EnemyModifierLibrary = {
   },
   'movement_0': {
     name: 'Accelerated',
+    mod_type: 'movement',
+    mod_tier: 0,
     stat_multipliers: {
       movement_speed: 1.5,
     },
@@ -140,7 +148,6 @@ export interface EnemyWave {
  * 4. apply modifiers to difficulty, add mobs until wave difficulty reaches max_difficulty
  */
 export const generateWave = (max_difficulty: number): EnemyWave => {
-  console.log('GENERATING WAVE WITH DIFFICULTY', max_difficulty)
   const { wave_type, max_modifiers } = chooseWaveType(max_difficulty);
 
   const max_mob_difficulty = calculateMaxMobDifficulty(wave_type, max_difficulty);
@@ -333,8 +340,7 @@ const generateEnemyList = (mob_with_mods_difficulty: number,
   // Multiply the mob count by any "group" stat modifiers which increase mob count.
   // this could happen in the wave manager instead;
   modifiers.forEach(mod => {
-    if (mod.name.startsWith('group_')) {
-      console.log('ADDING MOB COUNT MODIFIER', mod, mob_count)
+    if (mod.mod_type === 'group') {
       mob_difficulty = mob_difficulty / mod.difficulty_multiplier;
       if (mod.stat_multipliers?.group_size) {
         mob_count_multiplier *= mod.stat_multipliers.group_size
@@ -344,7 +350,7 @@ const generateEnemyList = (mob_with_mods_difficulty: number,
 
   const mob_count = Math.floor((max_difficulty/mob_difficulty) * mob_count_multiplier)
 
-  console.log('wat', modifiers, mob_count, max_difficulty, mob_difficulty, mob_count_multiplier, mob_with_mods_difficulty)
+  // console.log('wat', modifiers, mob_count, max_difficulty, mob_difficulty, mob_count_multiplier, mob_with_mods_difficulty)
 
   return { mob_count, mob_difficulty }
 }
