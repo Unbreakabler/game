@@ -19,16 +19,21 @@ class Enemy extends Phaser.GameObjects.Sprite {
         this.name = this.sprite_name; // Likely the enemy name and sprite_name will differ in future
         this.follower = { t: 0, vec: new Phaser.Math.Vector2() };
         this.speed = speed;
+        this.original_speed = this.speed;
         this.health_points = health_points;
         this.original_health_points = this.health_points; // health_points will need to be set for each enemy
         this.setActive(true);
-        this.setVisible(true);
+        // this.setVisible(true);
         this.health_bar = new HealthBar(td_scene, x, y - this.height, this.width, this.health_points);
     }
     // Allows reuse of enemy sprites
     resetEnemy() {
         if (!this.path)
             return;
+        if (!this.speed)
+            this.speed = DEFAULT_ENEMY_SPEED;
+        // this.setActive(true);
+        this.setVisible(true);
         // set the t parameter at the start of the path
         this.follower.t = 0;
         // get x and y of the given t point
@@ -36,9 +41,15 @@ class Enemy extends Phaser.GameObjects.Sprite {
         // set the x and y of our enemy to the received from the previous step
         this.setPosition(this.follower.vec.x, this.follower.vec.y);
         this.health_points = this.original_health_points;
+        this.speed = this.original_speed;
     }
     setSpeed(speed) {
         this.speed = speed;
+    }
+    setName(name) {
+        this.name = name;
+        this.sprite_name = name;
+        return this;
     }
     startOnPath(path) {
         this.path = path;
@@ -51,6 +62,8 @@ class Enemy extends Phaser.GameObjects.Sprite {
         this.health_bar.setCurrentHp(this.health_points);
         this.health_bar.setPosition(this.x, this.y - this.height);
         this.follower.t += (this.speed / this.path.getLength()) * delta;
+        this.path.getLength();
+        // debugger;
         // get the new x and y coordinates in vec
         this.path.getPoint(this.follower.t, this.follower.vec);
         // angle between 0 and 2*PI
@@ -75,6 +88,7 @@ class Enemy extends Phaser.GameObjects.Sprite {
         }
         this.prev_ang = ang;
         // update enemy x and y to the newly obtained x and y
+        // console.log('new pos', this.follower.vec.x, this.follower.vec.y) 
         this.setPosition(this.follower.vec.x, this.follower.vec.y);
         // We should probably add a small amount of left/right movement based on the forward vector so that every
         // enemy isn't following an identical path

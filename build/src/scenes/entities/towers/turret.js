@@ -161,7 +161,7 @@ class Turret extends Phaser.GameObjects.Image {
         return false;
     }
     findClosestEnemyInRange(range_bonus = 0) {
-        const enemies = this.td_scene.enemies;
+        const enemies = this.td_scene.wave_manager.enemies;
         let closest_enemy;
         let closest_distance = Number.MAX_VALUE;
         for (const e of enemies.getChildren()) {
@@ -207,7 +207,7 @@ class Turret extends Phaser.GameObjects.Image {
         b.fire(this.tower_id, x + (dx * (this.width - 10)), y + (dy * (this.height - 10)), angle, this.range, this.damage);
     }
     enableBulletCollisions() {
-        this.scene.physics.add.overlap(this.td_scene.enemies, this.projectiles, this.td_scene.damageEnemy);
+        this.scene.physics.add.overlap(this.td_scene.wave_manager.enemies, this.projectiles, this.td_scene.damageEnemy);
     }
     select(is_selected = true) {
         if (this.tower_info) {

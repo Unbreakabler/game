@@ -24,7 +24,7 @@ class TD extends Phaser.Scene {
         this.load.image("dirt0", "static/dirt0.png");
         this.load.image("grass0", "static/grass0.png");
         this.load.image("sand0", "static/sand0.png");
-        this.load.spritesheet("green-knight", "static/green_knight.png", {
+        this.load.spritesheet("green_knight", "static/green_knight.png", {
             frameWidth: 329 / 16,
             frameHeight: 30,
         });
@@ -33,34 +33,34 @@ class TD extends Phaser.Scene {
         this.generateAnimations();
         this.drawPath();
         this.setupEntities();
+        this.setupWaveManager();
         this.setupInputHandlers();
         this.setupTurrets();
         this.setupSelectionSubscription();
-        this.setupWaveManager();
     }
     generateAnimations() {
         // Set up animations
         this.anims.create({
-            key: "green-knight-walking-down",
-            frames: this.anims.generateFrameNames("green-knight", { start: 0, end: 3 }),
+            key: "green_knight-walking-down",
+            frames: this.anims.generateFrameNames("green_knight", { start: 0, end: 3 }),
             frameRate: 3,
             repeat: -1,
         });
         this.anims.create({
-            key: "green-knight-walking-right",
-            frames: this.anims.generateFrameNames("green-knight", { start: 4, end: 7 }),
+            key: "green_knight-walking-right",
+            frames: this.anims.generateFrameNames("green_knight", { start: 4, end: 7 }),
             frameRate: 3,
             repeat: -1,
         });
         this.anims.create({
-            key: "green-knight-walking-left",
-            frames: this.anims.generateFrameNames("green-knight", { start: 8, end: 11 }),
+            key: "green_knight-walking-left",
+            frames: this.anims.generateFrameNames("green_knight", { start: 8, end: 11 }),
             frameRate: 3,
             repeat: -1,
         });
         this.anims.create({
-            key: "green-knight-walking-up",
-            frames: this.anims.generateFrameNames("green-knight", { start: 12, end: 15 }),
+            key: "green_knight-walking-up",
+            frames: this.anims.generateFrameNames("green_knight", { start: 12, end: 15 }),
             frameRate: 3,
             repeat: -1,
         });
@@ -198,7 +198,7 @@ class TD extends Phaser.Scene {
         this.enemies = this.add.group({ classType: GreenKnight, runChildUpdate: true });
     }
     setupWaveManager() {
-        this.wave_manager = new WaveManager();
+        this.wave_manager = new WaveManager(this, this.path);
     }
     setupInputHandlers() {
         // Place turrets on click, this will be changed to be a drag/drop from a tower menu
@@ -208,14 +208,6 @@ class TD extends Phaser.Scene {
         this.input.on('pointermove', this.testTurretPlacement.bind(this));
     }
     update(time, delta) {
-        // if its time for the next enemy
-        this.delta_to_next_enemy -= delta;
-        if (this.delta_to_next_enemy <= 0) {
-            const enemy = this.enemies.get();
-            // place the enemy at the start of the path
-            enemy.startOnPath(this.path);
-            this.delta_to_next_enemy = 2000;
-        }
         this.tower_map.forEach((tower) => tower.update(time, delta));
         // wave manager
         // if waves.length < 10, generate a new wave
@@ -279,6 +271,7 @@ class TD extends Phaser.Scene {
             if (still_alive)
                 return;
             gameModelInstance.tower_defense.recordTowerKill(bullet.tower_id, enemy.name);
+            gameModelInstance.tower_defense.current_wave_info.alive--;
         }
     }
 }

@@ -1,4 +1,5 @@
 import { __decorate } from '../../../node_modules/tslib/tslib.es6.js';
+import { generateWave } from './enemy_wave_generator.js';
 import { Exclude } from '../../../node_modules/class-transformer/esm5/decorators/exclude.decorator.js';
 
 const BASIC_TOWER_DEFAULT_ID = 'basic_1';
@@ -39,6 +40,9 @@ class TowerDefense {
     constructor() {
         this.selection = null;
         this.stats = {};
+        this.waves = [];
+        this.current_wave_info = { total: 0, spawned: 0, alive: 0 };
+        this.current_wave_difficulty = 10;
         this.towers = get_default_towers();
         this.tower_map = get_default_tower_map();
         this.slots = [BASIC_TOWER_DEFAULT_ID, MACHINE_GUN_TOWER_DEFAULT_ID, null, null, null];
@@ -47,6 +51,10 @@ class TowerDefense {
                 this.stats[tower_id] = generate_default_stats();
             }
         });
+        for (let i = 0; i < 10; i++) {
+            // Generate the first 10 waves
+            this.generateEnemyWave();
+        }
     }
     getTower(id) {
         return this.tower_map[id];
@@ -113,6 +121,16 @@ class TowerDefense {
             tower_stats.kills[enemy_name] = 0;
         tower_stats.kills.prestige++;
         tower_stats.kills[enemy_name]++;
+    }
+    generateEnemyWave() {
+        this.waves.push(generateWave(this.current_wave_difficulty));
+        // TODO(jon): Figure out how to increase difficulty over time, 
+        // a linear increase wont match item/drop/upgrade power spikes.
+        this.current_wave_difficulty++;
+    }
+    getWave() {
+        this.generateEnemyWave();
+        return this.waves.shift();
     }
 }
 __decorate([
