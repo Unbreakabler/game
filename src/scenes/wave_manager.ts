@@ -56,7 +56,6 @@ export class WaveManager {
   private spawnEnemy(time: number, delta: number) { 
     this.delta_to_next_enemy -= delta;
     if (!this.current_wave || this.delta_to_next_enemy > 0) return;
-    console.log('spawnEnemy', this.tower_defense_state.current_wave_info, this.current_wave)
 
     const enemy = this.enemies.get() as Enemy;
     enemy.setName(this.current_wave.enemy_type);
@@ -87,7 +86,6 @@ export class WaveManager {
     this.tower_defense_state.current_wave_info.total = this.current_wave.mob_count;
     this.tower_defense_state.current_wave_info.spawned = 0;
     this.tower_defense_state.current_wave_info.alive = 0;
-    console.log('spawnWave', this.tower_defense_state.current_wave_info, this.current_wave)
   }
 
   public recordEnemyLeak() {

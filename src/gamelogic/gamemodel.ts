@@ -46,7 +46,6 @@ export class GameModel {
     this.village_buildings = get_default_village_buildings();
     this.tower_defense = new TowerDefense();
     this.reloadAchievables();
-    console.log('state', this)
   }
 
   public reloadAchievables(): void {
