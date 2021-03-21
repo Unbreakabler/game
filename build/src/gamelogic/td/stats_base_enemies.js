@@ -6,4 +6,4 @@ const ENEMY_BASE_STATS = {
 };
 
 export default ENEMY_BASE_STATS;
-//# sourceMappingURL=enemy_base_stats.js.map
+//# sourceMappingURL=stats_base_enemies.js.map

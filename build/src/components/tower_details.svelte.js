@@ -26,7 +26,7 @@ function create_if_block(ctx) {
 	let t10;
 	let t11;
 	let div4;
-	let t12_value = /*tower_info*/ ctx[0].type + "";
+	let t12_value = /*tower_info*/ ctx[0].status.type + "";
 	let t12;
 	let t13;
 	let div5;
@@ -35,12 +35,12 @@ function create_if_block(ctx) {
 	let t16;
 	let div6;
 	let t17;
-	let t18_value = /*tower_info*/ ctx[0].damage + "";
+	let t18_value = /*tower_info*/ ctx[0].attributes.damage + "";
 	let t18;
 	let t19;
 	let div7;
 	let t20;
-	let t21_value = /*tower_info*/ ctx[0].attack_speed / 1000 + "";
+	let t21_value = /*tower_info*/ ctx[0].attributes.attack_speed / 1000 + "";
 	let t21;
 	let t22;
 
@@ -119,10 +119,10 @@ function create_if_block(ctx) {
 			if (dirty & /*tower_stats*/ 2 && t4_value !== (t4_value = /*tower_stats*/ ctx[1].kills.prestige + "")) set_data(t4, t4_value);
 			if (dirty & /*tower_stats*/ 2 && t7_value !== (t7_value = /*tower_stats*/ ctx[1].damage.lifetime + /*tower_stats*/ ctx[1].damage.prestige + "")) set_data(t7, t7_value);
 			if (dirty & /*tower_stats*/ 2 && t10_value !== (t10_value = /*tower_stats*/ ctx[1].damage.prestige + "")) set_data(t10, t10_value);
-			if (dirty & /*tower_info*/ 1 && t12_value !== (t12_value = /*tower_info*/ ctx[0].type + "")) set_data(t12, t12_value);
+			if (dirty & /*tower_info*/ 1 && t12_value !== (t12_value = /*tower_info*/ ctx[0].status.type + "")) set_data(t12, t12_value);
 			if (dirty & /*dps*/ 4) set_data(t15, /*dps*/ ctx[2]);
-			if (dirty & /*tower_info*/ 1 && t18_value !== (t18_value = /*tower_info*/ ctx[0].damage + "")) set_data(t18, t18_value);
-			if (dirty & /*tower_info*/ 1 && t21_value !== (t21_value = /*tower_info*/ ctx[0].attack_speed / 1000 + "")) set_data(t21, t21_value);
+			if (dirty & /*tower_info*/ 1 && t18_value !== (t18_value = /*tower_info*/ ctx[0].attributes.damage + "")) set_data(t18, t18_value);
+			if (dirty & /*tower_info*/ 1 && t21_value !== (t21_value = /*tower_info*/ ctx[0].attributes.attack_speed / 1000 + "")) set_data(t21, t21_value);
 		},
 		d(detaching) {
 			if (detaching) detach(div8);
@@ -198,7 +198,7 @@ function instance($$self, $$props, $$invalidate) {
 
 		if ($$self.$$.dirty & /*tower_info*/ 1) {
 			 if (tower_info) {
-				$$invalidate(2, dps = tower_info.damage * (1000 / tower_info.attack_speed));
+				$$invalidate(2, dps = tower_info.attributes.damage * (1000 / tower_info.attributes.attack_speed));
 			}
 		}
 	};

@@ -12,8 +12,8 @@ import { Exclude } from '../../node_modules/class-transformer/esm5/decorators/ex
 
 class Wallet {
     constructor() {
-        this.money = 0;
-        this.money = 0;
+        this.money = 10000;
+        this.money = 10000;
     }
 }
 /**
@@ -44,6 +44,7 @@ class GameModel {
     }
     exportToSave() {
         this.last_saved = Date.now();
+        console.log('saving', this);
         return serialize(this);
     }
     static loadFromSave(data) {

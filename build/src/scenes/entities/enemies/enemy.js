@@ -1,5 +1,6 @@
 import { CombatText } from '../combat_text.js';
 import { HealthBar } from '../health_bar.js';
+import { ENEMY_MODIFIERS } from '../../../gamelogic/td/enemy_wave_generator.js';
 
 const DEFAULT_ENEMY_SPEED = 1 / 10;
 const DEFAULT_ENEMY_HP = 100;
@@ -47,6 +48,7 @@ class Enemy extends Phaser.GameObjects.Sprite {
     }
     setSpeed(speed) {
         this.speed = speed;
+        this.original_speed = this.speed;
     }
     setName(name) {
         this.name = name;
@@ -61,26 +63,32 @@ class Enemy extends Phaser.GameObjects.Sprite {
         this.difficulty = difficulty;
     }
     setModifiers(modifiers) {
-        this.modifiers = modifiers;
-        for (let i = 0; i < this.modifiers.length; i++) {
-            const mod = this.modifiers[i];
+        // this.modifiers = modifiers;
+        // reset to display height/width to original size
+        this.displayHeight = this.height;
+        this.displayWidth = this.width;
+        for (let i = 0; i < modifiers.length; i++) {
+            const mod = ENEMY_MODIFIERS[modifiers[i]];
+            if (!mod)
+                return;
+            this.modifiers[i] = mod;
             // group mods have already affected group size, skip, should be removed from list.
-            if (mod.name.startsWith('group_'))
+            if (mod.mod_type === 'group')
                 continue;
-            this.difficulty *= mod.difficulty_multiplier;
+            // this.difficulty *= mod.difficulty_multiplier;
             if (mod.stat_multipliers?.health_points) {
-                this.original_health_points *= mod.stat_multipliers?.health_points;
-                this.health_points *= mod.stat_multipliers?.health_points;
+                this.original_health_points *= mod.stat_multipliers.health_points;
+                this.health_points *= mod.stat_multipliers.health_points;
             }
             if (mod.stat_multipliers?.movement_speed) {
-                this.speed *= mod.stat_multipliers?.movement_speed;
+                console.log("CHANGE SPEED", this.speed);
+                this.setSpeed(this.speed * mod.stat_multipliers.movement_speed);
+                console.log("NEW SPEED", this.speed);
             }
             if (mod.visual_modifiers?.height) {
-                this.displayHeight = this.height;
-                this.displayHeight *= mod.visual_modifiers?.height;
+                this.displayHeight *= mod.visual_modifiers.height;
             }
             if (mod.visual_modifiers?.width) {
-                this.displayWidth = this.width;
                 this.displayWidth *= mod.visual_modifiers?.width;
             }
         }
@@ -96,8 +104,6 @@ class Enemy extends Phaser.GameObjects.Sprite {
         this.health_bar.setCurrentHp(this.health_points);
         this.health_bar.setPosition(this.x, this.y - this.height);
         this.follower.t += (this.speed / this.path.getLength()) * delta;
-        this.path.getLength();
-        // debugger;
         // get the new x and y coordinates in vec
         this.path.getPoint(this.follower.t, this.follower.vec);
         // angle between 0 and 2*PI

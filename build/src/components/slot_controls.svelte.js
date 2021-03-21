@@ -18,7 +18,7 @@ function get_each_context(ctx, list, i) {
 	return child_ctx;
 }
 
-// (11:2) {#each slots as tower_id, index}
+// (16:2) {#each slots as tower_id, index}
 function create_each_block(ctx) {
 	let towerslot;
 	let current;
@@ -148,16 +148,22 @@ function create_fragment(ctx) {
 function instance($$self, $$props, $$invalidate) {
 	let slots;
 	let slot_tower_info;
+	
 	let gameModelInstance;
 	gameModel.subscribe(m => $$invalidate(2, gameModelInstance = m));
-	const towerInfo = tower_id => gameModelInstance.tower_defense.getTower(tower_id);
+
+	const towerInfo = tower_id => {
+		// console.log('called slot control tower info')
+		return gameModelInstance.tower_defense.getTower(tower_id);
+	};
 
 	$$self.$$.update = () => {
 		if ($$self.$$.dirty & /*gameModelInstance*/ 4) {
-			 $$invalidate(0, slots = gameModelInstance.tower_defense.slots || []);
+			 $$invalidate(0, slots = gameModelInstance.tower_defense.slots);
 		}
 
 		if ($$self.$$.dirty & /*slots*/ 1) {
+			// $: console.log('slots changed?', slots)
 			 $$invalidate(1, slot_tower_info = slots.map(slot_id => slot_id ? towerInfo(slot_id) : null));
 		}
 	};

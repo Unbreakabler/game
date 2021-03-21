@@ -1,40 +1,25 @@
 import { __decorate } from '../../../node_modules/tslib/tslib.es6.js';
 import { generateWave } from './enemy_wave_generator.js';
+import { getTowerAttributes } from './stats_base_towers.js';
 import { Exclude } from '../../../node_modules/class-transformer/esm5/decorators/exclude.decorator.js';
 
-const BASIC_TOWER_DEFAULT_ID = 'basic_1';
-const MACHINE_GUN_TOWER_DEFAULT_ID = 'machine_gun_1';
-const BasicTowerInfoDefaults = {
+const BasicTowerStatusDefaults = {
+    id: 'basic_1',
     tier: 0,
     type: 'basic',
-    range: 200,
-    damage: 50,
-    attack_speed: 1000,
-    projectiles: 1,
-    spread_angle: 0,
-    area_of_effect_radius: 0,
     x: 0,
     y: 0,
     is_placed: false,
     is_selected: false,
-    damage_dealt_lifetime: 0,
-    damage_dealt_this_prestige: 0,
 };
-const MachineGunTowerInfoDefaults = {
+const MachineGunTowerStatusDefaults = {
+    id: 'machine_gun_1',
     tier: 0,
     type: 'machine_gun',
-    range: 100,
-    damage: 2,
-    attack_speed: 100,
-    projectiles: 1,
-    spread_angle: 0,
-    area_of_effect_radius: 0,
     x: 0,
     y: 0,
     is_placed: false,
     is_selected: false,
-    damage_dealt_lifetime: 0,
-    damage_dealt_this_prestige: 0,
 };
 class TowerDefense {
     constructor() {
@@ -43,9 +28,8 @@ class TowerDefense {
         this.waves = [];
         this.current_wave_info = { total: 0, spawned: 0, alive: 0 };
         this.current_wave_difficulty = 10;
-        this.towers = get_default_towers();
         this.tower_map = get_default_tower_map();
-        this.slots = [BASIC_TOWER_DEFAULT_ID, MACHINE_GUN_TOWER_DEFAULT_ID, null, null, null];
+        this.slots = ['basic_1', 'machine_gun_1', null, null, null];
         this.slots.forEach(tower_id => {
             if (tower_id) {
                 this.stats[tower_id] = generate_default_stats();
@@ -57,7 +41,11 @@ class TowerDefense {
         }
     }
     getTower(id) {
-        return this.tower_map[id];
+        const status = this.tower_map[id];
+        if (!status)
+            return null;
+        const attributes = getTowerAttributes(status);
+        return { status, attributes };
     }
     getTowerStats(id) {
         const tower_stats = this.stats[id];
@@ -76,25 +64,9 @@ class TowerDefense {
             this.selection = { type, id, cursor };
         }
     }
-    selectHighestTierForPlacement(tower_type) {
-        // Should I check if there is a "selectable" tower of this type available first?
-        const tower_list = this.towers[tower_type];
-        if (!tower_list)
-            return;
-        // iterate backwards through list until we find an unplaced tower of this type
-        const highest_tier_available_tower_list = tower_list.slice().reverse().flat();
-        const highest_tier_available_tower_id = highest_tier_available_tower_list.find(tower_id => {
-            const tower = this.getTower(tower_id);
-            if (!tower)
-                return;
-            return !tower.is_placed;
-        });
-        if (!highest_tier_available_tower_id)
-            return;
-        this.setSelection(highest_tier_available_tower_id);
-    }
     placeTower(id, x, y) {
         const tower = this.tower_map[id];
+        console.log('placeTower', tower, id, x, y);
         if (!tower)
             return;
         tower.x = x;
@@ -140,17 +112,10 @@ class TowerDefense {
 __decorate([
     Exclude()
 ], TowerDefense.prototype, "selection", void 0);
-// By default you have a single "basic" tower and a single "machine_gun" tower.
-const get_default_towers = () => {
-    return {
-        'basic': [[BASIC_TOWER_DEFAULT_ID]],
-        'machine_gun': [[MACHINE_GUN_TOWER_DEFAULT_ID]]
-    };
-};
 const get_default_tower_map = () => {
     return {
-        [BASIC_TOWER_DEFAULT_ID]: BasicTowerInfoDefaults,
-        [MACHINE_GUN_TOWER_DEFAULT_ID]: MachineGunTowerInfoDefaults
+        'basic_1': BasicTowerStatusDefaults,
+        'machine_gun_1': MachineGunTowerStatusDefaults
     };
 };
 const generate_default_stats = () => {

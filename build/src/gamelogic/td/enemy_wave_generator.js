@@ -3,6 +3,7 @@
 // was blocked because of a disallowed MIME type (“application/octet-stream”).
 const ENEMY_MODIFIERS = {
     'size_0': {
+        id: 'size_0',
         name: 'Huge',
         mod_type: 'size',
         mod_tier: 0,
@@ -13,18 +14,20 @@ const ENEMY_MODIFIERS = {
             width: 1.5,
             height: 1.5,
         },
-        difficulty_multiplier: 1.25,
+        difficulty_multiplier: 1.5,
     },
     'group_0': {
+        id: 'group_0',
         name: 'Mob',
         mod_type: 'group',
         mod_tier: 0,
         stat_multipliers: {
-            group_size: 2,
+            group_size: 1.5,
         },
-        difficulty_multiplier: 2,
+        difficulty_multiplier: 1.5,
     },
     'movement_0': {
+        id: 'movement_0',
         name: 'Accelerated',
         mod_type: 'movement',
         mod_tier: 0,
@@ -86,10 +89,10 @@ const generateWave = (max_difficulty) => {
     const { wave_type, max_modifiers } = chooseWaveType(max_difficulty);
     const max_mob_difficulty = calculateMaxMobDifficulty(wave_type, max_difficulty);
     const { enemy_type, enemy_type_difficulty } = chooseEnemyType();
-    const { modifiers, mob_with_modifier_difficulty } = chooseEnemyModifiers(enemy_type, enemy_type_difficulty, max_mob_difficulty, max_modifiers);
-    const { mob_count, mob_difficulty } = generateEnemyList(mob_with_modifier_difficulty, modifiers, max_difficulty);
+    const { modifiers, modifier_ids, mob_with_modifier_difficulty } = chooseEnemyModifiers(enemy_type, enemy_type_difficulty, max_mob_difficulty, max_modifiers);
+    const { mob_count, mob_difficulty, enemy_spawn_delta } = generateEnemyList(mob_with_modifier_difficulty, modifiers, max_difficulty);
     const wave_difficulty = mob_count * mob_difficulty;
-    return { wave_type, enemy_type, modifiers, mob_count, mob_difficulty, wave_difficulty, enemy_spawn_delta: 2000 };
+    return { wave_type, enemy_type, modifier_ids, mob_count, mob_difficulty, wave_difficulty, enemy_spawn_delta };
 };
 const chooseWaveType = (max_difficulty) => {
     const wave_types = [
@@ -203,7 +206,8 @@ const chooseEnemyModifiers = (enemy_type, enemy_type_difficulty, max_mob_difficu
                 break;
         }
     }
-    return { modifiers, mob_with_modifier_difficulty };
+    const modifier_ids = modifiers.map(mod => mod.id);
+    return { modifiers, modifier_ids, mob_with_modifier_difficulty };
 };
 /**
  * - Enemy types are divided into "tiers", starting at tier 0, incrementing as required.
@@ -250,21 +254,21 @@ const generateEnemyList = (mob_with_mods_difficulty, modifiers, max_difficulty) 
     // Iterate through modifiers, if there are any "group" modifiers, remove the difficulty form the mob difficulty
     // and increase the mob_count
     let mob_difficulty = mob_with_mods_difficulty;
-    let mob_count_multiplier = 1;
+    let enemy_spawn_delta = 2000; // by default we spawn one enemy every 2 seconds
     // Multiply the mob count by any "group" stat modifiers which increase mob count.
     // this could happen in the wave manager instead;
     modifiers.forEach(mod => {
         if (mod.mod_type === 'group') {
-            mob_difficulty = mob_difficulty / mod.difficulty_multiplier;
+            mob_difficulty /= mod.difficulty_multiplier;
             if (mod.stat_multipliers?.group_size) {
-                mob_count_multiplier *= mod.stat_multipliers.group_size;
+                enemy_spawn_delta /= mod.stat_multipliers.group_size;
             }
         }
     });
-    const mob_count = Math.floor((max_difficulty / mob_difficulty) * mob_count_multiplier);
-    // console.log('wat', modifiers, mob_count, max_difficulty, mob_difficulty, mob_count_multiplier, mob_with_mods_difficulty)
-    return { mob_count, mob_difficulty };
+    const mob_count = Math.floor(max_difficulty / mob_difficulty);
+    console.log('wat', mob_count, max_difficulty, mob_difficulty, max_difficulty / mob_difficulty);
+    return { mob_count, mob_difficulty, enemy_spawn_delta };
 };
 
-export { generateWave };
+export { ENEMY_MODIFIERS, generateWave };
 //# sourceMappingURL=enemy_wave_generator.js.map

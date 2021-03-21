@@ -10,24 +10,6 @@ function add_css() {
 	append(document.head, style);
 }
 
-// (28:2) {:else}
-function create_else_block(ctx) {
-	let t;
-
-	return {
-		c() {
-			t = text("BUSTED REEQUIP");
-		},
-		m(target, anchor) {
-			insert(target, t, anchor);
-		},
-		p: noop,
-		d(detaching) {
-			if (detaching) detach(t);
-		}
-	};
-}
-
 // (26:32) 
 function create_if_block_1(ctx) {
 	let t;
@@ -50,7 +32,7 @@ function create_if_block_1(ctx) {
 function create_if_block(ctx) {
 	let span;
 	let t0;
-	let t1_value = /*tower_info*/ ctx[0].tier + "";
+	let t1_value = /*tower_info*/ ctx[0].status.tier + "";
 	let t1;
 	let t2;
 	let button;
@@ -63,7 +45,7 @@ function create_if_block(ctx) {
 			t1 = text(t1_value);
 			t2 = space();
 			button = element("button");
-			attr(button, "class", button_class_value = "" + (null_to_empty(/*tower_info*/ ctx[0].type) + " svelte-1rezg55"));
+			attr(button, "class", button_class_value = "" + (null_to_empty(/*tower_info*/ ctx[0].status.type) + " svelte-1rezg55"));
 		},
 		m(target, anchor) {
 			insert(target, span, anchor);
@@ -73,9 +55,9 @@ function create_if_block(ctx) {
 			insert(target, button, anchor);
 		},
 		p(ctx, dirty) {
-			if (dirty & /*tower_info*/ 1 && t1_value !== (t1_value = /*tower_info*/ ctx[0].tier + "")) set_data(t1, t1_value);
+			if (dirty & /*tower_info*/ 1 && t1_value !== (t1_value = /*tower_info*/ ctx[0].status.tier + "")) set_data(t1, t1_value);
 
-			if (dirty & /*tower_info*/ 1 && button_class_value !== (button_class_value = "" + (null_to_empty(/*tower_info*/ ctx[0].type) + " svelte-1rezg55"))) {
+			if (dirty & /*tower_info*/ 1 && button_class_value !== (button_class_value = "" + (null_to_empty(/*tower_info*/ ctx[0].status.type) + " svelte-1rezg55"))) {
 				attr(button, "class", button_class_value);
 			}
 		},
@@ -97,22 +79,21 @@ function create_fragment(ctx) {
 		if (show_if == null || dirty & /*tower_info*/ 1) show_if = !!isTower(/*tower_info*/ ctx[0]);
 		if (show_if) return create_if_block;
 		if (/*tower_info*/ ctx[0] === null) return create_if_block_1;
-		return create_else_block;
 	}
 
 	let current_block_type = select_block_type(ctx, -1);
-	let if_block = current_block_type(ctx);
+	let if_block = current_block_type && current_block_type(ctx);
 
 	return {
 		c() {
 			div = element("div");
-			if_block.c();
+			if (if_block) if_block.c();
 			attr(div, "class", "item svelte-1rezg55");
 			toggle_class(div, "bb", /*tower_id*/ ctx[1] && /*selection_id*/ ctx[2] === /*tower_id*/ ctx[1]);
 		},
 		m(target, anchor) {
 			insert(target, div, anchor);
-			if_block.m(div, null);
+			if (if_block) if_block.m(div, null);
 
 			if (!mounted) {
 				dispose = listen(div, "click", /*click_handler*/ ctx[5]);
@@ -123,8 +104,8 @@ function create_fragment(ctx) {
 			if (current_block_type === (current_block_type = select_block_type(ctx, dirty)) && if_block) {
 				if_block.p(ctx, dirty);
 			} else {
-				if_block.d(1);
-				if_block = current_block_type(ctx);
+				if (if_block) if_block.d(1);
+				if_block = current_block_type && current_block_type(ctx);
 
 				if (if_block) {
 					if_block.c();
@@ -140,7 +121,11 @@ function create_fragment(ctx) {
 		o: noop,
 		d(detaching) {
 			if (detaching) detach(div);
-			if_block.d();
+
+			if (if_block) {
+				if_block.d();
+			}
+
 			mounted = false;
 			dispose();
 		}
@@ -148,7 +133,7 @@ function create_fragment(ctx) {
 }
 
 function isTower(tower) {
-	return tower ? tower.tier !== undefined : false;
+	return tower ? tower.status.tier !== undefined : false;
 }
 
 function instance($$self, $$props, $$invalidate) {

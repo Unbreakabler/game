@@ -1,6 +1,5 @@
 import '../../node_modules/phaser/dist/phaser.js';
 import { gameModel } from '../gamelogic/gamemodel.js';
-import GreenKnight from './entities/enemies/green_knight.js';
 import Turret from './entities/towers/turret.js';
 import { Path } from './entities/path.js';
 import { WaveManager } from './wave_manager.js';
@@ -10,12 +9,10 @@ gameModel.subscribe((m) => (gameModelInstance = m));
 class TD extends Phaser.Scene {
     constructor() {
         super({ key: "td", active: true });
-        this.nextEnemy = 0;
         this.selection = null;
         this.selected_turret = null;
         this.slots = [];
         this.tower_map = new Map();
-        this.delta_to_next_enemy = 0;
     }
     preload() {
         this.load.image("basic", "static/shotgun.png");
@@ -32,7 +29,6 @@ class TD extends Phaser.Scene {
     create() {
         this.generateAnimations();
         this.drawPath();
-        this.setupEntities();
         this.setupWaveManager();
         this.setupInputHandlers();
         this.setupTurrets();
@@ -100,10 +96,10 @@ class TD extends Phaser.Scene {
                     // tower was added to slot
                     const tower_info = model.tower_defense.getTower(model_tower_id);
                     if (tower_info) {
-                        const new_turret = new Turret(this, model_tower_id, tower_info.x, tower_info.y, tower_info.type);
-                        if (tower_info.is_placed) {
+                        const new_turret = new Turret(this, model_tower_id, tower_info.status.x, tower_info.status.y, tower_info.status.type);
+                        if (tower_info.status.is_placed) {
                             this.add.existing(new_turret);
-                            new_turret.place(tower_info.x, tower_info.y);
+                            new_turret.place(tower_info.status.x, tower_info.status.y);
                         }
                         this.tower_map.set(model_tower_id, new_turret);
                     }
@@ -140,14 +136,14 @@ class TD extends Phaser.Scene {
                     this.selected_turret?.select(false);
                     // Hide turret and deselect before updating selection, this allows the user to toggle
                     // between multiple unplaced turrets
-                    if (this.selection && active_selection_tower_info?.is_placed == false) {
+                    if (this.selection && active_selection_tower_info?.status.is_placed == false) {
                         this.selected_turret?.setVisible(false);
                         this.selected_turret = null;
                         this.selection = null;
                     }
                     // Update selection
                     this.selection = cur_selection;
-                    if (new_selection_tower_info?.is_placed) {
+                    if (new_selection_tower_info?.status.is_placed) {
                         // selecting tower already placed, highlight range
                         // Allows a user to select a tower to see details or take actions
                         console.log("SELECT PLACED TURRET");
@@ -171,7 +167,7 @@ class TD extends Phaser.Scene {
                     // reselecting - i don't think this ever happens, you can only toggle selection currently.
                     console.log("RESELECT TURRET");
                 }
-                else if (!cur_selection && this.selection && active_selection_tower_info?.is_placed == false) {
+                else if (!cur_selection && this.selection && active_selection_tower_info?.status.is_placed == false) {
                     // deselecting unplaced turret, hide gameobject
                     // Allows a user to unselect a turret that is currently on their cursor for placement
                     console.log('DESELECT UNPLACED TURRET');
@@ -180,7 +176,7 @@ class TD extends Phaser.Scene {
                     this.selected_turret = null;
                     this.selection = null;
                 }
-                else if (!cur_selection && this.selection && active_selection_tower_info?.is_placed) {
+                else if (!cur_selection && this.selection && active_selection_tower_info?.status.is_placed) {
                     // Deselecting a turret that is already placed
                     // Allows a user to deselect a placed turret that was selected to highlight range or take action
                     console.log("DESELECT PLACED TURRET");
@@ -193,9 +189,6 @@ class TD extends Phaser.Scene {
         this.events.on("destroy", function () {
             unsubscribe_store();
         });
-    }
-    setupEntities() {
-        this.enemies = this.add.group({ classType: GreenKnight, runChildUpdate: true });
     }
     setupWaveManager() {
         this.wave_manager = new WaveManager(this, this.path);
@@ -245,8 +238,8 @@ class TD extends Phaser.Scene {
         if (!t.place(place_x, place_y)) {
             return false;
         }
-        if (gameModelInstance.tower_defense.selection) {
-            gameModelInstance.tower_defense.placeTower(gameModelInstance.tower_defense.selection.id, place_x, place_y);
+        if (this.selection) {
+            gameModelInstance.tower_defense.placeTower(this.selection.id, place_x, place_y);
         }
         this.selection = null;
         gameModelInstance.tower_defense.selection = null;
