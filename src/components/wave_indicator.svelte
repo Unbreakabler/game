@@ -1,10 +1,15 @@
 <script lang='ts'>
   import { GameModel, gameModel } from "../gamelogic/gamemodel";
+  import { ENEMY_MODIFIERS, ModifierId } from "../gamelogic/td/enemy_wave_generator";
 
   let gameModelInstance: GameModel;
   gameModel.subscribe((m) => (gameModelInstance = m));
 
   $: waves = gameModelInstance.tower_defense.waves;
+
+  const getMod = (mod_id: string) => {
+    return ENEMY_MODIFIERS[mod_id as ModifierId]
+  }
 
 </script>
 
@@ -17,11 +22,11 @@
           {wave.enemy_type} - <div class={wave.enemy_type} /> x {wave.mob_count}
         </div>
         <!-- <span class="mob_count">count: </span> -->
-        {#if wave.modifiers.length}
+        {#if wave.modifier_ids.length}
           <span class="modifiers">
             mods:
-            {#each wave.modifiers as mod}
-              {mod.name} 
+            {#each wave.modifier_ids as mod_id}
+              {getMod(mod_id)?.name} 
             {/each}
           </span>
         {/if}

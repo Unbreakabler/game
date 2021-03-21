@@ -2,7 +2,7 @@ import type TD from "../../td";
 import Bullet from "../tower_bullet";
 import type Enemy from "../enemies/enemy";
 import { gameModel, GameModel } from "../../../gamelogic/gamemodel";
-import type { TowerInfo } from "../../../gamelogic/td/tower_defense";
+import type { TowerId, TowerInfo } from "../../../gamelogic/td/tower_defense";
 
 const DEFAULT_RANGE = 200;
 const DEFAULT_ATTACK_SPEED = 1000;
@@ -22,7 +22,7 @@ export default class Turret extends Phaser.GameObjects.Image {
   public display_range:  Phaser.GameObjects.Arc;
   private td_scene: TD;
   private next_tick = 0;
-  private tower_info!: TowerInfo | undefined;
+  private tower_info!: TowerInfo | null;
   private target!: Enemy | null;
   private target_indicator!: Phaser.GameObjects.Arc;
 
@@ -45,24 +45,24 @@ export default class Turret extends Phaser.GameObjects.Image {
 
   private setupTowerSubscription(tower_id: string) {
     const unsubscribe_store = gameModel.subscribe((model) => {
-      this.tower_info = model.tower_defense.getTower(tower_id)
+      this.tower_info = model.tower_defense.getTower(tower_id as TowerId)
   
       if (this.tower_info) {
-        if (this.range !== this.tower_info.range) {
-          this.range = this.tower_info.range
+        if (this.range !== this.tower_info.attributes.range) {
+          this.range = this.tower_info.attributes.range
           this.display_range.setRadius(this.range)
         }
-        if (this.attack_speed !== this.tower_info.attack_speed) {
-          this.attack_speed = this.tower_info.attack_speed
+        if (this.attack_speed !== this.tower_info.attributes.attack_speed) {
+          this.attack_speed = this.tower_info.attributes.attack_speed
         }
-        if (this.damage !== this.tower_info.damage) {
-          this.damage = this.tower_info.damage
+        if (this.damage !== this.tower_info.attributes.damage) {
+          this.damage = this.tower_info.attributes.damage
         }
-        if (this.is_selected !== this.tower_info.is_selected) {
-          this.is_selected = this.tower_info.is_selected
+        if (this.is_selected !== this.tower_info.status.is_selected) {
+          this.is_selected = this.tower_info.status.is_selected
         }
-        if (this.is_placed !== this.tower_info.is_placed) {
-          this.is_placed = this.tower_info.is_placed;
+        if (this.is_placed !== this.tower_info.status.is_placed) {
+          this.is_placed = this.tower_info.status.is_placed;
         }
       }
     })
@@ -93,8 +93,8 @@ export default class Turret extends Phaser.GameObjects.Image {
 
   public preDestroy() {
     if (this.tower_info) {
-      this.tower_info.is_selected = false;
-      this.tower_info.is_placed = false;
+      this.tower_info.status.is_selected = false;
+      this.tower_info.status.is_placed = false;
     }
     this.displayRange();
   }
@@ -103,6 +103,7 @@ export default class Turret extends Phaser.GameObjects.Image {
     place_x: number,
     place_y: number,
   ): boolean {
+    // TODO(jon): check performance here
     const min_dist = this.td_scene.path.getPoints(this.td_scene.path.getLength() / 20).reduce((acc, point) => {
       return Math.min(Phaser.Math.Distance.Between(place_x, place_y, point.x, point.y), acc);
     }, 1000);
@@ -147,10 +148,6 @@ export default class Turret extends Phaser.GameObjects.Image {
     this.setInteractive();
     console.log(`placing turret @ x:${place_x}, y:${place_y}`);
     this.is_placed = true;
-    if (this.tower_info) {
-      this.tower_info.is_selected = false;
-      this.tower_info.is_placed = true;
-    }
     this.select(false);
     this.enableBulletCollisions();
     return true;
@@ -216,11 +213,11 @@ export default class Turret extends Phaser.GameObjects.Image {
     if (!this.target_indicator) {
       this.target_indicator = this.td_scene.add.circle(enemy.x, enemy.y, enemy.width, 0xff0000)
     }
-    if (!this.tower_info?.is_selected) {
+    if (!this.tower_info?.status.is_selected) {
       this.target_indicator.setVisible(false);
       // return;
     }
-    if (this.target != enemy && this.tower_info?.is_selected) {
+    if (this.target != enemy && this.tower_info?.status.is_selected) {
       // this.target = enemy
       this.target_indicator.width = enemy.width;
       this.target_indicator.setVisible(true);
@@ -248,7 +245,7 @@ export default class Turret extends Phaser.GameObjects.Image {
 
   public select(is_selected = true): void {
     if (this.tower_info) {
-      this.tower_info.is_selected = is_selected;
+      this.tower_info.status.is_selected = is_selected;
     }
   }
 }

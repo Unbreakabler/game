@@ -1,68 +1,54 @@
 import { Exclude } from "class-transformer";
 
 import { EnemyWave, generateWave } from './enemy_wave_generator'
+import { getTowerAttributes, TowerCalculatedAttributes } from "./stats_base_towers";
 
-const BASIC_TOWER_DEFAULT_ID = 'basic_1'
-const MACHINE_GUN_TOWER_DEFAULT_ID = 'machine_gun_1'
+type BASIC_TOWER_IDS = 'basic_1'
+type MACHINE_GUN_IDS = 'machine_gun_1'
 
-type TowerId = string
+export type TowerId = BASIC_TOWER_IDS | MACHINE_GUN_IDS
+
+
 export interface TowerInfo {
-  tier: integer;
-  type: TowerType;
-  range: integer;
-  damage: number;
-  attack_speed: number;
-  projectiles: number;
-  spread_angle: number;
-  area_of_effect_radius: number;
-  x: number;
-  y: number;
-  is_placed: boolean;
-  is_selected: boolean;
-
-  damage_dealt_lifetime: number;
-  damage_dealt_this_prestige: number;
+  status: TowerStatus,
+  attributes: TowerCalculatedAttributes,
 }
 
-const BasicTowerInfoDefaults: TowerInfo = {
+export interface TowerStatus {
+  id: TowerId,
+  tier: integer,
+  type: TowerType,
+  x: number,
+  y: number,
+  is_placed: boolean,
+  is_selected: boolean,
+}
+
+const BasicTowerStatusDefaults: TowerStatus = {
+  id: 'basic_1',
   tier: 0,
   type: 'basic',
-  range: 200,
-  damage: 50,
-  attack_speed: 1000,
-  projectiles: 1,
-  spread_angle: 0,
-  area_of_effect_radius: 0,
   x: 0,
   y: 0,
   is_placed: false,
   is_selected: false,
-  damage_dealt_lifetime: 0,
-  damage_dealt_this_prestige: 0,
 }
 
-const MachineGunTowerInfoDefaults: TowerInfo = {
+const MachineGunTowerStatusDefaults: TowerStatus = {
+  id: 'machine_gun_1',
   tier: 0,
   type: 'machine_gun',
-  range: 100,
-  damage: 2,
-  attack_speed: 100,
-  projectiles: 1,
-  spread_angle: 0,
-  area_of_effect_radius: 0,
   x: 0,
   y: 0,
   is_placed: false,
   is_selected: false,
-  damage_dealt_lifetime: 0,
-  damage_dealt_this_prestige: 0,
 }
 
 interface Stats {
-  [tower_id: string] : TowerStats
+  [tower_id: string] : TowerRecordedStats
 }
 
-interface TowerStats { 
+interface TowerRecordedStats { 
   kills: { lifetime: number, prestige: number, [enemy_name: string]: number },
   damage: {
     lifetime: number,
@@ -89,23 +75,21 @@ export class TowerDefense {
   @Exclude() public selection: { type: TowerType, id: TowerId, cursor: SelectionCursor } | null = null;
 
   // Need to expose below but it breaks
-  public towers: { [K in TowerType]: TowerId[][]};
-  private tower_map: { [tower_id: string]: TowerInfo };
-  public slots: Array<string | null>
+  private tower_map: { [id in TowerId]: TowerStatus };
+  public slots: Array<TowerId | null>
   public stats: Stats = {}
   public waves: EnemyWave[] = [];
   public current_wave_info: WaveInfo = { total: 0, spawned: 0, alive: 0 };
   public current_wave_difficulty: number = 10;
 
   public constructor() {
-    this.towers = get_default_towers();
     this.tower_map = get_default_tower_map();
-    this.slots = [BASIC_TOWER_DEFAULT_ID, MACHINE_GUN_TOWER_DEFAULT_ID, null, null, null]
+    this.slots = ['basic_1', 'machine_gun_1', null, null, null]
     this.slots.forEach(tower_id => {
       if (tower_id) {
         this.stats[tower_id] = generate_default_stats()
       }
-    });
+    }); 
 
     for (let i = 0; i < 10; i++) {
       // Generate the first 10 waves
@@ -113,11 +97,14 @@ export class TowerDefense {
     }
   }
 
-  public getTower(id: TowerId): TowerInfo | undefined {
-    return this.tower_map[id]
+  public getTower(id: TowerId): TowerInfo | null {
+    const status = this.tower_map[id]
+    if (!status) return null;
+    const attributes = getTowerAttributes(status)
+    return { status, attributes }
   }
 
-  public getTowerStats(id: TowerId): TowerStats {
+  public getTowerStats(id: TowerId): TowerRecordedStats {
     const tower_stats = this.stats[id]
     if (tower_stats) return this.stats[id]
     this.stats[id] = generate_default_stats()
@@ -135,26 +122,9 @@ export class TowerDefense {
     }
   }
 
-  public selectHighestTierForPlacement(tower_type: TowerType) {
-    // Should I check if there is a "selectable" tower of this type available first?
-    const tower_list = this.towers[tower_type]
-    if (!tower_list) return
-    
-    // iterate backwards through list until we find an unplaced tower of this type
-    const highest_tier_available_tower_list = tower_list.slice().reverse().flat();
-
-    const highest_tier_available_tower_id = highest_tier_available_tower_list.find(tower_id => {
-      const tower = this.getTower(tower_id)
-      if (!tower) return
-      return !tower.is_placed
-    })
-    if (!highest_tier_available_tower_id) return
-
-    this.setSelection(highest_tier_available_tower_id)
-  }
-
   public placeTower(id: TowerId, x: number, y: number) {
     const tower = this.tower_map[id]
+    console.log('placeTower', tower, id, x, y)
     if (!tower) return
 
     tower.x = x;
@@ -164,20 +134,20 @@ export class TowerDefense {
   }
 
   public recordTowerDamage(tower_id: string, damage: number) {
-    const tower = this.getTower(tower_id)
+    const tower = this.getTower(tower_id as TowerId)
     if (!tower) return
 
-    const tower_stats = this.getTowerStats(tower_id)
+    const tower_stats = this.getTowerStats(tower_id as TowerId)
     tower_stats.damage.prestige += damage;
 
     // TODO(jon): track tower accuracy, projectiles fired, etc etc
   }
 
   public recordTowerKill(tower_id: string, enemy_name: string) {
-    const tower = this.getTower(tower_id)
+    const tower = this.getTower(tower_id as TowerId)
     if (!tower) return
 
-    const tower_stats = this.getTowerStats(tower_id)
+    const tower_stats = this.getTowerStats(tower_id as TowerId)
     if (!tower_stats.kills) tower_stats.kills = { lifetime: 0, prestige: 0 }
     if (!tower_stats.kills[enemy_name]) tower_stats.kills[enemy_name] = 0;
     tower_stats.kills.prestige++;
@@ -202,18 +172,10 @@ export class TowerDefense {
   }
 }
 
-// By default you have a single "basic" tower and a single "machine_gun" tower.
-const get_default_towers = () => {
-  return {
-    'basic': [[BASIC_TOWER_DEFAULT_ID]],
-    'machine_gun': [[MACHINE_GUN_TOWER_DEFAULT_ID]]
-  }
-}
-
 const get_default_tower_map = () => {
   return {
-    [BASIC_TOWER_DEFAULT_ID]: BasicTowerInfoDefaults,
-    [MACHINE_GUN_TOWER_DEFAULT_ID]: MachineGunTowerInfoDefaults
+    'basic_1': BasicTowerStatusDefaults,
+    'machine_gun_1': MachineGunTowerStatusDefaults
   }
 }
 

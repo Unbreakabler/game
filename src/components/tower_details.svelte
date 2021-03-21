@@ -1,6 +1,6 @@
 <script lang="ts">
   import { GameModel, gameModel } from "../gamelogic/gamemodel";
-import type { TowerInfo } from "../gamelogic/td/tower_defense";
+  import type { TowerInfo } from "../gamelogic/td/tower_defense";
 
   let gameModelInstance: GameModel;
   gameModel.subscribe((m) => (gameModelInstance = m));
@@ -21,7 +21,7 @@ import type { TowerInfo } from "../gamelogic/td/tower_defense";
 
   let dps: number = 0;
   $: if (tower_info) {
-    dps = tower_info.damage * ((1000 / tower_info.attack_speed))
+    dps = tower_info.attributes.damage * (1000 / tower_info.attributes.attack_speed)
   }
 </script>
 
@@ -31,10 +31,10 @@ import type { TowerInfo } from "../gamelogic/td/tower_defense";
     <div>prestige kills: {tower_stats.kills.prestige}</div>
     <div>lifetime damage: {tower_stats.damage.lifetime + tower_stats.damage.prestige}</div>
     <div>prestige damage: {tower_stats.damage.prestige}</div>
-    <div>{tower_info.type}</div>
+    <div>{tower_info.status.type}</div>
     <div>dps: {dps}</div>
-    <div>damage per hit: {tower_info.damage}</div>
-    <div>attack time: {tower_info.attack_speed/1000}s</div>
+    <div>damage per hit: {tower_info.attributes.damage}</div>
+    <div>attack time: {tower_info.attributes.attack_speed/1000}s</div>
   </div>
 {/if}
 

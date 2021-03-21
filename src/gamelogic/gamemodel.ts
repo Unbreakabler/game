@@ -8,9 +8,9 @@ import { VillageBuilding } from "./village/villagebuilding";
 import { get_default_village_buildings, villageBuildingTransformer } from "./village/villagebuildings";
 
 export class Wallet {
-  public money: number = 0;
+  public money: number = 10_000;
   public constructor() {
-    this.money = 0;
+    this.money = 10_000;
   }
 }
 
@@ -61,6 +61,7 @@ export class GameModel {
 
   public exportToSave(): string {
     this.last_saved = Date.now();
+    console.log('saving', this)
     return serialize(this);
   }
 
