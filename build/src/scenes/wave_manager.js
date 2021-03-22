@@ -57,7 +57,8 @@ class WaveManager {
     spawnWave(time, delta) {
         if (this.current_wave && (this.tower_defense_state.current_wave_info.spawned < this.tower_defense_state.current_wave_info.total || this.tower_defense_state.current_wave_info.alive))
             return;
-        this.current_wave = this.tower_defense_state.getWave();
+        this.tower_defense_state.spawnNextWave();
+        this.current_wave = this.tower_defense_state.getCurrentWave();
         this.tower_defense_state.current_wave_info.total = this.current_wave.mob_count;
         this.tower_defense_state.current_wave_info.spawned = 0;
         this.tower_defense_state.current_wave_info.alive = 0;

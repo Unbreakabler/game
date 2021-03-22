@@ -104,9 +104,16 @@ class TowerDefense {
         // a linear increase wont match item/drop/upgrade power spikes.
         this.current_wave_difficulty++;
     }
-    getWave() {
+    // public getWave() {
+    //   this.generateEnemyWave();
+    //   return this.waves.shift()!;
+    // }
+    spawnNextWave() {
         this.generateEnemyWave();
-        return this.waves.shift();
+        this.waves.shift();
+    }
+    getCurrentWave() {
+        return this.waves[0];
     }
 }
 __decorate([
