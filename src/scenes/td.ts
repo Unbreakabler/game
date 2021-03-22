@@ -49,7 +49,7 @@ export default class TD extends Phaser.Scene {
     this.load.image("grass0", "static/grass0.png");
     this.load.image("sand0", "static/sand0.png");
     this.load.spritesheet("green_knight", "static/green_knight.png", {
-      frameWidth: 329 / 16,
+      frameWidth: 20,
       frameHeight: 30,
     });
   }

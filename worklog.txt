@@ -1,9 +1,18 @@
-1/30/2021
-
-- broadcast event from phaser game loop to svelte
-- run svelte game loop in sync with phaser
-
-
 2/25/2021
 
 - TODO(jon): Fix green_knight.png sprite, the frames are not equal width.
+
+
+3/21/2021:
+
+TODO(jon):
+
+- Add a basic "merging" game under workshop, doesn't need to have state linked to the system yet.
+- Add a 2-3 more enemy types
+- Add some more modifiers
+- Add at least one more tier of green_knight
+- Add more modifier type tiers
+  - Make it so that mobs can only have one modifier of each type?
+
+  DONE:
+  - Show current wave information

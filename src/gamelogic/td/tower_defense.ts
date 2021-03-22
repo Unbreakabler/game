@@ -166,9 +166,18 @@ export class TowerDefense {
     this.current_wave_difficulty++;
   }
 
-  public getWave() {
+  // public getWave() {
+  //   this.generateEnemyWave();
+  //   return this.waves.shift()!;
+  // }
+
+  public spawnNextWave() {
     this.generateEnemyWave();
-    return this.waves.shift()!;
+    this.waves.shift()!;
+  }
+
+  public getCurrentWave() {
+    return this.waves[0];
   }
 }
 
