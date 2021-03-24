@@ -10,9 +10,9 @@ const DEFAULT_ENEMY_HP = 100;
 class Enemy extends Phaser.GameObjects.Sprite {
     constructor(td_scene, x = 0, y = 0, sprite_name, speed = DEFAULT_ENEMY_SPEED, health_points = DEFAULT_ENEMY_HP) {
         super(td_scene, x, y, sprite_name);
+        this.health_points = DEFAULT_ENEMY_HP;
         this.path = null;
         this.speed = DEFAULT_ENEMY_SPEED;
-        this.health_points = DEFAULT_ENEMY_HP;
         this.prev_ang = 0;
         this.modifiers = [];
         this.difficulty = 0;
@@ -75,15 +75,12 @@ class Enemy extends Phaser.GameObjects.Sprite {
             // group mods have already affected group size, skip, should be removed from list.
             if (mod.mod_type === 'group')
                 continue;
-            // this.difficulty *= mod.difficulty_multiplier;
             if (mod.stat_multipliers?.health_points) {
                 this.original_health_points *= mod.stat_multipliers.health_points;
                 this.health_points *= mod.stat_multipliers.health_points;
             }
             if (mod.stat_multipliers?.movement_speed) {
-                console.log("CHANGE SPEED", this.speed);
                 this.setSpeed(this.speed * mod.stat_multipliers.movement_speed);
-                console.log("NEW SPEED", this.speed);
             }
             if (mod.visual_modifiers?.height) {
                 this.displayHeight *= mod.visual_modifiers.height;

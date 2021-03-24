@@ -360,7 +360,7 @@ function instance($$self, $$props, $$invalidate) {
 	];
 
 	let filtered = items;
-	let selected = items[0].id;
+	let selected = items[2].id;
 
 	function switch_instance_selected_binding(value) {
 		selected = value;

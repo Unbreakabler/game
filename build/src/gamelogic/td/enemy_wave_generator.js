@@ -22,9 +22,9 @@ const ENEMY_MODIFIERS = {
         mod_type: 'group',
         mod_tier: 0,
         stat_multipliers: {
-            group_size: 1.5,
+            group_size: 1.25,
         },
-        difficulty_multiplier: 1.5,
+        difficulty_multiplier: 2,
     },
     'movement_0': {
         id: 'movement_0',
@@ -254,19 +254,21 @@ const generateEnemyList = (mob_with_mods_difficulty, modifiers, max_difficulty) 
     // Iterate through modifiers, if there are any "group" modifiers, remove the difficulty form the mob difficulty
     // and increase the mob_count
     let mob_difficulty = mob_with_mods_difficulty;
-    let enemy_spawn_delta = 2000; // by default we spawn one enemy every 2 seconds
+    // Instead of a spawn delta, a time between enemy spawns, if we used a total_wave_time, we could increase
+    // difficulty by increasing mob count, as it would always increase density of the wave.
+    let default_wave_time = 10000; // every wave spawns over 10 seconds by default. ( can have mods that reduce wave time?)
     // Multiply the mob count by any "group" stat modifiers which increase mob count.
     // this could happen in the wave manager instead;
     modifiers.forEach(mod => {
         if (mod.mod_type === 'group') {
             mob_difficulty /= mod.difficulty_multiplier;
             if (mod.stat_multipliers?.group_size) {
-                enemy_spawn_delta /= mod.stat_multipliers.group_size;
+                default_wave_time /= mod.stat_multipliers.group_size;
             }
         }
     });
     const mob_count = Math.floor(max_difficulty / mob_difficulty);
-    console.log('wat', mob_count, max_difficulty, mob_difficulty, max_difficulty / mob_difficulty);
+    const enemy_spawn_delta = default_wave_time / mob_count;
     return { mob_count, mob_difficulty, enemy_spawn_delta };
 };
 

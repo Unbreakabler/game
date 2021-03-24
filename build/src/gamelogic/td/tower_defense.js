@@ -11,6 +11,7 @@ const BasicTowerStatusDefaults = {
     y: 0,
     is_placed: false,
     is_selected: false,
+    targeting_mode: 'closest',
 };
 const MachineGunTowerStatusDefaults = {
     id: 'machine_gun_1',
@@ -20,6 +21,7 @@ const MachineGunTowerStatusDefaults = {
     y: 0,
     is_placed: false,
     is_selected: false,
+    targeting_mode: 'closest',
 };
 class TowerDefense {
     constructor() {

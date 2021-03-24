@@ -15,6 +15,7 @@ class Turret extends Phaser.GameObjects.Image {
         this.show_range = false;
         this.is_placed = false;
         this.next_tick = 0;
+        this.targeting_mode = 'closest';
         this.td_scene = td_scene;
         this.tower_id = tower_id;
         // TODO(jon): Projectiles will have to be managed different to allow differently projectiles for each turret.
@@ -43,6 +44,9 @@ class Turret extends Phaser.GameObjects.Image {
                 if (this.is_placed !== this.tower_info.status.is_placed) {
                     this.is_placed = this.tower_info.status.is_placed;
                 }
+                if (this.targeting_mode !== this.tower_info.status.targeting_mode) {
+                    this.targeting_mode = this.tower_info.status.targeting_mode;
+                }
             }
         });
         this.td_scene.events.on("destroy", function () {
@@ -54,7 +58,19 @@ class Turret extends Phaser.GameObjects.Image {
         if (!this.is_placed)
             return;
         //Look at near enemies
-        const e = this.findClosestEnemyInRange(20);
+        // let targetingFunction = (x: number) => this.findClosestEnemyInRange(x);
+        // if (this.targeting_mode === 'last') targetingFunction = (x: number) => this.findLastEnemyInRange(x);
+        // if (this.targeting_mode === 'first') targetingFunction = (x: number) => this.findFirstEnemyInRange(x);
+        // if (this.targeting_mode === 'strongest') targetingFunction = (x: number) => this.findStrongestEnemyInRange(x);
+        let e;
+        if (this.targeting_mode === 'closest')
+            e = this.findClosestEnemyInRange(20);
+        if (this.targeting_mode === 'last')
+            e = this.findLastEnemyInRange(20);
+        if (this.targeting_mode === 'first')
+            e = this.findFirstEnemyInRange(20);
+        if (this.targeting_mode === 'strongest')
+            e = this.findStrongestEnemyInRange(20);
         if (e) {
             this.targetEnemy(e);
         }
@@ -147,7 +163,15 @@ class Turret extends Phaser.GameObjects.Image {
     }
     attemptToFire() {
         //Enemy Found
-        const e = this.findClosestEnemyInRange();
+        let e;
+        if (this.targeting_mode === 'closest')
+            e = this.findClosestEnemyInRange(20);
+        if (this.targeting_mode === 'last')
+            e = this.findLastEnemyInRange(20);
+        if (this.targeting_mode === 'first')
+            e = this.findFirstEnemyInRange(20);
+        if (this.targeting_mode === 'strongest')
+            e = this.findStrongestEnemyInRange(20);
         if (e) {
             //Add bullet
             this.fireBullet(this.x, this.y, this.getAngleToEnemy(e));
@@ -172,6 +196,53 @@ class Turret extends Phaser.GameObjects.Image {
         }
         return closest_enemy;
     }
+    findFirstEnemyInRange(range_bonus = 0) {
+        const enemies = this.td_scene.wave_manager.enemies;
+        let first_enemy;
+        let first_distance = Number.MIN_VALUE;
+        for (const e of enemies.getChildren()) {
+            const d = Phaser.Math.Distance.Between(this.x, this.y, e.x, e.y);
+            if (d < this.range + range_bonus) {
+                if (e.follower.t > first_distance) {
+                    first_distance = e.follower.t;
+                    first_enemy = e;
+                }
+            }
+        }
+        return first_enemy;
+    }
+    findLastEnemyInRange(range_bonus = 0) {
+        const enemies = this.td_scene.wave_manager.enemies;
+        let furthest_enemy;
+        let furthest_distance = Number.MAX_VALUE;
+        for (const e of enemies.getChildren()) {
+            const d = Phaser.Math.Distance.Between(this.x, this.y, e.x, e.y);
+            if (d < this.range + range_bonus) {
+                if (e.follower.t < furthest_distance) {
+                    furthest_distance = e.follower.t;
+                    furthest_enemy = e;
+                }
+            }
+        }
+        return furthest_enemy;
+    }
+    findStrongestEnemyInRange(range_bonus = 0) {
+        const enemies = this.td_scene.wave_manager.enemies;
+        let furthest_enemy;
+        let height_hp = Number.MIN_VALUE;
+        for (const e of enemies.getChildren()) {
+            const d = Phaser.Math.Distance.Between(this.x, this.y, e.x, e.y);
+            if (d < this.range + range_bonus) {
+                if (e.health_points > height_hp) {
+                    height_hp = e.follower.t;
+                    furthest_enemy = e;
+                }
+            }
+        }
+        return furthest_enemy;
+    }
+    // firing modes:
+    // first, last, strongest, closest
     getAngleToEnemy(enemy) {
         return Phaser.Math.Angle.Between(this.x, this.y, enemy.x, enemy.y);
     }
