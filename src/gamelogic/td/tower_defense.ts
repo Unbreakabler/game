@@ -7,6 +7,7 @@ type BASIC_TOWER_IDS = 'basic_1'
 type MACHINE_GUN_IDS = 'machine_gun_1'
 
 export type TowerId = BASIC_TOWER_IDS | MACHINE_GUN_IDS
+export type TargetingMode = 'first' | 'last' | 'strongest' | 'closest'
 
 
 export interface TowerInfo {
@@ -22,6 +23,7 @@ export interface TowerStatus {
   y: number,
   is_placed: boolean,
   is_selected: boolean,
+  targeting_mode: TargetingMode
 }
 
 const BasicTowerStatusDefaults: TowerStatus = {
@@ -32,6 +34,7 @@ const BasicTowerStatusDefaults: TowerStatus = {
   y: 0,
   is_placed: false,
   is_selected: false,
+  targeting_mode: 'closest',
 }
 
 const MachineGunTowerStatusDefaults: TowerStatus = {
@@ -42,6 +45,7 @@ const MachineGunTowerStatusDefaults: TowerStatus = {
   y: 0,
   is_placed: false,
   is_selected: false,
+  targeting_mode: 'closest',
 }
 
 interface Stats {

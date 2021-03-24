@@ -2,12 +2,13 @@ import type TD from "../../td";
 import Bullet from "../tower_bullet";
 import type Enemy from "../enemies/enemy";
 import { gameModel, GameModel } from "../../../gamelogic/gamemodel";
-import type { TowerId, TowerInfo } from "../../../gamelogic/td/tower_defense";
+import type { TowerId, TowerInfo, TargetingMode } from "../../../gamelogic/td/tower_defense";
 
 const DEFAULT_RANGE = 200;
 const DEFAULT_ATTACK_SPEED = 1000;
 const DEFAULT_DAMAGE = 50;
 const PLACEABLE_MIN_DISTANCE_FROM_PATH = 25;
+
 
 export default class Turret extends Phaser.GameObjects.Image {
   public range = DEFAULT_RANGE;
@@ -25,6 +26,7 @@ export default class Turret extends Phaser.GameObjects.Image {
   private tower_info!: TowerInfo | null;
   private target!: Enemy | null;
   private target_indicator!: Phaser.GameObjects.Arc;
+  private targeting_mode: TargetingMode = 'closest'
 
   public constructor(
     td_scene: TD,
@@ -64,6 +66,9 @@ export default class Turret extends Phaser.GameObjects.Image {
         if (this.is_placed !== this.tower_info.status.is_placed) {
           this.is_placed = this.tower_info.status.is_placed;
         }
+        if (this.targeting_mode !== this.tower_info.status.targeting_mode) {
+          this.targeting_mode = this.tower_info.status.targeting_mode;
+        }
       }
     })
     this.td_scene.events.on("destroy", function () {
@@ -77,7 +82,16 @@ export default class Turret extends Phaser.GameObjects.Image {
     if (!this.is_placed) return;
 
     //Look at near enemies
-    const e = this.findClosestEnemyInRange(20);
+    // let targetingFunction = (x: number) => this.findClosestEnemyInRange(x);
+    // if (this.targeting_mode === 'last') targetingFunction = (x: number) => this.findLastEnemyInRange(x);
+    // if (this.targeting_mode === 'first') targetingFunction = (x: number) => this.findFirstEnemyInRange(x);
+    // if (this.targeting_mode === 'strongest') targetingFunction = (x: number) => this.findStrongestEnemyInRange(x);
+
+    let e;
+    if (this.targeting_mode === 'closest') e = this.findClosestEnemyInRange(20);
+    if (this.targeting_mode === 'last') e = this.findLastEnemyInRange(20);
+    if (this.targeting_mode === 'first') e = this.findFirstEnemyInRange(20);
+    if (this.targeting_mode === 'strongest') e = this.findStrongestEnemyInRange(20);
 
     if (e) {
       this.targetEnemy(e);
@@ -178,7 +192,12 @@ export default class Turret extends Phaser.GameObjects.Image {
 
   public attemptToFire(): boolean {
     //Enemy Found
-    const e = this.findClosestEnemyInRange();
+    let e;
+    if (this.targeting_mode === 'closest') e = this.findClosestEnemyInRange(20);
+    if (this.targeting_mode === 'last') e = this.findLastEnemyInRange(20);
+    if (this.targeting_mode === 'first') e = this.findFirstEnemyInRange(20);
+    if (this.targeting_mode === 'strongest') e = this.findStrongestEnemyInRange(20);
+
     if (e) {
       //Add bullet
       this.fireBullet(this.x, this.y, this.getAngleToEnemy(e));
@@ -204,6 +223,57 @@ export default class Turret extends Phaser.GameObjects.Image {
     }
     return closest_enemy;
   }
+
+  private findFirstEnemyInRange(range_bonus: number = 0): Enemy | undefined {
+    const enemies = this.td_scene.wave_manager.enemies;
+    let first_enemy: Enemy | undefined;
+    let first_distance = Number.MIN_VALUE;
+    for (const e of enemies.getChildren()) {
+      const d = Phaser.Math.Distance.Between(this.x, this.y, e.x, e.y);
+      if (d < this.range + range_bonus) {
+        if (e.follower.t > first_distance) {
+          first_distance = e.follower.t;
+          first_enemy = e;
+        }
+      }
+    }
+    return first_enemy;
+  }
+
+  private findLastEnemyInRange(range_bonus: number = 0): Enemy | undefined {
+    const enemies = this.td_scene.wave_manager.enemies;
+    let furthest_enemy: Enemy | undefined;
+    let furthest_distance = Number.MAX_VALUE;
+    for (const e of enemies.getChildren()) {
+      const d = Phaser.Math.Distance.Between(this.x, this.y, e.x, e.y);
+      if (d < this.range + range_bonus) {
+        if (e.follower.t < furthest_distance) {
+          furthest_distance = e.follower.t;
+          furthest_enemy = e;
+        }
+      }
+    }
+    return furthest_enemy;
+  }
+
+  private findStrongestEnemyInRange(range_bonus: number = 0): Enemy | undefined {
+    const enemies = this.td_scene.wave_manager.enemies;
+    let furthest_enemy: Enemy | undefined;
+    let height_hp = Number.MIN_VALUE;
+    for (const e of enemies.getChildren()) {
+      const d = Phaser.Math.Distance.Between(this.x, this.y, e.x, e.y);
+      if (d < this.range + range_bonus) {
+        if (e.health_points > height_hp) {
+          height_hp = e.follower.t;
+          furthest_enemy = e;
+        }
+      }
+    }
+    return furthest_enemy;
+  }
+
+  // firing modes:
+  // first, last, strongest, closest
 
   private getAngleToEnemy(enemy: Enemy): number {
     return Phaser.Math.Angle.Between(this.x, this.y, enemy.x, enemy.y);

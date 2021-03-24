@@ -29,7 +29,7 @@
     return true;
   });
 
-  let selected: string = items[0].id;
+  let selected: string = items[2].id;
 </script>
 
 <Tabs bind:selected items={filtered} class="bg-primary-500 text-white">

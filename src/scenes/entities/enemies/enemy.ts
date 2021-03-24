@@ -12,11 +12,12 @@ const DEFAULT_ENEMY_HP = 100;
 
 export default class Enemy extends Phaser.GameObjects.Sprite {
   public follower: { t: number; vec: Phaser.Math.Vector2 };
+  public health_points = DEFAULT_ENEMY_HP;
   public name: string;
+
   private path: Phaser.Curves.Path | null = null;
   private speed: number = DEFAULT_ENEMY_SPEED;
   private original_speed: number;
-  private health_points = DEFAULT_ENEMY_HP;
   private original_health_points: number;
   private sprite_name: string;
   private prev_ang: number = 0;
@@ -100,7 +101,6 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
       // group mods have already affected group size, skip, should be removed from list.
       if (mod.mod_type === 'group') continue;
 
-      // this.difficulty *= mod.difficulty_multiplier;
 
       if (mod.stat_multipliers?.health_points) {
         this.original_health_points *= mod.stat_multipliers.health_points
@@ -108,9 +108,7 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
       }
 
       if (mod.stat_multipliers?.movement_speed) {
-        console.log("CHANGE SPEED", this.speed)
         this.setSpeed(this.speed * mod.stat_multipliers.movement_speed)
-        console.log("NEW SPEED", this.speed)
       }
 
       if (mod.visual_modifiers?.height) {
