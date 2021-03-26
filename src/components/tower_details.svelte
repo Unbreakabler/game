@@ -54,6 +54,7 @@
     <div>dps: {dps}</div>
     <div>damage per hit: {tower_info.attributes.damage}</div>
     <div>attack time: {tower_info.attributes.attack_speed/1000}s</div>
+    <div>proj mods: {JSON.stringify(tower_info.attributes.projectile_modifiers, null, 2)}</div>
   </div>
 {/if}
 
