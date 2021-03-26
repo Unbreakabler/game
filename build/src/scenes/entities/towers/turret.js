@@ -18,7 +18,7 @@ class Turret extends Phaser.GameObjects.Image {
         this.targeting_mode = 'closest';
         this.td_scene = td_scene;
         this.tower_id = tower_id;
-        // TODO(jon): Projectiles will have to be managed different to allow differently projectiles for each turret.
+        // TODO(jon): Projectiles will have to be managed differently to allow different projectiles for each turret.
         this.projectiles = this.td_scene.add.group({ classType: Bullet, active: true, runChildUpdate: true });
         this.display_range = this.td_scene.add.circle(0, 0, this.range, 0xff0000, 0.5);
         this.display_range.setVisible(false);
@@ -57,11 +57,6 @@ class Turret extends Phaser.GameObjects.Image {
     update(time, delta) {
         if (!this.is_placed)
             return;
-        //Look at near enemies
-        // let targetingFunction = (x: number) => this.findClosestEnemyInRange(x);
-        // if (this.targeting_mode === 'last') targetingFunction = (x: number) => this.findLastEnemyInRange(x);
-        // if (this.targeting_mode === 'first') targetingFunction = (x: number) => this.findFirstEnemyInRange(x);
-        // if (this.targeting_mode === 'strongest') targetingFunction = (x: number) => this.findStrongestEnemyInRange(x);
         let e;
         if (this.targeting_mode === 'closest')
             e = this.findClosestEnemyInRange(20);
@@ -228,21 +223,19 @@ class Turret extends Phaser.GameObjects.Image {
     }
     findStrongestEnemyInRange(range_bonus = 0) {
         const enemies = this.td_scene.wave_manager.enemies;
-        let furthest_enemy;
-        let height_hp = Number.MIN_VALUE;
+        let strongest_enemy;
+        let heightest_hp = Number.MIN_VALUE;
         for (const e of enemies.getChildren()) {
             const d = Phaser.Math.Distance.Between(this.x, this.y, e.x, e.y);
             if (d < this.range + range_bonus) {
-                if (e.health_points > height_hp) {
-                    height_hp = e.follower.t;
-                    furthest_enemy = e;
+                if (e.health_points > heightest_hp) {
+                    heightest_hp = e.health_points;
+                    strongest_enemy = e;
                 }
             }
         }
-        return furthest_enemy;
+        return strongest_enemy;
     }
-    // firing modes:
-    // first, last, strongest, closest
     getAngleToEnemy(enemy) {
         return Phaser.Math.Angle.Between(this.x, this.y, enemy.x, enemy.y);
     }
@@ -272,7 +265,7 @@ class Turret extends Phaser.GameObjects.Image {
         // position the bullet in front of the tower "cannon". If the tower is not a cannon this will cause the projectile to
         // spawn in front of the turret. Another approach here is to have all projectiles spawn at the turret center, but render
         // under the tower sprite.
-        b.fire(this.tower_id, x + (dx * (this.width - 10)), y + (dy * (this.height - 10)), angle, this.range, this.damage);
+        b.fire(this.tower_id, x + (dx * (this.width - 10)), y + (dy * (this.height - 10)), angle, this.range, this.damage, this.tower_info?.attributes.projectile_modifiers);
     }
     enableBulletCollisions() {
         this.scene.physics.add.overlap(this.td_scene.wave_manager.enemies, this.projectiles, this.td_scene.damageEnemy);

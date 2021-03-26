@@ -7,7 +7,6 @@ class WaveManager {
         this.delta_to_next_enemy = 0;
         this.td_scene = scene;
         this.path = path;
-        // TODO(jon): When using Enemy as classType "speed" is not set as the consutructor is not called ???
         this.enemies = this.td_scene.add.group({ classType: Enemy, runChildUpdate: true });
         this.setupWaveSubscription();
     }
@@ -21,10 +20,6 @@ class WaveManager {
         });
     }
     update(time, delta) {
-        // If it's been X time since last spawn, spawn a new enemy
-        // If there are no enemies remaining from the previously spawn wave, start the next wave.
-        // If there are less then 10 waves avaiable, create a new wave.
-        // When a new wave is created, difficulty should be automatically incremented.
         if (this.current_wave && (this.tower_defense_state.current_wave_info.spawned < this.tower_defense_state.current_wave_info.total)) {
             this.spawnEnemy(time, delta);
         }

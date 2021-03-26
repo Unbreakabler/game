@@ -1,6 +1,7 @@
 import { __decorate } from '../../../node_modules/tslib/tslib.es6.js';
 import { generateWave } from './enemy_wave_generator.js';
 import { getTowerAttributes } from './stats_base_towers.js';
+import { applyTowerAttributeModifiers } from './stats_tower_modifiers.js';
 import { Exclude } from '../../../node_modules/class-transformer/esm5/decorators/exclude.decorator.js';
 
 const BasicTowerStatusDefaults = {
@@ -15,7 +16,7 @@ const BasicTowerStatusDefaults = {
 };
 const MachineGunTowerStatusDefaults = {
     id: 'machine_gun_1',
-    tier: 0,
+    tier: 1,
     type: 'machine_gun',
     x: 0,
     y: 0,
@@ -29,13 +30,13 @@ class TowerDefense {
         this.stats = {};
         this.waves = [];
         this.current_wave_info = { total: 0, spawned: 0, alive: 0 };
-        this.current_wave_difficulty = 10;
+        this.current_wave_difficulty = 100;
         this.tower_map = get_default_tower_map();
+        this.slot_tower_attribute_modifier_map = get_default_slot_tower_attribute_modifiers();
         this.slots = ['basic_1', 'machine_gun_1', null, null, null];
         this.slots.forEach(tower_id => {
-            if (tower_id) {
+            if (tower_id)
                 this.stats[tower_id] = generate_default_stats();
-            }
         });
         for (let i = 0; i < 10; i++) {
             // Generate the first 10 waves
@@ -47,7 +48,10 @@ class TowerDefense {
         if (!status)
             return null;
         const attributes = getTowerAttributes(status);
-        return { status, attributes };
+        // Apply modifiers to the attributes, these would mods that increase attack speed, projectiles, etc.
+        const attribute_modifier_ids = this.slot_tower_attribute_modifier_map[id];
+        const modified_attributes = applyTowerAttributeModifiers(attributes, attribute_modifier_ids);
+        return { status, attributes: modified_attributes };
     }
     getTowerStats(id) {
         const tower_stats = this.stats[id];
@@ -98,6 +102,7 @@ class TowerDefense {
     }
     recordEnemyLeak(enemy) {
         // record leak count per wave?
+        // TODO(jon): more, better stats. How many enemies were leaked? Current lives? etc.
         this.current_wave_info.alive--;
     }
     generateEnemyWave() {
@@ -106,10 +111,6 @@ class TowerDefense {
         // a linear increase wont match item/drop/upgrade power spikes.
         this.current_wave_difficulty++;
     }
-    // public getWave() {
-    //   this.generateEnemyWave();
-    //   return this.waves.shift()!;
-    // }
     spawnNextWave() {
         this.generateEnemyWave();
         this.waves.shift();
@@ -125,6 +126,12 @@ const get_default_tower_map = () => {
     return {
         'basic_1': BasicTowerStatusDefaults,
         'machine_gun_1': MachineGunTowerStatusDefaults
+    };
+};
+const get_default_slot_tower_attribute_modifiers = () => {
+    return {
+        'basic_1': [{ id: 'physical_1', level: 10 }, { id: 'chain_1', level: 1 }],
+        'machine_gun_1': [{ id: 'physical_1', level: 10 }, { id: 'chain_1', level: 20 }],
     };
 };
 const generate_default_stats = () => {

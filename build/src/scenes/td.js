@@ -146,7 +146,6 @@ class TD extends Phaser.Scene {
                     if (new_selection_tower_info?.status.is_placed) {
                         // selecting tower already placed, highlight range
                         // Allows a user to select a tower to see details or take actions
-                        console.log("SELECT PLACED TURRET");
                         this.selection.cursor = "selected";
                         this.selected_turret = this.tower_map.get(this.selection.id) || null;
                         this.selected_turret?.select(true);
@@ -154,7 +153,6 @@ class TD extends Phaser.Scene {
                     else {
                         // selecting a tower that is not yet placed, make placeable
                         // Allows a user to select a tower for placement
-                        console.log("SELECT UNPLACED TURRET");
                         this.selection.cursor = "placement";
                         this.selected_turret = this.tower_map.get(this.selection.id) || null;
                         if (this.selected_turret) {
@@ -163,14 +161,10 @@ class TD extends Phaser.Scene {
                         }
                     }
                 }
-                else if (cur_selection && this.selection === cur_selection) {
-                    // reselecting - i don't think this ever happens, you can only toggle selection currently.
-                    console.log("RESELECT TURRET");
-                }
+                else if (cur_selection && this.selection === cur_selection) ;
                 else if (!cur_selection && this.selection && active_selection_tower_info?.status.is_placed == false) {
                     // deselecting unplaced turret, hide gameobject
                     // Allows a user to unselect a turret that is currently on their cursor for placement
-                    console.log('DESELECT UNPLACED TURRET');
                     this.selected_turret?.select(false);
                     this.selected_turret?.setVisible(false);
                     this.selected_turret = null;
@@ -179,7 +173,6 @@ class TD extends Phaser.Scene {
                 else if (!cur_selection && this.selection && active_selection_tower_info?.status.is_placed) {
                     // Deselecting a turret that is already placed
                     // Allows a user to deselect a placed turret that was selected to highlight range or take action
-                    console.log("DESELECT PLACED TURRET");
                     this.selected_turret?.select(false);
                     this.selected_turret = null;
                     this.selection = null;
@@ -202,24 +195,15 @@ class TD extends Phaser.Scene {
     }
     update(time, delta) {
         this.tower_map.forEach((tower) => tower.update(time, delta));
-        // wave manager
-        // if waves.length < 10, generate a new wave
-        // take the oldest wave (next up) and start it in the wave manager
-        // wave manager creates the enemies, spawns them on the path, and watches for wave completion
-        // once all enemies in the wave are destroyed, repeat.
-        // wave manager will subscribe to the tower defense svelte store and manage the waves itself.
         this.wave_manager.update(time, delta);
     }
     checkUnderCursor(pointer, game_objects_under_pointer) {
         if (game_objects_under_pointer.length) {
-            // change cursor to hand
             document.body.style.cursor = 'pointer';
         }
         else {
             document.body.style.cursor = 'auto';
-            // pointer
         }
-        this.testTurretPlacement(pointer);
     }
     testTurretPlacement(pointer) {
         if (!this.selection || this.selection.cursor !== 'placement' || !this.selected_turret)
@@ -258,7 +242,9 @@ class TD extends Phaser.Scene {
         // only if both enemy and bullet are alive
         if (enemy.active === true && bullet.active === true) {
             // decrease the enemy hp with BULLET_DAMAGE
-            const bullet_damage = bullet.hit();
+            const bullet_damage = bullet.hit(enemy);
+            if (!bullet_damage)
+                return;
             gameModelInstance.tower_defense.recordTowerDamage(bullet.tower_id, bullet_damage);
             const still_alive = enemy.receiveDamage(bullet_damage);
             if (still_alive)

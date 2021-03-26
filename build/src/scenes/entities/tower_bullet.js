@@ -6,19 +6,20 @@ class Bullet extends Phaser.GameObjects.Image {
         this.lifespan = 0;
         this.speed = 0;
         this.damage = 0;
+        this.range = 0;
+        this.chains = 0;
+        this.td_scene = scene;
         scene.add.existing(this);
         scene.physics.add.existing(this);
         this.dx = 0;
         this.dy = 0;
         this.lifespan = 0;
         this.speed = Phaser.Math.GetSpeed(600, 1);
-        // gameModel.subscribe((m) => {
-        //   this.tower = m.tower_defense.getTower(this.tower_id)
-        //   // TODO(jon): move this damage tracking into the tower state object
-        // });
     }
-    fire(tower_id, x, y, angle, range, damage) {
+    fire(tower_id, x, y, angle, range, damage, projectile_modifiers) {
         this.tower_id = tower_id;
+        if (!this.mods)
+            this.initialize_mods(projectile_modifiers);
         this.setActive(true);
         this.setVisible(true);
         this.setPosition(x, y);
@@ -27,6 +28,7 @@ class Bullet extends Phaser.GameObjects.Image {
         this.dy = Math.sin(angle);
         this.lifespan = range * 1.3;
         this.damage = damage;
+        this.range = range;
     }
     update(time, delta) {
         this.lifespan -= delta;
@@ -38,9 +40,58 @@ class Bullet extends Phaser.GameObjects.Image {
         }
     }
     // returns damage
-    hit() {
-        this.destroy();
+    // This is where a "chain" or "aoe" caluclation would take place if present on the projectile.
+    hit(enemy) {
+        if (enemy === this.last_enemy_hit)
+            return null;
+        let still_alive = false;
+        if (this.chains > 0) {
+            const e = this.findClosestEnemyInRange(this.range, enemy);
+            if (e) {
+                this.last_enemy_hit = enemy;
+                still_alive = true;
+                this.chains--;
+                const angle = Phaser.Math.Angle.Between(this.x, this.y, e.x, e.y);
+                this.fire(this.tower_id, this.x, this.y, angle, this.range, this.damage, this.mods);
+            }
+            else {
+                this.chains = 0;
+            }
+            // target new enemy
+            // set chain range
+            // move "fire" in new direction
+        }
+        if (!still_alive)
+            this.destroy();
+        // console.log('hit with', this.mods)
+        // to chain or do aoe damage we need to find enemies within a range and either target, or apply damage.
+        // This should fetch projectile modifiers from the tower_defense state based on the firing tower_id
         return this.damage;
+    }
+    initialize_mods(projectile_modifiers = []) {
+        this.mods = projectile_modifiers;
+        this.mods.forEach(mod => {
+            if (mod.chains)
+                this.chains += mod.chains;
+        });
+    }
+    findClosestEnemyInRange(range = 0, current_target) {
+        const enemies = this.td_scene.wave_manager.enemies;
+        let closest_enemy;
+        let closest_distance = Number.MAX_VALUE;
+        for (const e of enemies.getChildren()) {
+            if (e === current_target)
+                continue;
+            if (e === this.last_enemy_hit) {
+                continue;
+            }
+            const d = Phaser.Math.Distance.Between(this.x, this.y, e.x, e.y);
+            if (d < range && d < closest_distance) {
+                closest_distance = d;
+                closest_enemy = e;
+            }
+        }
+        return closest_enemy;
     }
 }
 
