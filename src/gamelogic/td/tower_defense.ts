@@ -2,6 +2,7 @@ import { Exclude } from "class-transformer";
 
 import { EnemyWave, generateWave } from './enemy_wave_generator'
 import { getTowerAttributes, TowerCalculatedAttributes } from "./stats_base_towers";
+import { AttributeModifierIds, applyTowerAttributeModifiers, ProjectileModifierIds } from "./stats_tower_modifiers";
 
 type BASIC_TOWER_IDS = 'basic_1'
 type MACHINE_GUN_IDS = 'machine_gun_1'
@@ -39,7 +40,7 @@ const BasicTowerStatusDefaults: TowerStatus = {
 
 const MachineGunTowerStatusDefaults: TowerStatus = {
   id: 'machine_gun_1',
-  tier: 0,
+  tier: 1,
   type: 'machine_gun',
   x: 0,
   y: 0,
@@ -80,20 +81,23 @@ export class TowerDefense {
 
   // Need to expose below but it breaks
   private tower_map: { [id in TowerId]: TowerStatus };
+
+  private slot_tower_attribute_modifier_map: { [id in TowerId]: {id: AttributeModifierIds, level: integer}[]};
+
   public slots: Array<TowerId | null>
   public stats: Stats = {}
   public waves: EnemyWave[] = [];
   public current_wave_info: WaveInfo = { total: 0, spawned: 0, alive: 0 };
-  public current_wave_difficulty: number = 10;
+  public current_wave_difficulty: number = 100;
 
   public constructor() {
     this.tower_map = get_default_tower_map();
+    this.slot_tower_attribute_modifier_map = get_default_slot_tower_attribute_modifiers();
     this.slots = ['basic_1', 'machine_gun_1', null, null, null]
     this.slots.forEach(tower_id => {
-      if (tower_id) {
-        this.stats[tower_id] = generate_default_stats()
-      }
+      if (tower_id) this.stats[tower_id] = generate_default_stats()
     }); 
+
 
     for (let i = 0; i < 10; i++) {
       // Generate the first 10 waves
@@ -105,7 +109,11 @@ export class TowerDefense {
     const status = this.tower_map[id]
     if (!status) return null;
     const attributes = getTowerAttributes(status)
-    return { status, attributes }
+    // Apply modifiers to the attributes, these would mods that increase attack speed, projectiles, etc.
+    const attribute_modifier_ids = this.slot_tower_attribute_modifier_map[id]
+    const modified_attributes = applyTowerAttributeModifiers(attributes, attribute_modifier_ids)
+
+    return { status, attributes: modified_attributes }
   }
 
   public getTowerStats(id: TowerId): TowerRecordedStats {
@@ -160,6 +168,7 @@ export class TowerDefense {
 
   public recordEnemyLeak(enemy: string) {
     // record leak count per wave?
+    // TODO(jon): more, better stats. How many enemies were leaked? Current lives? etc.
     this.current_wave_info.alive--;
   }
 
@@ -169,11 +178,6 @@ export class TowerDefense {
     // a linear increase wont match item/drop/upgrade power spikes.
     this.current_wave_difficulty++;
   }
-
-  // public getWave() {
-  //   this.generateEnemyWave();
-  //   return this.waves.shift()!;
-  // }
 
   public spawnNextWave() {
     this.generateEnemyWave();
@@ -189,6 +193,13 @@ const get_default_tower_map = () => {
   return {
     'basic_1': BasicTowerStatusDefaults,
     'machine_gun_1': MachineGunTowerStatusDefaults
+  }
+}
+
+const get_default_slot_tower_attribute_modifiers = (): { [id in TowerId]: {id: AttributeModifierIds, level: integer}[]} => {
+  return {
+    'basic_1': [{ id: 'physical_1', level: 10 }, { id: 'chain_1', level: 1}],
+    'machine_gun_1': [{ id: 'physical_1', level: 10 }, { id: 'chain_1', level: 20}],
   }
 }
 

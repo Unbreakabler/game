@@ -1,7 +1,7 @@
 import type TD from "../../td";
 import Bullet from "../tower_bullet";
 import type Enemy from "../enemies/enemy";
-import { gameModel, GameModel } from "../../../gamelogic/gamemodel";
+import { gameModel } from "../../../gamelogic/gamemodel";
 import type { TowerId, TowerInfo, TargetingMode } from "../../../gamelogic/td/tower_defense";
 
 const DEFAULT_RANGE = 200;
@@ -17,7 +17,7 @@ export default class Turret extends Phaser.GameObjects.Image {
   public is_selected = false;
   public show_range = false;
   public is_placed = false;
-  public tower_id: string;
+  public tower_id: TowerId;
   
   private projectiles: BetterGroup<Bullet>;
   public display_range:  Phaser.GameObjects.Arc;
@@ -30,7 +30,7 @@ export default class Turret extends Phaser.GameObjects.Image {
 
   public constructor(
     td_scene: TD,
-    tower_id: string,
+    tower_id: TowerId,
     x: number = 0,
     y: number = 0,
     sprite_name: string = "turret",
@@ -38,7 +38,8 @@ export default class Turret extends Phaser.GameObjects.Image {
     super(td_scene, x, y, sprite_name);
     this.td_scene = td_scene;
     this.tower_id = tower_id;
-    // TODO(jon): Projectiles will have to be managed different to allow differently projectiles for each turret.
+
+    // TODO(jon): Projectiles will have to be managed differently to allow different projectiles for each turret.
     this.projectiles = this.td_scene.add.group({ classType: Bullet, active: true, runChildUpdate: true }) as BetterGroup<Bullet>;
     this.display_range = this.td_scene.add.circle(0, 0, this.range, 0xff0000, 0.5);
     this.display_range.setVisible(false);
@@ -80,12 +81,6 @@ export default class Turret extends Phaser.GameObjects.Image {
 
   public update(time: number, delta: number): void {
     if (!this.is_placed) return;
-
-    //Look at near enemies
-    // let targetingFunction = (x: number) => this.findClosestEnemyInRange(x);
-    // if (this.targeting_mode === 'last') targetingFunction = (x: number) => this.findLastEnemyInRange(x);
-    // if (this.targeting_mode === 'first') targetingFunction = (x: number) => this.findFirstEnemyInRange(x);
-    // if (this.targeting_mode === 'strongest') targetingFunction = (x: number) => this.findStrongestEnemyInRange(x);
 
     let e;
     if (this.targeting_mode === 'closest') e = this.findClosestEnemyInRange(20);
@@ -258,22 +253,19 @@ export default class Turret extends Phaser.GameObjects.Image {
 
   private findStrongestEnemyInRange(range_bonus: number = 0): Enemy | undefined {
     const enemies = this.td_scene.wave_manager.enemies;
-    let furthest_enemy: Enemy | undefined;
-    let height_hp = Number.MIN_VALUE;
+    let strongest_enemy: Enemy | undefined;
+    let heightest_hp = Number.MIN_VALUE;
     for (const e of enemies.getChildren()) {
       const d = Phaser.Math.Distance.Between(this.x, this.y, e.x, e.y);
       if (d < this.range + range_bonus) {
-        if (e.health_points > height_hp) {
-          height_hp = e.follower.t;
-          furthest_enemy = e;
+        if (e.health_points > heightest_hp) {
+          heightest_hp = e.health_points;
+          strongest_enemy = e;
         }
       }
     }
-    return furthest_enemy;
+    return strongest_enemy;
   }
-
-  // firing modes:
-  // first, last, strongest, closest
 
   private getAngleToEnemy(enemy: Enemy): number {
     return Phaser.Math.Angle.Between(this.x, this.y, enemy.x, enemy.y);
@@ -306,7 +298,7 @@ export default class Turret extends Phaser.GameObjects.Image {
     // position the bullet in front of the tower "cannon". If the tower is not a cannon this will cause the projectile to
     // spawn in front of the turret. Another approach here is to have all projectiles spawn at the turret center, but render
     // under the tower sprite.
-    b.fire(this.tower_id, x + (dx * (this.width - 10)), y + (dy * (this.height - 10)), angle, this.range, this.damage);
+    b.fire(this.tower_id, x + (dx * (this.width - 10)), y + (dy * (this.height - 10)), angle, this.range, this.damage, this.tower_info?.attributes.projectile_modifiers);
   }
 
   public enableBulletCollisions(): void {

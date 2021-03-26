@@ -5,14 +5,32 @@
 
 3/21/2021:
 
+DONE:
+- Show current wave information
+- Add a basic "merging" game under workshop, doesn't need to have state linked to the system yet.
+  - drag and drop basic implementation is in place
+
+3/23/2021:
+
+DONE:
+- basic drag/drop merging game for objects with type/tier.
+  - Still needs to be tied into the tower defense state store.
+
+
+3/24/2021:
+
+DONE:
+- ability to change turret target selection priority
+- changed wave generation algo to cause waves to spawn quicker, increasing difficulty and game speed.
+
+
+3/25/2021:
+
 TODO(jon):
 
-- Add a basic "merging" game under workshop, doesn't need to have state linked to the system yet.
 - Add a 2-3 more enemy types
 - Add some more modifiers
-- Add at least one more tier of green_knight
+- Add at least one more tier of green_knight mods
 - Add more modifier type tiers
   - Make it so that mobs can only have one modifier of each type?
-
-  DONE:
-  - Show current wave information
+- Add slot modifier system (similar to poe support gems)

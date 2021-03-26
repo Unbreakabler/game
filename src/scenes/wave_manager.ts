@@ -3,15 +3,8 @@ import enemy_base_stats from "../gamelogic/td/stats_base_enemies";
 import type { EnemyWave } from "../gamelogic/td/enemy_wave_generator";
 import type { TowerDefense } from "../gamelogic/td/tower_defense";
 import Enemy from "./entities/enemies/enemy";
-import GreenKnight from "./entities/enemies/green_knight";
 import type { Path } from "./entities/path";
 import type TD from "./td";
-
-interface WaveInfo {
-  total: number,
-  spawned: number,
-  alive: number,
-}
 
 export class WaveManager {
   private td_scene: TD;
@@ -20,13 +13,11 @@ export class WaveManager {
   private delta_to_next_enemy: number = 0;
   private current_wave!: EnemyWave;
   
-  // public wave_info: WaveInfo = { total: 0, spawned: 0, alive: 0 };
   public enemies!: BetterGroup<Enemy>;
 
   constructor(scene: TD, path: Path) {
     this.td_scene = scene;
     this.path = path;
-    // TODO(jon): When using Enemy as classType "speed" is not set as the consutructor is not called ???
     this.enemies = this.td_scene.add.group({ classType: Enemy, runChildUpdate: true }) as BetterGroup<Enemy>;
     this.setupWaveSubscription()
   }
@@ -41,11 +32,6 @@ export class WaveManager {
   }
 
   public update(time: number, delta: number): void {
-    // If it's been X time since last spawn, spawn a new enemy
-    // If there are no enemies remaining from the previously spawn wave, start the next wave.
-    // If there are less then 10 waves avaiable, create a new wave.
-    // When a new wave is created, difficulty should be automatically incremented.
-
     if (this.current_wave && (this.tower_defense_state.current_wave_info.spawned < this.tower_defense_state.current_wave_info.total)) {
       this.spawnEnemy(time, delta);
     } else {
