@@ -1,5 +1,6 @@
 import { Exclude, Expose } from "class-transformer";
 import type { FARM_JOB } from "./farmjobs";
+import type { MINE } from "./mines";
 import type { VILLAGE_BUILDING } from "./villagebuildings";
 
 export interface Requirement {
@@ -7,7 +8,7 @@ export interface Requirement {
   level_required: number;
 }
 
-export type ValidAchievableShortName = FARM_JOB | VILLAGE_BUILDING;
+export type ValidAchievableShortName = FARM_JOB | VILLAGE_BUILDING | MINE;
 
 /**
  * Achievables would be Jobs, Skills, Talents that have or are

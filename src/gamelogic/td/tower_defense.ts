@@ -98,7 +98,6 @@ export class TowerDefense {
       if (tower_id) this.stats[tower_id] = generate_default_stats()
     }); 
 
-
     for (let i = 0; i < 10; i++) {
       // Generate the first 10 waves
       this.generateEnemyWave()
@@ -111,6 +110,8 @@ export class TowerDefense {
     const attributes = getTowerAttributes(status)
     // Apply modifiers to the attributes, these would mods that increase attack speed, projectiles, etc.
     const attribute_modifier_ids = this.slot_tower_attribute_modifier_map[id]
+
+    // Lookup modifiers by id and pass tower attributes through the modifier functions.
     const modified_attributes = applyTowerAttributeModifiers(attributes, attribute_modifier_ids)
 
     return { status, attributes: modified_attributes }
@@ -198,7 +199,7 @@ const get_default_tower_map = () => {
 
 const get_default_slot_tower_attribute_modifiers = (): { [id in TowerId]: {id: AttributeModifierIds, level: integer}[]} => {
   return {
-    'basic_1': [{ id: 'physical_1', level: 10 }, { id: 'chain_1', level: 1}],
+    'basic_1': [{ id: 'physical_1', level: 10 }, { id: 'chain_1', level: 100}],
     'machine_gun_1': [{ id: 'physical_1', level: 10 }, { id: 'chain_1', level: 20}],
   }
 }

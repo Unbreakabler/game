@@ -47,13 +47,6 @@ export class FarmJob extends Achievable {
   public getDisplayName(): string {
     return this.display_name;
   }
-  public getCurrentLevel(): number {
-    return this.level;
-  }
-
-  public getMaxLevelReached(): number {
-    return this.max_level;
-  }
 
   /**
    * https://www.desmos.com/calculator/lor4dbrqdz

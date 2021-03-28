@@ -45,8 +45,7 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
     this.health_points = health_points;
     this.original_health_points = this.health_points; // health_points will need to be set for each enemy
     this.setActive(true);
-    // this.setVisible(true);
-
+    
     this.health_bar = new HealthBar(td_scene, x, y - this.height, this.width, this.health_points)
   }
 

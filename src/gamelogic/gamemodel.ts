@@ -1,9 +1,12 @@
 import { deserialize, Exclude, serialize, Transform, Type } from "class-transformer";
 import { writable } from "svelte/store";
+import type { IIndexable } from "./td/stats_tower_modifiers";
 import { TowerDefense } from "./td/tower_defense";
-import type { Achievable } from "./village/achievable";
+import type { Achievable, ValidAchievableShortName } from "./village/achievable";
 import { FarmJob } from "./village/farmjob";
 import { farmJobTransformer, get_default_farm_jobs } from "./village/farmjobs";
+import { Mine } from "./village/mine";
+import { get_default_mines, MINE, MineTransformer } from "./village/mines";
 import { VillageBuilding } from "./village/villagebuilding";
 import { get_default_village_buildings, villageBuildingTransformer } from "./village/villagebuildings";
 
@@ -12,6 +15,11 @@ export class Wallet {
   public constructor() {
     this.money = 10_000;
   }
+}
+
+export class Resources {
+  public dirt: integer = 0;
+  public stone: integer = 0;
 }
 
 /**
@@ -24,6 +32,9 @@ export class GameModel {
   @Type(() => Wallet)
   public wallet: Wallet;
 
+  @Type(() => Resources)
+  public resources: Resources;
+
   @Type(() => FarmJob)
   @Transform(farmJobTransformer, { toClassOnly: true })
   public farm_jobs: Map<string, FarmJob> = new Map();
@@ -31,6 +42,10 @@ export class GameModel {
   @Type(() => VillageBuilding)
   @Transform(villageBuildingTransformer, { toClassOnly: true })
   public village_buildings: Map<string, VillageBuilding> = new Map();
+
+  @Type(() => Mine)
+  @Transform(MineTransformer, { toClassOnly: true })
+  public mines: Map<string, Mine> = new Map();
 
   @Exclude()
   public achievables: Map<string, Achievable> = new Map();
@@ -42,20 +57,26 @@ export class GameModel {
     //Create new empty GameModel
     this.last_saved = Date.now();
     this.wallet = new Wallet();
+    this.resources = new Resources();
     this.farm_jobs = get_default_farm_jobs();
     this.village_buildings = get_default_village_buildings();
+    this.mines = get_default_mines();
     this.tower_defense = new TowerDefense();
     this.reloadAchievables();
   }
 
   public reloadAchievables(): void {
-    this.achievables = new Map([...this.farm_jobs]);
+    this.achievables = new Map([...this.farm_jobs as Map<string, Achievable>, ...this.mines as Map<string, Achievable>]);
   }
 
   public update(delta_t_s: number): void {
+    const delta_t_ms = delta_t_s * 1000
     for (const [key, farm_job] of this.farm_jobs.entries()) {
       farm_job.update(delta_t_s);
       farm_job.earnIncome(this.wallet, delta_t_s);
+    }
+    for (const [key, mine] of this.mines.entries()) {
+      mine.update(this.resources, delta_t_ms);
     }
   }
 
@@ -78,6 +99,19 @@ export class GameModel {
     const job = this.farm_jobs.get(achievable_name);
     if (!job) throw new Error(`Missing FarmJob ${achievable_name}`);
     job.active = true;
+  }
+
+  public activateMine(achievable_name: MINE): void {
+    const mine = this.mines.get(achievable_name)
+    if (!mine) throw new Error(`Missing mine ${achievable_name}`)
+    mine.active = true;
+  }
+
+  public levelMine(achievable_name: MINE): void {
+    const mine = this.mines.get(achievable_name)
+    if (!mine) throw new Error(`Missing mine ${achievable_name}`)
+
+    mine.requestLevelUp(this.wallet);
   }
 }
 

@@ -5,6 +5,7 @@
   import Farm from "../app/farm.svelte";
   import Village from "../app/village.svelte";
   import Workshop from "../app/workshop.svelte";
+  import Mine from "../app/mines.svelte";
 
   import { gameModel, GameModel } from "../gamelogic/gamemodel";
 
@@ -14,6 +15,7 @@
   let items = [
     { id: "village", component: Village, text: "Village", locked: false },
     { id: "farm", component: Farm, text: "Farm", name: "villagebuilding_farm", locked: false },
+    { id: "mine", component: Mine, text: "Mine", name: "villagebuilding_mine", locked: false },
     { id: "workshop", component: Workshop, text: "Workshop", name: "villagebuilding_workshop", locked: false },
     { id: "blacksmith", component: Blacksmith, text: "Blacksmith", name: "villagebuilding_blacksmith", locked: false },
     { id: "laboratory", component: Laboratory, text: "Laboratory", name: "villagebuilding_laboratory", locked: false },

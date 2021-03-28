@@ -26,7 +26,7 @@ export default class Turret extends Phaser.GameObjects.Image {
   private tower_info!: TowerInfo | null;
   private target!: Enemy | null;
   private target_indicator!: Phaser.GameObjects.Arc;
-  private targeting_mode: TargetingMode = 'closest'
+  private targeting_mode: TargetingMode = 'first'
 
   public constructor(
     td_scene: TD,
@@ -77,22 +77,11 @@ export default class Turret extends Phaser.GameObjects.Image {
     });
   }
 
-  public preUpdate() { this.displayRange() }
+  public preUpdate() { this.setDisplayRange() }
 
   public update(time: number, delta: number): void {
     if (!this.is_placed) return;
 
-    let e;
-    if (this.targeting_mode === 'closest') e = this.findClosestEnemyInRange(20);
-    if (this.targeting_mode === 'last') e = this.findLastEnemyInRange(20);
-    if (this.targeting_mode === 'first') e = this.findFirstEnemyInRange(20);
-    if (this.targeting_mode === 'strongest') e = this.findStrongestEnemyInRange(20);
-
-    if (e) {
-      this.targetEnemy(e);
-    } else if (this.target_indicator) {
-      this.target_indicator.setVisible(false);
-    }
     // time to shoot
     if (time > this.next_tick) {
       //If fired at enemy, start cooldown
@@ -105,7 +94,7 @@ export default class Turret extends Phaser.GameObjects.Image {
       this.tower_info.status.is_selected = false;
       this.tower_info.status.is_placed = false;
     }
-    this.displayRange();
+    this.setDisplayRange();
   }
 
   private isPlaceable(
@@ -162,7 +151,7 @@ export default class Turret extends Phaser.GameObjects.Image {
     return true;
   }
 
-  public displayRange() {
+  public setDisplayRange() {
     const red = 0xff0000
     const green = 0x00ff00
     const blue = 0x0000ff
