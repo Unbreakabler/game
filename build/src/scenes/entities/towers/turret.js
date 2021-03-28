@@ -15,7 +15,7 @@ class Turret extends Phaser.GameObjects.Image {
         this.show_range = false;
         this.is_placed = false;
         this.next_tick = 0;
-        this.targeting_mode = 'closest';
+        this.targeting_mode = 'first';
         this.td_scene = td_scene;
         this.tower_id = tower_id;
         // TODO(jon): Projectiles will have to be managed differently to allow different projectiles for each turret.
@@ -53,25 +53,10 @@ class Turret extends Phaser.GameObjects.Image {
             unsubscribe_store();
         });
     }
-    preUpdate() { this.displayRange(); }
+    preUpdate() { this.setDisplayRange(); }
     update(time, delta) {
         if (!this.is_placed)
             return;
-        let e;
-        if (this.targeting_mode === 'closest')
-            e = this.findClosestEnemyInRange(20);
-        if (this.targeting_mode === 'last')
-            e = this.findLastEnemyInRange(20);
-        if (this.targeting_mode === 'first')
-            e = this.findFirstEnemyInRange(20);
-        if (this.targeting_mode === 'strongest')
-            e = this.findStrongestEnemyInRange(20);
-        if (e) {
-            this.targetEnemy(e);
-        }
-        else if (this.target_indicator) {
-            this.target_indicator.setVisible(false);
-        }
         // time to shoot
         if (time > this.next_tick) {
             //If fired at enemy, start cooldown
@@ -84,7 +69,7 @@ class Turret extends Phaser.GameObjects.Image {
             this.tower_info.status.is_selected = false;
             this.tower_info.status.is_placed = false;
         }
-        this.displayRange();
+        this.setDisplayRange();
     }
     isPlaceable(place_x, place_y) {
         // TODO(jon): check performance here
@@ -131,7 +116,7 @@ class Turret extends Phaser.GameObjects.Image {
         this.enableBulletCollisions();
         return true;
     }
-    displayRange() {
+    setDisplayRange() {
         const red = 0xff0000;
         const green = 0x00ff00;
         const blue = 0x0000ff;

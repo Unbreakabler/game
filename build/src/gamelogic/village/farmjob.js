@@ -20,12 +20,6 @@ class FarmJob extends Achievable {
     getDisplayName() {
         return this.display_name;
     }
-    getCurrentLevel() {
-        return this.level;
-    }
-    getMaxLevelReached() {
-        return this.max_level;
-    }
     /**
      * https://www.desmos.com/calculator/lor4dbrqdz
      * formula 5
