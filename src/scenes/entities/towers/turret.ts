@@ -82,6 +82,17 @@ export default class Turret extends Phaser.GameObjects.Image {
   public update(time: number, delta: number): void {
     if (!this.is_placed) return;
 
+    let e;
+    if (this.targeting_mode === 'closest') e = this.findClosestEnemyInRange(20);
+    if (this.targeting_mode === 'last') e = this.findLastEnemyInRange(20);
+    if (this.targeting_mode === 'first') e = this.findFirstEnemyInRange(20);
+    if (this.targeting_mode === 'strongest') e = this.findStrongestEnemyInRange(20);
+
+    if (e) {
+      this.targetEnemy(e);
+    } else if (this.target_indicator) {
+      this.target_indicator.setVisible(false);
+    }
     // time to shoot
     if (time > this.next_tick) {
       //If fired at enemy, start cooldown
@@ -186,7 +197,7 @@ export default class Turret extends Phaser.GameObjects.Image {
       //Add bullet
       this.fireBullet(this.x, this.y, this.getAngleToEnemy(e));
       //Update where turret is pointing
-      this.targetEnemy(e);
+      // this.targetEnemy(e);
       return true;
     }
     return false;
