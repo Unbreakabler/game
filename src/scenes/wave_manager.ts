@@ -1,5 +1,5 @@
 import { gameModel } from "../gamelogic/gamemodel";
-import enemy_base_stats from "../gamelogic/td/stats_base_enemies";
+import ENEMY_BASE_STATS from "../gamelogic/td/stats_base_enemies";
 import type { EnemyWave } from "../gamelogic/td/enemy_wave_generator";
 import type { TowerDefense } from "../gamelogic/td/tower_defense";
 import Enemy from "./entities/enemies/enemy";
@@ -47,9 +47,11 @@ export class WaveManager {
     enemy.setName(this.current_wave.enemy_type);
 
     // Set enemy stats/sprite
-    const stats = enemy_base_stats[this.current_wave.enemy_type]
+    const stats = ENEMY_BASE_STATS[this.current_wave.enemy_type]
     enemy.setSpeed(stats?.speed);
     enemy.setHealthPoints(stats?.health_points)
+    enemy.setExperience(stats?.experience);
+    enemy.setValue(stats?.money);
     
     // Set difficulty per mob, we can show this number when selecting the mobs.
     enemy.setDifficulty(this.current_wave.mob_difficulty)

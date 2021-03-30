@@ -51,7 +51,6 @@ export const SLOT_ATTRIBUTE_LIBRARY: { [k in AttributeModifierIds]: SlotAttribut
 }
 
 export const applyTowerAttributeModifiers = (attributes: TowerCalculatedAttributes, attribute_modifier_ids: {id: AttributeModifierIds, level: integer}[]) => {
-  // takes a list of ids, returns attribute modifiers
   const modifiers = attribute_modifier_ids.map(attr => {
     return {
       mod: SLOT_ATTRIBUTE_LIBRARY[attr.id],

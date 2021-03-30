@@ -19,6 +19,12 @@ export interface TowerInfo {
 export interface TowerStatus {
   id: TowerId,
   tier: integer,
+  exp_level?: integer,
+  current_exp?: integer,
+  // do frames get exp? modifiers? hmm.
+  // I think I would like towers to both "level" and be "upgraded", essentially having two levels.
+  // should the exp levels carry between runs? What should carry between runs?
+  exp_for_next_tier?: CallableFunction, 
   type: TowerType,
   x: number,
   y: number,

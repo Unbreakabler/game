@@ -2,6 +2,7 @@ import type TD from "../../td";
 import { CombatText } from '../combat_text';
 import { HealthBar } from '../health_bar';
 import { EnemyModifier, ENEMY_MODIFIERS, ModifierId } from '../../../gamelogic/td/enemy_wave_generator'
+import type { Wallet } from "../../../gamelogic/gamemodel";
 
 const DEFAULT_ENEMY_SPEED = 1 / 10;
 const DEFAULT_ENEMY_HP = 100;
@@ -25,6 +26,8 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
   private health_bar: HealthBar;
   private modifiers: EnemyModifier[] = [];
   private difficulty: number = 0;
+  private experience: number = 0;
+  private money: number = 0;
 
   public constructor(
     td_scene: TD,
@@ -76,6 +79,14 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
     this.name = name;
     this.sprite_name = name;
     return this;
+  }
+
+  public setExperience(exp: number): void {
+    this.experience = exp;
+  }
+
+  public setValue(money: number): void {
+    this.money = money
   }
 
   public setHealthPoints(health_points: number): void {
@@ -173,7 +184,7 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
     this.health_bar.destroy();
   }
 
-  public receiveDamage(damage: number): boolean {
+  public receiveDamage(damage: number, wallet: Wallet): boolean {
     this.health_points -= damage;
     // combat text is self managed and destroys itself from the scene after it's lifespan (default 250ms) has expired.
     // Generates a new floating combat text instance for each instance of damage
@@ -182,6 +193,7 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
     this.setActive(false);
     this.setVisible(false);
     this.destroy();
+    wallet.money += this.money * this.difficulty; //  TODO(jon): Should this add difficulty or money or some combo?
     return false;
   }
 }

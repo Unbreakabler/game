@@ -280,11 +280,12 @@ export default class TD extends Phaser.Scene {
       const bullet_damage = bullet.hit(enemy);
       if (!bullet_damage) return;
 
-      gameModelInstance.tower_defense.recordTowerDamage(bullet.tower_id, bullet_damage)
-      const still_alive = enemy.receiveDamage(bullet_damage);
-      if (still_alive) return;
-      gameModelInstance.tower_defense.recordTowerKill(bullet.tower_id, enemy.name)
-      gameModelInstance.tower_defense.current_wave_info.alive--;
+      const still_alive = enemy.receiveDamage(bullet_damage, gameModelInstance.wallet);
+      if (!still_alive) {
+        gameModelInstance.tower_defense.recordTowerKill(bullet.tower_id, enemy.name)
+        gameModelInstance.tower_defense.current_wave_info.alive--;
+      }
+      // gameModelInstance.tower_defense.recordTowerDamage(bullet.tower_id, bullet_damage, still_alive)
     }
   }
 }
