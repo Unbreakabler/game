@@ -54,7 +54,7 @@ function instance($$self, $$props, $$invalidate) {
 	let progress_width;
 	let { total = 100 } = $$props;
 	let { current = 0 } = $$props;
-	let { name = "Test" } = $$props;
+	let { name = "" } = $$props;
 
 	$$self.$$set = $$props => {
 		if ("total" in $$props) $$invalidate(2, total = $$props.total);

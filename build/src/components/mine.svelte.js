@@ -47,8 +47,7 @@ function create_fragment(ctx) {
 	progressbar = new Progress_bar({
 			props: {
 				current: /*mine*/ ctx[0].current_timer_ms,
-				total: /*mine*/ ctx[0].mine_timer_ms,
-				name: /*mine*/ ctx[0].getDisplayName()
+				total: /*mine*/ ctx[0].mine_timer_ms
 			}
 		});
 
@@ -127,7 +126,6 @@ function create_fragment(ctx) {
 			const progressbar_changes = {};
 			if (dirty & /*mine*/ 1) progressbar_changes.current = /*mine*/ ctx[0].current_timer_ms;
 			if (dirty & /*mine*/ 1) progressbar_changes.total = /*mine*/ ctx[0].mine_timer_ms;
-			if (dirty & /*mine*/ 1) progressbar_changes.name = /*mine*/ ctx[0].getDisplayName();
 			progressbar.$set(progressbar_changes);
 			if ((!current || dirty & /*purchase_cost*/ 2) && t9_value !== (t9_value = formatNumber(/*purchase_cost*/ ctx[1], 0) + "")) set_data(t9, t9_value);
 			if (!current || dirty & /*button_text*/ 4) set_data(t11, /*button_text*/ ctx[2]);
