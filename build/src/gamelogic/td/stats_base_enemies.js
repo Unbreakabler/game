@@ -2,6 +2,8 @@ const ENEMY_BASE_STATS = {
     green_knight: {
         health_points: 100,
         speed: 1 / 10,
+        experience: 1,
+        money: 1,
     }
 };
 

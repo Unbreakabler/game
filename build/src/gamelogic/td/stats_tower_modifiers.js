@@ -9,7 +9,6 @@ const SLOT_ATTRIBUTE_LIBRARY = {
     chain_1: ChainProjectileModifier
 };
 const applyTowerAttributeModifiers = (attributes, attribute_modifier_ids) => {
-    // takes a list of ids, returns attribute modifiers
     const modifiers = attribute_modifier_ids.map(attr => {
         return {
             mod: SLOT_ATTRIBUTE_LIBRARY[attr.id],

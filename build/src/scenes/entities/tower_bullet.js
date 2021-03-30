@@ -46,6 +46,9 @@ class Bullet extends Phaser.GameObjects.Image {
             return null;
         let still_alive = false;
         if (this.chains > 0) {
+            // target new enemy
+            // set chain range
+            // "fire" bullet in new direction
             const e = this.findClosestEnemyInRange(this.range, enemy);
             if (e) {
                 this.last_enemy_hit = enemy;
@@ -57,15 +60,9 @@ class Bullet extends Phaser.GameObjects.Image {
             else {
                 this.chains = 0;
             }
-            // target new enemy
-            // set chain range
-            // move "fire" in new direction
         }
         if (!still_alive)
             this.destroy();
-        // console.log('hit with', this.mods)
-        // to chain or do aoe damage we need to find enemies within a range and either target, or apply damage.
-        // This should fetch projectile modifiers from the tower_defense state based on the firing tower_id
         return this.damage;
     }
     initialize_mods(projectile_modifiers = []) {

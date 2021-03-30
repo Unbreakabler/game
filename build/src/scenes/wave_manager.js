@@ -37,6 +37,8 @@ class WaveManager {
         const stats = ENEMY_BASE_STATS[this.current_wave.enemy_type];
         enemy.setSpeed(stats?.speed);
         enemy.setHealthPoints(stats?.health_points);
+        enemy.setExperience(stats?.experience);
+        enemy.setValue(stats?.money);
         // Set difficulty per mob, we can show this number when selecting the mobs.
         enemy.setDifficulty(this.current_wave.mob_difficulty);
         // Set modifiers (width/height changes, colour changes, auras, effects, etc)

@@ -16,6 +16,8 @@ class Enemy extends Phaser.GameObjects.Sprite {
         this.prev_ang = 0;
         this.modifiers = [];
         this.difficulty = 0;
+        this.experience = 0;
+        this.money = 0;
         td_scene.physics.add.existing(this);
         this.td_scene = td_scene;
         this.sprite_name = sprite_name;
@@ -53,6 +55,12 @@ class Enemy extends Phaser.GameObjects.Sprite {
         this.name = name;
         this.sprite_name = name;
         return this;
+    }
+    setExperience(exp) {
+        this.experience = exp;
+    }
+    setValue(money) {
+        this.money = money;
     }
     setHealthPoints(health_points) {
         this.health_points = health_points;
@@ -138,7 +146,7 @@ class Enemy extends Phaser.GameObjects.Sprite {
     preDestroy() {
         this.health_bar.destroy();
     }
-    receiveDamage(damage) {
+    receiveDamage(damage, wallet) {
         this.health_points -= damage;
         // combat text is self managed and destroys itself from the scene after it's lifespan (default 250ms) has expired.
         // Generates a new floating combat text instance for each instance of damage
@@ -148,6 +156,7 @@ class Enemy extends Phaser.GameObjects.Sprite {
         this.setActive(false);
         this.setVisible(false);
         this.destroy();
+        wallet.money += this.money * this.difficulty; //  TODO(jon): Should this add difficulty or money or some combo?
         return false;
     }
 }
