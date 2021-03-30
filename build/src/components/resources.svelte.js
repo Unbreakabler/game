@@ -8,8 +8,8 @@ import Button from '../../node_modules/smelte/src/components/Button/Button.svelt
 
 function add_css() {
 	var style = element("style");
-	style.id = "svelte-1xs9gyi-style";
-	style.textContent = ".resource-container.svelte-1xs9gyi{display:flex;justify-content:space-between;padding:5px}.money.svelte-1xs9gyi{width:300px;padding:10px}.coin.svelte-1xs9gyi{width:15px;height:15px;background-color:rgb(221, 184, 67);display:inline-block;border-radius:100px;box-shadow:1px 1px}";
+	style.id = "svelte-1nrd325-style";
+	style.textContent = ".resource-container.svelte-1nrd325{display:flex;justify-content:space-between;padding:5px}.money.svelte-1nrd325{width:300px;padding:10px}.coin{width:15px;height:15px;background-color:rgb(221, 184, 67);display:inline-block;border-radius:100px;box-shadow:1px 1px}";
 	append(document.head, style);
 }
 
@@ -147,9 +147,9 @@ function create_fragment(ctx) {
 			create_component(button0.$$.fragment);
 			t4 = space();
 			create_component(button1.$$.fragment);
-			attr(div0, "class", "coin svelte-1xs9gyi");
-			attr(div1, "class", "money bg-secondary-400 svelte-1xs9gyi");
-			attr(div3, "class", "resource-container bg-secondary-400 svelte-1xs9gyi");
+			attr(div0, "class", "coin");
+			attr(div1, "class", "money bg-secondary-400 svelte-1nrd325");
+			attr(div3, "class", "resource-container bg-secondary-400 svelte-1nrd325");
 		},
 		m(target, anchor) {
 			insert(target, div3, anchor);
@@ -264,7 +264,7 @@ function instance($$self, $$props, $$invalidate) {
 class Resources extends SvelteComponent {
 	constructor(options) {
 		super();
-		if (!document.getElementById("svelte-1xs9gyi-style")) add_css();
+		if (!document.getElementById("svelte-1nrd325-style")) add_css();
 		init(this, options, instance, create_fragment, safe_not_equal, {});
 	}
 }

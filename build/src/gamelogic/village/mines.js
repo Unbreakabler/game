@@ -8,8 +8,8 @@ var MINE;
 })(MINE || (MINE = {}));
 const pre = 'mine';
 const mine_array = [
-    new Mine(MINE.dirt, [], `${pre}_${MINE.dirt}`, "Your first mine! Gather resources to build towers and ammo"),
-    new Mine(MINE.stone, [], `${pre}_${MINE.stone}`, "Stone")
+    new Mine(MINE.dirt, [], `${pre}_${MINE.dirt}`, "Your first mine! Gather resources to build towers and ammo", 1, false),
+    new Mine(MINE.stone, [], `${pre}_${MINE.stone}`, "Stone", 5)
 ];
 const get_default_mines = () => {
     return mine_array.reduce((map, mine) => {

@@ -4,36 +4,57 @@ import { Exclude } from '../../../node_modules/class-transformer/esm5/decorators
 import { Expose } from '../../../node_modules/class-transformer/esm5/decorators/expose.decorator.js';
 
 class Mine extends Achievable {
-    constructor(short_name, upgrades, display_name, description, production = 1, production_multiplier = 2) {
+    constructor(short_name, upgrades, display_name, description, difficulty_growth_factor = 1, active = false, production = 1, production_multiplier = 2) {
         super(short_name);
-        this.difficulty_growth_factor = 1;
         this.base_gold_per_level = 10;
-        //Saveable Members
-        this.active = false; // Whether the mine is enabled or not.
         this.current_timer_ms = 0;
         this.mine_timer_ms = 4000; // time to complete a round of mining
         this.upgrades = upgrades;
         this.display_name = display_name;
         this.description = description;
+        this.difficulty_growth_factor = difficulty_growth_factor;
+        this.active = active;
         this.production = production;
         this.production_multiplier = production_multiplier;
     }
     getDisplayName() {
         return this.display_name;
     }
-    getTotalMoneyToNextLevel() {
+    getTotalMoneyToLevel(levels_to_calc = 1) {
         //prettier-ignore
-        return this.difficulty_growth_factor *
-            (this.base_gold_per_level + 10 * Math.log(Math.pow(10, this.level / 10)));
+        let total = 0;
+        let starting_level = this.level;
+        while (levels_to_calc > 0) {
+            total += this.difficulty_growth_factor *
+                (this.base_gold_per_level + 10 * Math.log(Math.pow(10, starting_level / 10)));
+            levels_to_calc--;
+            starting_level++;
+        }
+        return total;
     }
-    requestLevelUp(wallet) {
+    getMaxLevelAffordable(money) {
+        let level = 0;
+        while (money > this.getTotalMoneyToLevel(level)) {
+            level++;
+        }
+        return level;
+    }
+    requestLevelUp(wallet, level = 1) {
+        const cost = this.getTotalMoneyToLevel(level);
+        console.log('requestLevelUp', wallet, cost);
+        if (wallet.money >= cost) {
+            wallet.money -= cost;
+            this.level++;
+            if (this.level > 1)
+                this.production *= this.production_multiplier;
+            this.active = true;
+        }
+    }
+    manuallyMine() {
         if (!this.active)
             return;
-        if (wallet.money > this.getTotalMoneyToNextLevel()) {
-            wallet.money -= this.getTotalMoneyToNextLevel();
-            this.level++;
-            this.production *= this.production_multiplier;
-        }
+        // TODO(jon): instead of adding 1 second every click this should be upgradeable
+        this.current_timer_ms = this.current_timer_ms + 1000;
     }
     update(resources, delta_t_ms) {
         if (!this.active)

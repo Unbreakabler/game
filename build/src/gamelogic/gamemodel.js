@@ -14,8 +14,8 @@ import { Exclude } from '../../node_modules/class-transformer/esm5/decorators/ex
 
 class Wallet {
     constructor() {
-        this.money = 10000;
-        this.money = 10000;
+        this.money = 10;
+        this.money = 10;
     }
 }
 class Resources {
@@ -80,6 +80,7 @@ class GameModel {
         const mine = this.mines.get(achievable_name);
         if (!mine)
             throw new Error(`Missing mine ${achievable_name}`);
+        // TODO(jon): This needs to handle purchasing the mine initially
         mine.active = true;
     }
     levelMine(achievable_name) {
