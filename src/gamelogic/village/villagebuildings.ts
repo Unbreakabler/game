@@ -35,7 +35,7 @@ const mine_upgrades: Upgrade[] = [
 ];
 
 const workshop_upgrades: Upgrade[] = [
-  { build_time: 120, money_cost: 10_000, requirement: { achievable_name: farm_name, level_required: 2 } },
+  { build_time: 120, money_cost: 0, requirement: { achievable_name: farm_name, level_required: 2 } },
 ];
 
 const blacksmith_upgrades: Upgrade[] = [
@@ -47,7 +47,7 @@ const laboratory_upgrades: Upgrade[] = [
 ];
 
 const arr: VillageBuilding[] = [
-  new VillageBuilding(VILLAGE_BUILDING.farm, farm_upgrades, "Farm", "Work here to make some money."),
+  // new VillageBuilding(VILLAGE_BUILDING.farm, farm_upgrades, "Farm", "Work here to make some money."),
   new VillageBuilding(VILLAGE_BUILDING.mine, mine_upgrades, "Mine", "Mine resources here."),
   new VillageBuilding(VILLAGE_BUILDING.workshop, workshop_upgrades, "Workshop", "Construct towers."),
   new VillageBuilding(VILLAGE_BUILDING.blacksmith, blacksmith_upgrades, "Blacksmith", "Craft tower items and equipment"),
