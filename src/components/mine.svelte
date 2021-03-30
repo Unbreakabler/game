@@ -39,7 +39,7 @@
     <div on:click={manuallyMine} class={icon_class}></div>
     <column class="mine-info">
       <row>{mine.display_name} - Lv. {mine.level} - Produces: {mine.production}</row>
-      <ProgressBar current={mine.current_timer_ms} total={mine.mine_timer_ms}/>
+      <ProgressBar current={mine.current_timer_ms} total={mine.mine_timer_ms} />
     </column>
     <button class={button_class} on:click={purchaseMine}>
       <div class="cost">
