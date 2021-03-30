@@ -11,9 +11,9 @@ import { VillageBuilding } from "./village/villagebuilding";
 import { get_default_village_buildings, villageBuildingTransformer } from "./village/villagebuildings";
 
 export class Wallet {
-  public money: number = 10_000;
+  public money: number = 10;
   public constructor() {
-    this.money = 10_000;
+    this.money = 10;
   }
 }
 
@@ -104,6 +104,7 @@ export class GameModel {
   public activateMine(achievable_name: MINE): void {
     const mine = this.mines.get(achievable_name)
     if (!mine) throw new Error(`Missing mine ${achievable_name}`)
+    // TODO(jon): This needs to handle purchasing the mine initially
     mine.active = true;
   }
 

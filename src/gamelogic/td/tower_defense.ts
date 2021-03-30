@@ -2,7 +2,7 @@ import { Exclude } from "class-transformer";
 
 import { EnemyWave, generateWave } from './enemy_wave_generator'
 import { getTowerAttributes, TowerCalculatedAttributes } from "./stats_base_towers";
-import { AttributeModifierIds, applyTowerAttributeModifiers, ProjectileModifierIds } from "./stats_tower_modifiers";
+import { AttributeModifierIds, applyTowerAttributeModifiers } from "./stats_tower_modifiers";
 
 type BASIC_TOWER_IDS = 'basic_1'
 type MACHINE_GUN_IDS = 'machine_gun_1'

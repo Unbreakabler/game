@@ -9,8 +9,8 @@ export enum MINE {
 const pre = 'mine'
 
 const mine_array: Mine[] = [
-  new Mine(MINE.dirt, [], `${pre}_${MINE.dirt}`, "Your first mine! Gather resources to build towers and ammo"),
-  new Mine(MINE.stone, [], `${pre}_${MINE.stone}`, "Stone")
+  new Mine(MINE.dirt, [], `${pre}_${MINE.dirt}`, "Your first mine! Gather resources to build towers and ammo", 1, false),
+  new Mine(MINE.stone, [], `${pre}_${MINE.stone}`, "Stone", 5)
 ]
 
 export const get_default_mines = (): Map<string, Mine> => {
