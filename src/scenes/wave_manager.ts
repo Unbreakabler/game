@@ -76,7 +76,6 @@ export class WaveManager {
   }
 
   public recordEnemyLeak() {
-    console.log("Enemy reached end.");
     this.tower_defense_state.current_wave_info.alive--;
   }
 }

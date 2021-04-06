@@ -8,24 +8,31 @@
 </script>
 
 <div class="main-container ">
-  <Resources />
-  <div class="game-container">
-    <div class="village-container">
+  <!-- <Resources /> -->
+  <!-- <div class="game-container"> -->
+    <!-- <div class="village-container">
       <Tabs />
-    </div>
-    <Game />
-  </div>
+    </div> -->
+  <!-- </div> -->
+  <Game />
 </div>
 
 <style>
+  :global(html) {
+    height: 100%;
+    width: 100%;
+  }
   :global(body) {
     --tw-bg-opacity: 1;
+    height: 100%;
+    width: 100%;
     background-color: rgba(243, 244, 246, var(--tw-bg-opacity));
   }
   .village-container {
     flex-direction: column;
     height: 100%;
     width: 100%;
+    margin: auto;
   }
   .main-container {
     display: flex;
@@ -35,19 +42,6 @@
   .game-container {
     display: flex;
     flex: 1;
-  }
-  @media only screen and (max-width: 1600px) {
-    .game-container {
-      flex-direction: column;
-    }
-    .village-container {
-      /* max-width: 1200px; */
-      margin: auto;
-    }
-  }
-  .menu {
-    display: flex;
     flex-direction: column;
-    flex: 1;
   }
 </style>

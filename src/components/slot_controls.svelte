@@ -30,9 +30,10 @@
     justify-content: center;
   }
   .towers {
-    margin-top:10px;
+    margin-top: 10px;
     display: flex;
     flex-direction: row;
     justify-content: left;
+    background: #ffffff;
   }
 </style>

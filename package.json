@@ -60,6 +60,7 @@
   "dependencies": {
     "class-transformer": "^0.3.2",
     "phaser": "^3.52.0",
+    "phaser3-rex-plugins": "^1.1.44",
     "reflect-metadata": "^0.1.13",
     "smelte": "^1.1.5"
   }

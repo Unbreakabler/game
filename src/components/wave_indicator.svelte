@@ -1,4 +1,6 @@
 <script lang='ts'>
+import { beforeUpdate } from "svelte";
+
   import { GameModel, gameModel } from "../gamelogic/gamemodel";
   import { ENEMY_MODIFIERS, ModifierId } from "../gamelogic/td/enemy_wave_generator";
 
@@ -12,6 +14,12 @@
   const getMod = (mod_id: string) => {
     return ENEMY_MODIFIERS[mod_id as ModifierId]
   }
+
+  // let canvas_height: number;
+  // beforeUpdate(() => {
+  //   const canvas = document.getElementById('game-container')
+  //   if (canvas) canvas_height = canvas.offsetHeight;
+  // })
 
 </script>
 
@@ -62,13 +70,15 @@
   .main {
     display: flex;
     flex-direction: column;
+    overflow: hidden;
   }
   .indicator {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    height: 500px;
+    /* height: 500px; */
     overflow-y: scroll;
-    min-width: 200px;
+    width: 200px;
   }
   .wave_type {
     display: flex;

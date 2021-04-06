@@ -60,6 +60,9 @@
 
 <style>
   .details {
-
+    background: #ffffff;
+    height: 100%;
+    padding: 10px;
+    filter: drop-shadow(0 0 0.75rem crimson);
   }
 </style>

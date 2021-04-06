@@ -27,15 +27,18 @@ Killing an enemy in the tower defense grants the player gold/money. This money c
 Each new tier of resource is drastically more powerful as a projectile then the previous level, but also drastically more expensive to buy and upgrade. This means that older resources will be used for the major of your fast hiring turret projectiles and you may have a harder hitting turret in the back firing a higher tier resource for the toughest enemies. Resources may have a prestige system, either upgrading the resource once a threshold is reached or by upgrading the mine.
 
 ## Components
-- Mine
-- Workshop
-- Inventory
-- Tower defense
-- Prestige
+- Gold - Gained by killing mobs in the tower defense
+- Resources - Gained through mines
+- Mines - Bought/Upgraded for gold, produces resources
+- Workshop - Purchase frames/mods with resources.
+- Inventory - Manage slots, frames, mods and their relations.
+- Prestige - ????
+
+- Tower defense - Places towers to kill mobs, gain gold and mods from the enemies.
 
 ## Tower defense
 - Enemies
 - Waves
-- Enemy Modifiers
+- Wave/Enemy Modifiers
 - Towers
 - Tower Modifiers

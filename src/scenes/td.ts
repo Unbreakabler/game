@@ -9,6 +9,7 @@ import Turret from "./entities/towers/turret";
 import type { SelectionCursor, TowerId, TowerType } from "../gamelogic/td/tower_defense";
 import { Path } from "./entities/path";
 import { WaveManager } from "./wave_manager";
+import { object_without_properties } from "svelte/internal";
 
 type Selection = {
   type: TowerType;
@@ -104,11 +105,11 @@ export default class TD extends Phaser.Scene {
     this.path = new Path(this, points);
     this.path_border = new Path(this, points, 34);
 
-    this.bg_sprite = this.add.tileSprite(0, 0, 800, 600, "grass0");
+    this.bg_sprite = this.add.tileSprite(0, 0, 1920, 1080, "grass0");
     this.bg_sprite.setOrigin(0, 0);
-    this.path_border_sprite = this.add.tileSprite(0, 0, 800, 600, "sand0");
+    this.path_border_sprite = this.add.tileSprite(0, 0, 1920, 1080, "sand0");
     this.path_border_sprite.setOrigin(0, 0);
-    this.path_sprite = this.add.tileSprite(0, 0, 800, 600, "dirt0");
+    this.path_sprite = this.add.tileSprite(0, 0, 1920, 1080, "dirt0");
     this.path_sprite.setOrigin(0, 0);
     this.path_sprite.setMask(this.path.graphics.createGeometryMask());
     this.path_border_sprite.setMask(this.path_border.graphics.createGeometryMask());
@@ -231,11 +232,17 @@ export default class TD extends Phaser.Scene {
     this.wave_manager.update(time, delta)
   }
 
-  public checkUnderCursor(pointer: Phaser.Input.Pointer, game_objects_under_pointer: Phaser.GameObjects.GameObject[]) {
+  public checkUnderCursor(pointer: Phaser.Input.Pointer, game_objects_under_pointer: Phaser.GameObjects.GameObject[]|Turret[]) {
     if (game_objects_under_pointer.length) {
       document.body.style.cursor = 'pointer';
+      for (const obj of game_objects_under_pointer) {
+        if ('is_hovered' in obj) obj.is_hovered = true;
+      }
     } else {
       document.body.style.cursor = 'auto';
+      for (const [key, obj] of this.tower_map) {
+        if ('is_hovered' in obj) obj.is_hovered = false;
+      }
     }
   }
 

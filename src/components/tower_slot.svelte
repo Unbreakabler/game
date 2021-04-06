@@ -71,14 +71,14 @@
   $clip-size: $box-size * (1 + $clip-distance * 2);
   $path-width: 2px;
 
-  $selected-colour: #69ca62;
-  $unselected-colour: #b9b9b9;
+  $selected-colour: #50bd48;
+  $unselected-colour: #353535;
 
   .item {
     position: relative;
     width: $box-size;
     height: $box-size;
-    margin: auto;
+    margin: 5px;
     color: $unselected-colour;
     box-shadow: inset 0 0 0 1px rgba($unselected-colour, .5);
   }
@@ -91,7 +91,7 @@
     &::after {
       @extend %full-fill;
       content: '';
-      z-index: -1;
+      z-index: 1;
       margin: -1 * $clip-distance * 100%;
       box-shadow: inset 0 0 0 $path-width; 
       animation: clipMe $anime-time linear infinite;

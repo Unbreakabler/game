@@ -3,6 +3,7 @@ import Bullet from "../tower_bullet";
 import type Enemy from "../enemies/enemy";
 import { gameModel } from "../../../gamelogic/gamemodel";
 import type { TowerId, TowerInfo, TargetingMode } from "../../../gamelogic/td/tower_defense";
+import { OutlinePipeline } from "../../../plugins/outline";
 
 const DEFAULT_RANGE = 200;
 const DEFAULT_ATTACK_SPEED = 1000;
@@ -15,6 +16,7 @@ export default class Turret extends Phaser.GameObjects.Image {
   public attack_speed = DEFAULT_ATTACK_SPEED;
   public damage = DEFAULT_DAMAGE;
   public is_selected = false;
+  public is_hovered = false;
   public show_range = false;
   public is_placed = false;
   public tower_id: TowerId;
@@ -80,6 +82,13 @@ export default class Turret extends Phaser.GameObjects.Image {
   public preUpdate() { this.setDisplayRange() }
 
   public update(time: number, delta: number): void {
+    if (this.is_selected || this.is_hovered) {
+      const already_applied = this.getPostPipeline(OutlinePipeline)
+      if (already_applied instanceof Array && !already_applied.length) this.setPostPipeline(OutlinePipeline)
+    } else {
+      this.removePostPipeline(OutlinePipeline);
+    }
+
     if (!this.is_placed) return;
 
     let e;
@@ -194,10 +203,7 @@ export default class Turret extends Phaser.GameObjects.Image {
     if (this.targeting_mode === 'strongest') e = this.findStrongestEnemyInRange(20);
 
     if (e) {
-      //Add bullet
       this.fireBullet(this.x, this.y, this.getAngleToEnemy(e));
-      //Update where turret is pointing
-      // this.targetEnemy(e);
       return true;
     }
     return false;
@@ -208,8 +214,8 @@ export default class Turret extends Phaser.GameObjects.Image {
     let closest_enemy: Enemy | undefined;
     let closest_distance = Number.MAX_VALUE;
     for (const e of enemies.getChildren()) {
-      const d = Phaser.Math.Distance.Between(this.x, this.y, e.x, e.y);
-      if (d < this.range + range_bonus) {
+      const d = Phaser.Math.Distance.Squared(this.x, this.y, e.x, e.y);
+      if (d < (this.range + range_bonus) * (this.range + range_bonus)) {
         if (d < closest_distance) {
           closest_distance = d;
           closest_enemy = e;
@@ -280,13 +286,14 @@ export default class Turret extends Phaser.GameObjects.Image {
       // return;
     }
     if (this.target != enemy && this.tower_info?.status.is_selected) {
-      // this.target = enemy
+      this.target = enemy
       this.target_indicator.width = enemy.width;
       this.target_indicator.setVisible(true);
       this.target_indicator.setStrokeStyle(2, 0xffffff)
       this.target_indicator.setAlpha(0.4)
     }
     this.target_indicator.setPosition(enemy.x, enemy.y)
+    this.target_indicator.setDepth(1)
     this.rotation = this.getAngleToEnemy(enemy) + Math.PI / 2;
   }
 
