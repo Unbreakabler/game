@@ -2,7 +2,6 @@
   import { GameModel, gameModel, updateGameModel } from "../gamelogic/gamemodel";
   import { resetSaveGame, saveToStorage } from "../gamelogic/util/saveloadfunctions";
   import { formatNumber } from "../gamelogic/util/utils";
-  import Button from "smelte/src/components/Button";
 
   let gameModelInstance: GameModel;
   gameModel.subscribe((m) => (gameModelInstance = m));
@@ -23,29 +22,34 @@
   }
 </script>
 
-<div class="resource-container bg-secondary-400">
-  <div class="money bg-secondary-400">
-    {money}
+<div class="resource-container">
+  <div class="money">
+    <div>{money}</div>
     <div class="coin" />
     {#each resources as [key, val]}
-      <span>{key}: {val} </span>
+      <div>{key}: {val} </div>
     {/each}
   </div>
-  <div>
-    <Button color="secondary" on:click={saveGame}>Save</Button>
-    <Button color="secondary" on:click={hardReset}>Hard Reset</Button>
-  </div>
+  <!-- <Button color="secondary" on:click={saveGame}>Save</Button>
+  <Button color="secondary" on:click={hardReset}>Hard Reset</Button> -->
 </div>
 
-<style>
+<style lang='scss'>
   .resource-container {
     display: flex;
     justify-content: space-between;
     padding: 5px;
+    color: #fff;
+    font-style: bold;
   }
   .money {
     width: 300px;
     padding: 10px;
+    display: flex;
+    justify-content: flex-end;
+    div {
+      margin-right: 5px;
+    }
   }
   :global(.coin) {
     width: 15px;

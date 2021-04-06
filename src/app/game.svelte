@@ -9,7 +9,7 @@
   import TD from "../scenes/td";
   import WaveIndicator from '../components/wave_indicator.svelte'
   import { OutlinePipeline } from '../plugins/outline'
-import Resources from "../components/resources.svelte";
+  import Resources from "../components/resources.svelte";
 
   let canvas: HTMLCanvasElement, game: any;
 
@@ -36,6 +36,7 @@ import Resources from "../components/resources.svelte";
 
     game = new Phaser.Game(config);
   });
+
 </script>
 
 <div class="main">
@@ -68,7 +69,7 @@ import Resources from "../components/resources.svelte";
     height: 100%;
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
-    grid-template-rows: minmax(0, 1fr) 300px;
+    grid-template-rows: minmax(0, 1fr) minmax(100px, 0.5fr);
     grid-template-areas: 
       "indicator parent"
       "frames parent";
@@ -81,12 +82,6 @@ import Resources from "../components/resources.svelte";
   .parent {
     grid-area: parent;
     position: relative;
-  }
-  .details {
-    position: absolute;
-    right: 0px;
-    top: 0px;
-    height: 100%;
   }
   .inventory {
     grid-area: inventory;
@@ -102,7 +97,16 @@ import Resources from "../components/resources.svelte";
   }
   .resources {
     position: absolute;
-    right: 300px;
+    right: 250px;
     top: 0px;
+  }
+  .details {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
   }
 </style>
