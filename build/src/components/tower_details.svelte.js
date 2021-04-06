@@ -5,8 +5,8 @@ import { gameModel } from '../gamelogic/gamemodel.js';
 
 function add_css() {
 	var style = element("style");
-	style.id = "svelte-1rabr15-style";
-	style.textContent = ".details.svelte-1rabr15{background:#ffffff;height:100%;padding:10px;filter:drop-shadow(0 0 0.75rem crimson)}";
+	style.id = "svelte-cr49gj-style";
+	style.textContent = ".details.svelte-cr49gj{background:#ffffff;height:100%;padding:10px;filter:drop-shadow(0 0 0.75rem crimson);animation:svelte-cr49gj-slide 100ms;transform:translateX(0)}@keyframes svelte-cr49gj-slide{0%{transform:translateX(200px)}100%{transform:translateX(0px)}}";
 	append(document.head, style);
 }
 
@@ -118,7 +118,7 @@ function create_if_block(ctx) {
 			div9 = element("div");
 			t31 = text("proj mods: ");
 			t32 = text(t32_value);
-			attr(div10, "class", "details svelte-1rabr15");
+			attr(div10, "class", "details svelte-cr49gj");
 		},
 		m(target, anchor) {
 			insert(target, div10, anchor);
@@ -300,7 +300,7 @@ function instance($$self, $$props, $$invalidate) {
 class Tower_details extends SvelteComponent {
 	constructor(options) {
 		super();
-		if (!document.getElementById("svelte-1rabr15-style")) add_css();
+		if (!document.getElementById("svelte-cr49gj-style")) add_css();
 		init(this, options, instance, create_fragment, safe_not_equal, {});
 	}
 }
