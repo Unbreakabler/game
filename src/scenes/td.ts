@@ -99,7 +99,8 @@ export default class TD extends Phaser.Scene {
       [300, 514],
       [96, 514],
       [96, 380],
-      [850, 380],
+      [850, 480],
+      [850, 1380],
     ];
 
     this.path = new Path(this, points);
