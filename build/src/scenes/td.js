@@ -75,11 +75,11 @@ class TD extends Phaser.Scene {
         ];
         this.path = new Path(this, points);
         this.path_border = new Path(this, points, 34);
-        this.bg_sprite = this.add.tileSprite(0, 0, 800, 600, "grass0");
+        this.bg_sprite = this.add.tileSprite(0, 0, 1920, 1080, "grass0");
         this.bg_sprite.setOrigin(0, 0);
-        this.path_border_sprite = this.add.tileSprite(0, 0, 800, 600, "sand0");
+        this.path_border_sprite = this.add.tileSprite(0, 0, 1920, 1080, "sand0");
         this.path_border_sprite.setOrigin(0, 0);
-        this.path_sprite = this.add.tileSprite(0, 0, 800, 600, "dirt0");
+        this.path_sprite = this.add.tileSprite(0, 0, 1920, 1080, "dirt0");
         this.path_sprite.setOrigin(0, 0);
         this.path_sprite.setMask(this.path.graphics.createGeometryMask());
         this.path_border_sprite.setMask(this.path_border.graphics.createGeometryMask());
@@ -200,9 +200,17 @@ class TD extends Phaser.Scene {
     checkUnderCursor(pointer, game_objects_under_pointer) {
         if (game_objects_under_pointer.length) {
             document.body.style.cursor = 'pointer';
+            for (const obj of game_objects_under_pointer) {
+                if ('is_hovered' in obj)
+                    obj.is_hovered = true;
+            }
         }
         else {
             document.body.style.cursor = 'auto';
+            for (const [key, obj] of this.tower_map) {
+                if ('is_hovered' in obj)
+                    obj.is_hovered = false;
+            }
         }
     }
     testTurretPlacement(pointer) {

@@ -6,8 +6,8 @@ import { ENEMY_MODIFIERS } from '../gamelogic/td/enemy_wave_generator.js';
 
 function add_css() {
 	var style = element("style");
-	style.id = "svelte-18vyhos-style";
-	style.textContent = ".main.svelte-18vyhos{display:flex;flex-direction:column}.indicator.svelte-18vyhos{display:flex;flex-direction:column;height:500px;overflow-y:scroll;min-width:200px}.wave_type.svelte-18vyhos{display:flex}.wave.svelte-18vyhos{background:rgba(202, 202, 202, 0.521);padding:5px;margin:5px}.wave_normal.svelte-18vyhos{color:#fff}.wave_magic.svelte-18vyhos{color:blue}.wave_rare.svelte-18vyhos{color:yellow}.green_knight.svelte-18vyhos{display:inline-block;width:20px;height:32px;background-image:url('static/green_knight.png')}";
+	style.id = "svelte-1yq6sy5-style";
+	style.textContent = ".main.svelte-1yq6sy5{display:flex;flex-direction:column;overflow:hidden}.indicator.svelte-1yq6sy5{flex:1;display:flex;flex-direction:column;overflow-y:scroll;width:200px}.wave_type.svelte-1yq6sy5{display:flex}.wave.svelte-1yq6sy5{background:rgba(202, 202, 202, 0.521);padding:5px;margin:5px}.wave_normal.svelte-1yq6sy5{color:#fff}.wave_magic.svelte-1yq6sy5{color:blue}.wave_rare.svelte-1yq6sy5{color:yellow}.green_knight.svelte-1yq6sy5{display:inline-block;width:20px;height:32px;background-image:url('static/green_knight.png')}";
 	append(document.head, style);
 }
 
@@ -29,7 +29,7 @@ function get_each_context_2(ctx, list, i) {
 	return child_ctx;
 }
 
-// (20:4) {#if current_wave.modifier_ids.length}
+// (26:4) {#if current_wave.modifier_ids.length}
 function create_if_block_1(ctx) {
 	let span;
 	let t;
@@ -90,7 +90,7 @@ function create_if_block_1(ctx) {
 	};
 }
 
-// (23:8) {#each current_wave.modifier_ids as mod_id}
+// (29:8) {#each current_wave.modifier_ids as mod_id}
 function create_each_block_2(ctx) {
 	let t_value = /*getMod*/ ctx[2](/*mod_id*/ ctx[7])?.name + "";
 	let t;
@@ -111,7 +111,7 @@ function create_each_block_2(ctx) {
 	};
 }
 
-// (40:8) {#if wave.modifier_ids.length}
+// (46:8) {#if wave.modifier_ids.length}
 function create_if_block(ctx) {
 	let span;
 	let t;
@@ -172,7 +172,7 @@ function create_if_block(ctx) {
 	};
 }
 
-// (43:12) {#each wave.modifier_ids as mod_id}
+// (49:12) {#each wave.modifier_ids as mod_id}
 function create_each_block_1(ctx) {
 	let t_value = /*getMod*/ ctx[2](/*mod_id*/ ctx[7])?.name + "";
 	let t;
@@ -193,7 +193,7 @@ function create_each_block_1(ctx) {
 	};
 }
 
-// (35:4) {#each waves as wave}
+// (41:4) {#each waves as wave}
 function create_each_block(ctx) {
 	let div3;
 	let div1;
@@ -242,11 +242,11 @@ function create_each_block(ctx) {
 			t9 = text("mob: ");
 			t10 = text(t10_value);
 			t11 = space();
-			attr(div0, "class", div0_class_value = "" + (null_to_empty(/*wave*/ ctx[4].enemy_type) + " svelte-18vyhos"));
-			attr(div1, "class", div1_class_value = "wave_type wave_" + /*wave*/ ctx[4].wave_type + " svelte-18vyhos");
+			attr(div0, "class", div0_class_value = "" + (null_to_empty(/*wave*/ ctx[4].enemy_type) + " svelte-1yq6sy5"));
+			attr(div1, "class", div1_class_value = "wave_type wave_" + /*wave*/ ctx[4].wave_type + " svelte-1yq6sy5");
 			attr(span0, "class", "modifiers");
 			attr(span1, "class", "modifiers");
-			attr(div3, "class", "wave svelte-18vyhos");
+			attr(div3, "class", "wave svelte-1yq6sy5");
 		},
 		m(target, anchor) {
 			insert(target, div3, anchor);
@@ -272,13 +272,13 @@ function create_each_block(ctx) {
 		p(ctx, dirty) {
 			if (dirty & /*waves*/ 1 && t0_value !== (t0_value = /*wave*/ ctx[4].enemy_type + "")) set_data(t0, t0_value);
 
-			if (dirty & /*waves*/ 1 && div0_class_value !== (div0_class_value = "" + (null_to_empty(/*wave*/ ctx[4].enemy_type) + " svelte-18vyhos"))) {
+			if (dirty & /*waves*/ 1 && div0_class_value !== (div0_class_value = "" + (null_to_empty(/*wave*/ ctx[4].enemy_type) + " svelte-1yq6sy5"))) {
 				attr(div0, "class", div0_class_value);
 			}
 
 			if (dirty & /*waves*/ 1 && t3_value !== (t3_value = /*wave*/ ctx[4].mob_count + "")) set_data(t3, t3_value);
 
-			if (dirty & /*waves*/ 1 && div1_class_value !== (div1_class_value = "wave_type wave_" + /*wave*/ ctx[4].wave_type + " svelte-18vyhos")) {
+			if (dirty & /*waves*/ 1 && div1_class_value !== (div1_class_value = "wave_type wave_" + /*wave*/ ctx[4].wave_type + " svelte-1yq6sy5")) {
 				attr(div1, "class", div1_class_value);
 			}
 
@@ -370,13 +370,13 @@ function create_fragment(ctx) {
 				each_blocks[i].c();
 			}
 
-			attr(div0, "class", div0_class_value = "" + (null_to_empty(/*current_wave*/ ctx[1].enemy_type) + " svelte-18vyhos"));
-			attr(div1, "class", div1_class_value = "wave_type wave_" + /*current_wave*/ ctx[1].wave_type + " svelte-18vyhos");
+			attr(div0, "class", div0_class_value = "" + (null_to_empty(/*current_wave*/ ctx[1].enemy_type) + " svelte-1yq6sy5"));
+			attr(div1, "class", div1_class_value = "wave_type wave_" + /*current_wave*/ ctx[1].wave_type + " svelte-1yq6sy5");
 			attr(span0, "class", "modifiers");
 			attr(span1, "class", "modifiers");
-			attr(div3, "class", "wave svelte-18vyhos");
-			attr(div4, "class", "indicator svelte-18vyhos");
-			attr(div5, "class", "main svelte-18vyhos");
+			attr(div3, "class", "wave svelte-1yq6sy5");
+			attr(div4, "class", "indicator svelte-1yq6sy5");
+			attr(div5, "class", "main svelte-1yq6sy5");
 		},
 		m(target, anchor) {
 			insert(target, div5, anchor);
@@ -409,13 +409,13 @@ function create_fragment(ctx) {
 		p(ctx, [dirty]) {
 			if (dirty & /*current_wave*/ 2 && t1_value !== (t1_value = /*current_wave*/ ctx[1].enemy_type + "")) set_data(t1, t1_value);
 
-			if (dirty & /*current_wave*/ 2 && div0_class_value !== (div0_class_value = "" + (null_to_empty(/*current_wave*/ ctx[1].enemy_type) + " svelte-18vyhos"))) {
+			if (dirty & /*current_wave*/ 2 && div0_class_value !== (div0_class_value = "" + (null_to_empty(/*current_wave*/ ctx[1].enemy_type) + " svelte-1yq6sy5"))) {
 				attr(div0, "class", div0_class_value);
 			}
 
 			if (dirty & /*current_wave*/ 2 && t4_value !== (t4_value = /*current_wave*/ ctx[1].mob_count + "")) set_data(t4, t4_value);
 
-			if (dirty & /*current_wave*/ 2 && div1_class_value !== (div1_class_value = "wave_type wave_" + /*current_wave*/ ctx[1].wave_type + " svelte-18vyhos")) {
+			if (dirty & /*current_wave*/ 2 && div1_class_value !== (div1_class_value = "wave_type wave_" + /*current_wave*/ ctx[1].wave_type + " svelte-1yq6sy5")) {
 				attr(div1, "class", div1_class_value);
 			}
 
@@ -498,7 +498,7 @@ function instance($$self, $$props, $$invalidate) {
 class Wave_indicator extends SvelteComponent {
 	constructor(options) {
 		super();
-		if (!document.getElementById("svelte-18vyhos-style")) add_css();
+		if (!document.getElementById("svelte-1yq6sy5-style")) add_css();
 		init(this, options, instance, create_fragment, safe_not_equal, {});
 	}
 }

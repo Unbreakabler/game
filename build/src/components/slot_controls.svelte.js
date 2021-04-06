@@ -6,8 +6,8 @@ import Tower_slot from './tower_slot.svelte.js';
 
 function add_css() {
 	var style = element("style");
-	style.id = "svelte-19ihlb8-style";
-	style.textContent = "div.svelte-19ihlb8{display:flex;flex-direction:column;justify-content:center}.towers.svelte-19ihlb8{margin-top:10px;display:flex;flex-direction:row;justify-content:left}";
+	style.id = "svelte-s4r4ty-style";
+	style.textContent = "div.svelte-s4r4ty{display:flex;flex-direction:column;justify-content:center}.towers.svelte-s4r4ty{margin-top:10px;display:flex;flex-direction:row;justify-content:left;background:#ffffff}";
 	append(document.head, style);
 }
 
@@ -81,7 +81,7 @@ function create_fragment(ctx) {
 				each_blocks[i].c();
 			}
 
-			attr(div, "class", "towers svelte-19ihlb8");
+			attr(div, "class", "towers svelte-s4r4ty");
 		},
 		m(target, anchor) {
 			insert(target, div, anchor);
@@ -174,7 +174,7 @@ function instance($$self, $$props, $$invalidate) {
 class Slot_controls extends SvelteComponent {
 	constructor(options) {
 		super();
-		if (!document.getElementById("svelte-19ihlb8-style")) add_css();
+		if (!document.getElementById("svelte-s4r4ty-style")) add_css();
 		init(this, options, instance, create_fragment, safe_not_equal, {});
 	}
 }

@@ -5,8 +5,8 @@ import { gameModel } from '../gamelogic/gamemodel.js';
 
 function add_css() {
 	var style = element("style");
-	style.id = "svelte-1rezg55-style";
-	style.textContent = "div.svelte-1rezg55{display:flex;flex-direction:column;justify-content:center;align-items:center;cursor:pointer}button.svelte-1rezg55{border:none;height:32px;width:32px}.basic.svelte-1rezg55{background-image:url(\"static/shotgun.png\")}.machine_gun.svelte-1rezg55{background-image:url(\"static/machine_gun.png\")}.active.svelte-1rezg55{background-color:green}.bb.svelte-1rezg55::before,.bb.svelte-1rezg55::after{position:absolute;top:0;bottom:0;left:0;right:0}.item.svelte-1rezg55{position:relative;width:75px;height:75px;margin:auto;color:#b9b9b9;box-shadow:inset 0 0 0 1px rgba(185, 185, 185, 0.5)}.bb.svelte-1rezg55{color:#69ca62;box-shadow:inset 0 0 0 1px rgba(105, 202, 98, 0.5)}.bb.svelte-1rezg55::before,.bb.svelte-1rezg55::after{content:\"\";z-index:-1;margin:-5%;box-shadow:inset 0 0 0 2px;animation:svelte-1rezg55-clipMe 8s linear infinite}.bb.svelte-1rezg55::before{animation-delay:-4s}@keyframes svelte-1rezg55-clipMe{0%,100%{clip:rect(0px, 82.5px, 2px, 0px)}25%{clip:rect(0px, 2px, 82.5px, 0px)}50%{clip:rect(80.5px, 82.5px, 82.5px, 0px)}75%{clip:rect(0px, 82.5px, 82.5px, 80.5px)}}";
+	style.id = "svelte-jh55fh-style";
+	style.textContent = "div.svelte-jh55fh{display:flex;flex-direction:column;justify-content:center;align-items:center;cursor:pointer}button.svelte-jh55fh{border:none;height:32px;width:32px}.basic.svelte-jh55fh{background-image:url(\"static/shotgun.png\")}.machine_gun.svelte-jh55fh{background-image:url(\"static/machine_gun.png\")}.active.svelte-jh55fh{background-color:green}.bb.svelte-jh55fh::before,.bb.svelte-jh55fh::after{position:absolute;top:0;bottom:0;left:0;right:0}.item.svelte-jh55fh{position:relative;width:75px;height:75px;margin:5px;color:#353535;box-shadow:inset 0 0 0 1px rgba(53, 53, 53, 0.5)}.bb.svelte-jh55fh{color:#50bd48;box-shadow:inset 0 0 0 1px rgba(80, 189, 72, 0.5)}.bb.svelte-jh55fh::before,.bb.svelte-jh55fh::after{content:\"\";z-index:1;margin:-5%;box-shadow:inset 0 0 0 2px;animation:svelte-jh55fh-clipMe 8s linear infinite}.bb.svelte-jh55fh::before{animation-delay:-4s}@keyframes svelte-jh55fh-clipMe{0%,100%{clip:rect(0px, 82.5px, 2px, 0px)}25%{clip:rect(0px, 2px, 82.5px, 0px)}50%{clip:rect(80.5px, 82.5px, 82.5px, 0px)}75%{clip:rect(0px, 82.5px, 82.5px, 80.5px)}}";
 	append(document.head, style);
 }
 
@@ -45,7 +45,7 @@ function create_if_block(ctx) {
 			t1 = text(t1_value);
 			t2 = space();
 			button = element("button");
-			attr(button, "class", button_class_value = "" + (null_to_empty(/*tower_info*/ ctx[0].status.type) + " svelte-1rezg55"));
+			attr(button, "class", button_class_value = "" + (null_to_empty(/*tower_info*/ ctx[0].status.type) + " svelte-jh55fh"));
 		},
 		m(target, anchor) {
 			insert(target, span, anchor);
@@ -57,7 +57,7 @@ function create_if_block(ctx) {
 		p(ctx, dirty) {
 			if (dirty & /*tower_info*/ 1 && t1_value !== (t1_value = /*tower_info*/ ctx[0].status.tier + "")) set_data(t1, t1_value);
 
-			if (dirty & /*tower_info*/ 1 && button_class_value !== (button_class_value = "" + (null_to_empty(/*tower_info*/ ctx[0].status.type) + " svelte-1rezg55"))) {
+			if (dirty & /*tower_info*/ 1 && button_class_value !== (button_class_value = "" + (null_to_empty(/*tower_info*/ ctx[0].status.type) + " svelte-jh55fh"))) {
 				attr(button, "class", button_class_value);
 			}
 		},
@@ -88,7 +88,7 @@ function create_fragment(ctx) {
 		c() {
 			div = element("div");
 			if (if_block) if_block.c();
-			attr(div, "class", "item svelte-1rezg55");
+			attr(div, "class", "item svelte-jh55fh");
 			toggle_class(div, "bb", /*tower_id*/ ctx[1] && /*selection_id*/ ctx[2] === /*tower_id*/ ctx[1]);
 		},
 		m(target, anchor) {
@@ -178,7 +178,7 @@ function instance($$self, $$props, $$invalidate) {
 class Tower_slot extends SvelteComponent {
 	constructor(options) {
 		super();
-		if (!document.getElementById("svelte-1rezg55-style")) add_css();
+		if (!document.getElementById("svelte-jh55fh-style")) add_css();
 		init(this, options, instance, create_fragment, safe_not_equal, { tower_info: 0, tower_id: 1 });
 	}
 }

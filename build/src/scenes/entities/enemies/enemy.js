@@ -157,6 +157,7 @@ class Enemy extends Phaser.GameObjects.Sprite {
         this.setVisible(false);
         this.destroy();
         wallet.money += this.money * this.difficulty; //  TODO(jon): Should this add difficulty or money or some combo?
+        this.resetPostPipeline(true);
         return false;
     }
 }

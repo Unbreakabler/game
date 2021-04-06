@@ -58,7 +58,6 @@ class WaveManager {
         this.tower_defense_state.current_wave_info.alive = 0;
     }
     recordEnemyLeak() {
-        console.log("Enemy reached end.");
         this.tower_defense_state.current_wave_info.alive--;
     }
 }

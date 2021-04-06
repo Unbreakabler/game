@@ -82,8 +82,8 @@ class Bullet extends Phaser.GameObjects.Image {
             if (e === this.last_enemy_hit) {
                 continue;
             }
-            const d = Phaser.Math.Distance.Between(this.x, this.y, e.x, e.y);
-            if (d < range && d < closest_distance) {
+            const d = Phaser.Math.Distance.Squared(this.x, this.y, e.x, e.y);
+            if (d < range * range && d < closest_distance) {
                 closest_distance = d;
                 closest_enemy = e;
             }
