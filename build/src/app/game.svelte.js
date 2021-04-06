@@ -14,8 +14,8 @@ import Resources from '../components/resources.svelte.js';
 
 function add_css() {
 	var style = element("style");
-	style.id = "svelte-3n8nfn-style";
-	style.textContent = ".main.svelte-3n8nfn{overflow:hidden;width:100%;height:100%;display:grid;grid-template-columns:auto minmax(0, 1fr);grid-template-rows:minmax(0, 1fr) 300px;grid-template-areas:\"indicator parent\" \"frames parent\"}.indicator.svelte-3n8nfn{display:flex;grid-area:indicator;overflow-y:hidden}.parent.svelte-3n8nfn{grid-area:parent;position:relative}.details.svelte-3n8nfn{position:absolute;right:0px;top:0px;height:100%}.inventory.svelte-3n8nfn{grid-area:inventory;position:absolute;bottom:0px;left:0px}.frames.svelte-3n8nfn{grid-area:frames}canvas.svelte-3n8nfn{z-index:-1}.resources.svelte-3n8nfn{position:absolute;right:300px;top:0px}";
+	style.id = "svelte-4nh8d9-style";
+	style.textContent = ".main.svelte-4nh8d9{overflow:hidden;width:100%;height:100%;display:grid;grid-template-columns:auto minmax(0, 1fr);grid-template-rows:minmax(0, 1fr) minmax(100px, 0.5fr);grid-template-areas:\"indicator parent\" \"frames parent\"}.indicator.svelte-4nh8d9{display:flex;grid-area:indicator;overflow-y:hidden}.parent.svelte-4nh8d9{grid-area:parent;position:relative}.inventory.svelte-4nh8d9{grid-area:inventory;position:absolute;bottom:0px;left:0px}.frames.svelte-4nh8d9{grid-area:frames}canvas.svelte-4nh8d9{z-index:-1}.resources.svelte-4nh8d9{position:absolute;right:250px;top:0px}.details.svelte-4nh8d9{position:absolute;right:0px;top:0px;height:100%;display:flex;flex-direction:column;justify-content:space-between}";
 	append(document.head, style);
 }
 
@@ -67,17 +67,17 @@ function create_fragment(ctx) {
 			t4 = space();
 			div6 = element("div");
 			create_component(frames.$$.fragment);
-			attr(div0, "class", "indicator svelte-3n8nfn");
+			attr(div0, "class", "indicator svelte-4nh8d9");
 			attr(canvas_1, "id", "game-container");
-			attr(canvas_1, "class", "svelte-3n8nfn");
-			attr(div1, "class", "resources svelte-3n8nfn");
-			attr(div2, "class", "details svelte-3n8nfn");
+			attr(canvas_1, "class", "svelte-4nh8d9");
+			attr(div1, "class", "resources svelte-4nh8d9");
+			attr(div2, "class", "details svelte-4nh8d9");
 			attr(div3, "class", "column");
-			attr(div4, "class", "inventory svelte-3n8nfn");
-			attr(div5, "class", "parent svelte-3n8nfn");
+			attr(div4, "class", "inventory svelte-4nh8d9");
+			attr(div5, "class", "parent svelte-4nh8d9");
 			attr(div5, "id", "parent");
-			attr(div6, "class", "frames svelte-3n8nfn");
-			attr(div7, "class", "main svelte-3n8nfn");
+			attr(div6, "class", "frames svelte-4nh8d9");
+			attr(div7, "class", "main svelte-4nh8d9");
 		},
 		m(target, anchor) {
 			insert(target, div7, anchor);
@@ -168,7 +168,7 @@ function instance($$self, $$props, $$invalidate) {
 class Game extends SvelteComponent {
 	constructor(options) {
 		super();
-		if (!document.getElementById("svelte-3n8nfn-style")) add_css();
+		if (!document.getElementById("svelte-4nh8d9-style")) add_css();
 		init(this, options, instance, create_fragment, safe_not_equal, {});
 	}
 }
