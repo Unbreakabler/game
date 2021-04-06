@@ -64,5 +64,16 @@
     height: 100%;
     padding: 10px;
     filter: drop-shadow(0 0 0.75rem crimson);
+    animation: slide 100ms;
+    transform: translateX(0);
+  }
+
+  @keyframes slide {
+    0% {
+      transform: translateX(200px);
+    }
+    100% {
+      transform: translateX(0px);
+    }
   }
 </style>
