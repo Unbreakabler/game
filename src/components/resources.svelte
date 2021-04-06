@@ -9,6 +9,8 @@
 
   $: money = formatNumber(gameModelInstance.wallet.money, 2);
 
+  $: resources = Object.entries(gameModelInstance.resources);
+
   function saveGame() {
     saveToStorage(gameModelInstance);
   }
@@ -25,6 +27,9 @@
   <div class="money bg-secondary-400">
     {money}
     <div class="coin" />
+    {#each resources as [key, val]}
+      <span>{key}: {val} </span>
+    {/each}
   </div>
   <div>
     <Button color="secondary" on:click={saveGame}>Save</Button>
@@ -42,15 +47,12 @@
     width: 300px;
     padding: 10px;
   }
-  .coin {
+  :global(.coin) {
     width: 15px;
     height: 15px;
     background-color: rgb(221, 184, 67);
     display: inline-block;
     border-radius: 100px;
     box-shadow: 1px 1px;
-  }
-  .save {
-    margin-left: auto;
   }
 </style>

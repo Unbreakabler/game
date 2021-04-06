@@ -25,7 +25,7 @@
     <row>
       <div>
         {#each job.requirements as r}
-          Requires {gameModelInstance.achievables.get(r.achievable_name).getDisplayName()} level {r.level_required}
+          Requires {gameModelInstance.achievables.get(r.achievable_name)?.getDisplayName()} level {r.level_required}
         {/each}
       </div>
     </row>

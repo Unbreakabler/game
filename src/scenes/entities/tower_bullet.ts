@@ -1,4 +1,7 @@
 import type { GameModel } from "../../gamelogic/gamemodel";
+import type { SlotProjectileModifier } from "../../gamelogic/td/stats_tower_modifiers";
+import type TD from "../td";
+import type Enemy from "./enemies/enemy";
 
 export default class Bullet extends Phaser.GameObjects.Image {
   public dx: number = 0;
@@ -6,25 +9,28 @@ export default class Bullet extends Phaser.GameObjects.Image {
   public lifespan: number = 0;
   public speed: number = 0;
   public damage: number = 0;
+  public range: number = 0;
   public tower_id!: string;
+
+  private td_scene: TD;
+  private mods!: SlotProjectileModifier[];
+  private chains: number = 0;
+  private last_enemy_hit!: Enemy;
 
   public constructor(scene: Phaser.Scene) {
     super(scene, 0, 0, "small_bullet");
+    this.td_scene = scene as TD;
     scene.add.existing(this);
     scene.physics.add.existing(this);
     this.dx = 0;
     this.dy = 0;
     this.lifespan = 0;
     this.speed = Phaser.Math.GetSpeed(600, 1);
-
-    // gameModel.subscribe((m) => {
-    //   this.tower = m.tower_defense.getTower(this.tower_id)
-    //   // TODO(jon): move this damage tracking into the tower state object
-    // });
   }
 
-  public fire(tower_id: string, x: number, y: number, angle: number, range: number, damage: number): void {
+  public fire(tower_id: string, x: number, y: number, angle: number, range: number, damage: number, projectile_modifiers: SlotProjectileModifier[]): void {
     this.tower_id = tower_id;
+    if (!this.mods) this.initialize_mods(projectile_modifiers)
     this.setActive(true);
     this.setVisible(true);
     this.setPosition(x, y);
@@ -33,6 +39,7 @@ export default class Bullet extends Phaser.GameObjects.Image {
     this.dy = Math.sin(angle);
     this.lifespan = range * 1.3;
     this.damage = damage;
+    this.range = range;
   }
 
   public update(time: number, delta: number): void {
@@ -48,8 +55,52 @@ export default class Bullet extends Phaser.GameObjects.Image {
   }
 
   // returns damage
-  public hit(): number {
-    this.destroy();
+  // This is where a "chain" or "aoe" caluclation would take place if present on the projectile.
+  public hit(enemy: Enemy): number | null {
+    if (enemy === this.last_enemy_hit) return null;
+
+    let still_alive = false;
+    if (this.chains > 0) {
+      // target new enemy
+      // set chain range
+      // "fire" bullet in new direction
+      const e = this.findClosestEnemyInRange(this.range, enemy);
+      if (e) {
+        this.last_enemy_hit = enemy;
+        still_alive = true
+        this.chains--;
+        const angle = Phaser.Math.Angle.Between(this.x, this.y, e.x, e.y)
+        this.fire(this.tower_id, this.x, this.y, angle, this.range, this.damage, this.mods)
+      } else {
+        this.chains = 0;
+      }
+    } 
+    if (!still_alive) this.destroy();
     return this.damage;
+  }
+
+  private initialize_mods(projectile_modifiers: SlotProjectileModifier[] = []) {
+    this.mods = projectile_modifiers;
+    this.mods.forEach(mod => {
+      if (mod.chains) this.chains += mod.chains
+    })
+  }
+
+  private findClosestEnemyInRange(range: number = 0, current_target: Enemy): Enemy | undefined {
+    const enemies = this.td_scene.wave_manager.enemies;
+    let closest_enemy: Enemy | undefined;
+    let closest_distance = Number.MAX_VALUE;
+    for (const e of enemies.getChildren()) {
+      if (e === current_target) continue;
+      if (e === this.last_enemy_hit) {
+        continue;
+      };
+      const d = Phaser.Math.Distance.Squared(this.x, this.y, e.x, e.y);
+      if (d < range*range && d < closest_distance) {
+        closest_distance = d;
+        closest_enemy = e;
+      }
+    }
+    return closest_enemy;
   }
 }

@@ -5,14 +5,15 @@ import { GameModel, gameModel } from "../gamelogic/gamemodel";
 import type Enemy from "./entities/enemies/enemy";
 import type Bullet from "./entities/tower_bullet";
 
-import GreenKnight from "./entities/enemies/green_knight";
 import Turret from "./entities/towers/turret";
-import type { SelectionCursor, TowerType } from "../gamelogic/td/tower_defense";
+import type { SelectionCursor, TowerId, TowerType } from "../gamelogic/td/tower_defense";
 import { Path } from "./entities/path";
+import { WaveManager } from "./wave_manager";
+import { object_without_properties } from "svelte/internal";
 
 type Selection = {
   type: TowerType;
-  id: string;
+  id: TowerId;
   cursor: SelectionCursor;
 } | null;
 
@@ -25,19 +26,13 @@ export default class TD extends Phaser.Scene {
   private bg_sprite!: Phaser.GameObjects.TileSprite;
   private path_sprite!: Phaser.GameObjects.TileSprite;
   private path_border_sprite!: Phaser.GameObjects.TileSprite;
+  public wave_manager!: WaveManager;
 
-  private nextEnemy = 0;
-  public enemies!: BetterGroup<Enemy>;
-  public selection: {
-    type: TowerType;
-    id: string;
-    cursor: SelectionCursor;
-  } | null = null;
+  public selection: Selection | null = null;
   public selected_turret: Turret | null = null;
 
   private slots: Array<string | null> = [];
   public tower_map: Map<string, Turret> = new Map<string, Turret>();
-  private delta_to_next_enemy: number = 0;
 
   public constructor() {
     super({ key: "td", active: true });
@@ -50,8 +45,8 @@ export default class TD extends Phaser.Scene {
     this.load.image("dirt0", "static/dirt0.png");
     this.load.image("grass0", "static/grass0.png");
     this.load.image("sand0", "static/sand0.png");
-    this.load.spritesheet("green-knight", "static/green_knight.png", {
-      frameWidth: 329 / 16,
+    this.load.spritesheet("green_knight", "static/green_knight.png", {
+      frameWidth: 20,
       frameHeight: 30,
     });
   }
@@ -60,7 +55,7 @@ export default class TD extends Phaser.Scene {
     this.generateAnimations();
     this.drawPath();
 
-    this.setupEntities();
+    this.setupWaveManager();
     this.setupInputHandlers();
     this.setupTurrets();
     this.setupSelectionSubscription();
@@ -69,26 +64,26 @@ export default class TD extends Phaser.Scene {
   private generateAnimations(): void {
     // Set up animations
     this.anims.create({
-      key: "green-knight-walking-down",
-      frames: this.anims.generateFrameNames("green-knight", { start: 0, end: 3 }),
+      key: "green_knight-walking-down",
+      frames: this.anims.generateFrameNames("green_knight", { start: 0, end: 3 }),
       frameRate: 3,
       repeat: -1,
     });
     this.anims.create({
-      key: "green-knight-walking-right",
-      frames: this.anims.generateFrameNames("green-knight", { start: 4, end: 7 }),
+      key: "green_knight-walking-right",
+      frames: this.anims.generateFrameNames("green_knight", { start: 4, end: 7 }),
       frameRate: 3,
       repeat: -1,
     });
     this.anims.create({
-      key: "green-knight-walking-left",
-      frames: this.anims.generateFrameNames("green-knight", { start: 8, end: 11 }),
+      key: "green_knight-walking-left",
+      frames: this.anims.generateFrameNames("green_knight", { start: 8, end: 11 }),
       frameRate: 3,
       repeat: -1,
     });
     this.anims.create({
-      key: "green-knight-walking-up",
-      frames: this.anims.generateFrameNames("green-knight", { start: 12, end: 15 }),
+      key: "green_knight-walking-up",
+      frames: this.anims.generateFrameNames("green_knight", { start: 12, end: 15 }),
       frameRate: 3,
       repeat: -1,
     });
@@ -104,17 +99,18 @@ export default class TD extends Phaser.Scene {
       [300, 514],
       [96, 514],
       [96, 380],
-      [850, 380],
+      [850, 480],
+      [850, 1380],
     ];
 
     this.path = new Path(this, points);
     this.path_border = new Path(this, points, 34);
 
-    this.bg_sprite = this.add.tileSprite(0, 0, 800, 600, "grass0");
+    this.bg_sprite = this.add.tileSprite(0, 0, 1920, 1080, "grass0");
     this.bg_sprite.setOrigin(0, 0);
-    this.path_border_sprite = this.add.tileSprite(0, 0, 800, 600, "sand0");
+    this.path_border_sprite = this.add.tileSprite(0, 0, 1920, 1080, "sand0");
     this.path_border_sprite.setOrigin(0, 0);
-    this.path_sprite = this.add.tileSprite(0, 0, 800, 600, "dirt0");
+    this.path_sprite = this.add.tileSprite(0, 0, 1920, 1080, "dirt0");
     this.path_sprite.setOrigin(0, 0);
     this.path_sprite.setMask(this.path.graphics.createGeometryMask());
     this.path_border_sprite.setMask(this.path_border.graphics.createGeometryMask());
@@ -132,10 +128,10 @@ export default class TD extends Phaser.Scene {
           // tower was added to slot
           const tower_info = model.tower_defense.getTower(model_tower_id);
           if (tower_info) {
-            const new_turret = new Turret(this, model_tower_id, tower_info.x, tower_info.y, tower_info.type);
-            if (tower_info.is_placed) {
+            const new_turret = new Turret(this, model_tower_id, tower_info.status.x, tower_info.status.y, tower_info.status.type);
+            if (tower_info.status.is_placed) {
               this.add.existing(new_turret);
-              new_turret.place(tower_info.x, tower_info.y);
+              new_turret.place(tower_info.status.x, tower_info.status.y);
             }
             this.tower_map.set(model_tower_id, new_turret);
           }
@@ -165,15 +161,15 @@ export default class TD extends Phaser.Scene {
       if (cur_selection !== model.tower_defense.selection) {
         // Selection changed
         cur_selection = model.tower_defense.selection;
-        const new_selection_tower_info = model.tower_defense.getTower(cur_selection?.id || "");
-        const active_selection_tower_info = model.tower_defense.getTower(this.selection?.id || "");
+        const new_selection_tower_info = model.tower_defense.getTower(cur_selection?.id as TowerId || "");
+        const active_selection_tower_info = model.tower_defense.getTower(this.selection?.id as TowerId || "");
         if (cur_selection && this.selection !== cur_selection) {
           // New selection, deselect previously selected turret
           this.selected_turret?.select(false);
 
           // Hide turret and deselect before updating selection, this allows the user to toggle
           // between multiple unplaced turrets
-          if (this.selection && active_selection_tower_info?.is_placed == false) {
+          if (this.selection && active_selection_tower_info?.status.is_placed == false) {
             this.selected_turret?.setVisible(false);
             this.selected_turret = null;
             this.selection = null;
@@ -181,17 +177,15 @@ export default class TD extends Phaser.Scene {
 
           // Update selection
           this.selection = cur_selection;
-          if (new_selection_tower_info?.is_placed) {
+          if (new_selection_tower_info?.status.is_placed) {
             // selecting tower already placed, highlight range
             // Allows a user to select a tower to see details or take actions
-            console.log("SELECT PLACED TURRET");
             this.selection.cursor = "selected";
             this.selected_turret = this.tower_map.get(this.selection.id) || null;
             this.selected_turret?.select(true);
           } else {
             // selecting a tower that is not yet placed, make placeable
             // Allows a user to select a tower for placement
-            console.log("SELECT UNPLACED TURRET");
             this.selection.cursor = "placement";
             this.selected_turret = this.tower_map.get(this.selection.id) || null;
             if (this.selected_turret) {
@@ -201,19 +195,16 @@ export default class TD extends Phaser.Scene {
           }
         } else if (cur_selection && this.selection === cur_selection) {
           // reselecting - i don't think this ever happens, you can only toggle selection currently.
-          console.log("RESELECT TURRET");
-        } else if (!cur_selection && this.selection && active_selection_tower_info?.is_placed == false) {
+        } else if (!cur_selection && this.selection && active_selection_tower_info?.status.is_placed == false) {
           // deselecting unplaced turret, hide gameobject
           // Allows a user to unselect a turret that is currently on their cursor for placement
-          console.log('DESELECT UNPLACED TURRET')
           this.selected_turret?.select(false);
           this.selected_turret?.setVisible(false);
           this.selected_turret = null;
           this.selection = null;
-        } else if (!cur_selection && this.selection && active_selection_tower_info?.is_placed) {
+        } else if (!cur_selection && this.selection && active_selection_tower_info?.status.is_placed) {
           // Deselecting a turret that is already placed
           // Allows a user to deselect a placed turret that was selected to highlight range or take action
-          console.log("DESELECT PLACED TURRET");
           this.selected_turret?.select(false);
           this.selected_turret = null;
           this.selection = null;
@@ -225,8 +216,8 @@ export default class TD extends Phaser.Scene {
     });
   }
 
-  private setupEntities(): void {
-    this.enemies = this.add.group({ classType: GreenKnight, runChildUpdate: true }) as BetterGroup<Enemy>;
+  private setupWaveManager(): void {
+    this.wave_manager = new WaveManager(this, this.path);
   }
 
   private setupInputHandlers(): void {
@@ -238,27 +229,22 @@ export default class TD extends Phaser.Scene {
   }
 
   public update(time: number, delta: number): void {
-    // if its time for the next enemy
-    this.delta_to_next_enemy -= delta;
-    if (this.delta_to_next_enemy <= 0) {
-      const enemy = this.enemies.get();
-      // place the enemy at the start of the path
-      enemy.startOnPath(this.path);
-      this.delta_to_next_enemy = 2000;
-    }
-
     this.tower_map.forEach((tower) => tower.update(time, delta));
+    this.wave_manager.update(time, delta)
   }
 
-  public checkUnderCursor(pointer: Phaser.Input.Pointer, game_objects_under_pointer: Phaser.GameObjects.GameObject[]) {
+  public checkUnderCursor(pointer: Phaser.Input.Pointer, game_objects_under_pointer: Phaser.GameObjects.GameObject[]|Turret[]) {
     if (game_objects_under_pointer.length) {
-      // change cursor to hand
       document.body.style.cursor = 'pointer';
+      for (const obj of game_objects_under_pointer) {
+        if ('is_hovered' in obj) obj.is_hovered = true;
+      }
     } else {
       document.body.style.cursor = 'auto';
-      // pointer
+      for (const [key, obj] of this.tower_map) {
+        if ('is_hovered' in obj) obj.is_hovered = false;
+      }
     }
-    this.testTurretPlacement(pointer)
   }
 
   public testTurretPlacement(pointer: Phaser.Input.Pointer) {
@@ -278,8 +264,8 @@ export default class TD extends Phaser.Scene {
     if (!t.place(place_x, place_y)) {
       return false;
     }
-    if (gameModelInstance.tower_defense.selection) {
-      gameModelInstance.tower_defense.placeTower(gameModelInstance.tower_defense.selection.id, place_x, place_y);
+    if (this.selection) {
+      gameModelInstance.tower_defense.placeTower(this.selection.id, place_x, place_y);
     }
     this.selection = null;
     gameModelInstance.tower_defense.selection = null;
@@ -299,11 +285,15 @@ export default class TD extends Phaser.Scene {
     // only if both enemy and bullet are alive
     if (enemy.active === true && bullet.active === true) {
       // decrease the enemy hp with BULLET_DAMAGE
-      const bullet_damage = bullet.hit();
-      gameModelInstance.tower_defense.recordTowerDamage(bullet.tower_id, bullet_damage)
-      const still_alive = enemy.receiveDamage(bullet_damage);
-      if (still_alive) return
-      gameModelInstance.tower_defense.recordTowerKill(bullet.tower_id, enemy.name)
+      const bullet_damage = bullet.hit(enemy);
+      if (!bullet_damage) return;
+
+      const still_alive = enemy.receiveDamage(bullet_damage, gameModelInstance.wallet);
+      if (!still_alive) {
+        gameModelInstance.tower_defense.recordTowerKill(bullet.tower_id, enemy.name)
+        gameModelInstance.tower_defense.current_wave_info.alive--;
+      }
+      // gameModelInstance.tower_defense.recordTowerDamage(bullet.tower_id, bullet_damage, still_alive)
     }
   }
 }

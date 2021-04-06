@@ -11,41 +11,14 @@ let gameModelInstance: GameModel;
 gameModel.subscribe((m) => (gameModelInstance = m));
 
 /**
- * how often to run the loop. 200ms = 5 times per second
- * 200ms or 100ms is usually fast enough to feel responsive without wasting too much CPU time
- */
-const ms = 200;
-
-/**
  * How often to auto save the game. 60_000 = 60 seconds.
  */
 const autoSaveTime = 60_000;
 
-/**
- * A reference to the interval that can be used to stop it if we need to
- */
-let interval: number;
-
-/**
- * This function will start the game loop running at the desired rate, and save a reference to the interval so it can be stopped later
- */
-// export function startGameLoop() {
-
-//     console.log('calculating offline progess')
-//     calculateOfflineProgress();
-
-//     console.log('starting the game loop');
-//     interval = setInterval(gameLoop, ms);
-// }
-
 // some datetime values we will be using to calculate how much time has passed
 //let lastRunTime = Date.now();
 let lastSaved = Date.now();
-
-/**
- * delta_t or delta time is the time difference in seconds since the last time the loop ran
- */
-//let delta_t: number = 0;
+let time_since_last_update_ms = 0;
 
 /**
  * The game loop function that runs multiple times per second in the background.
@@ -66,7 +39,11 @@ export function svelte_game_loop(current_time: number, ms_delta_t: number): void
   // lastRunTime = currentTime;
 
   const seconds_delta_t = ms_delta_t / 1_000;
-  game_update(seconds_delta_t);
+  time_since_last_update_ms += ms_delta_t
+  if (time_since_last_update_ms > 16) {
+    game_update(seconds_delta_t);
+    time_since_last_update_ms = 0;
+  }
 }
 
 /**
@@ -77,7 +54,7 @@ export function svelte_game_loop(current_time: number, ms_delta_t: number): void
  */
 function game_update(seconds_delta_t: number): void {
   gameModelInstance.update(seconds_delta_t);
-  updateGameModel();
+  updateGameModel(); // We could update the UI less frequently? maybe every 16ms at most?
 }
 
 /**

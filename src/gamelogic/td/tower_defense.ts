@@ -1,66 +1,65 @@
 import { Exclude } from "class-transformer";
 
-const BASIC_TOWER_DEFAULT_ID = 'basic_1'
-const MACHINE_GUN_TOWER_DEFAULT_ID = 'machine_gun_1'
+import { EnemyWave, generateWave } from './enemy_wave_generator'
+import { getTowerAttributes, TowerCalculatedAttributes } from "./stats_base_towers";
+import { AttributeModifierIds, applyTowerAttributeModifiers } from "./stats_tower_modifiers";
 
-type TowerId = string
+type BASIC_TOWER_IDS = 'basic_1'
+type MACHINE_GUN_IDS = 'machine_gun_1'
+
+export type TowerId = BASIC_TOWER_IDS | MACHINE_GUN_IDS
+export type TargetingMode = 'first' | 'last' | 'strongest' | 'closest'
+
+
 export interface TowerInfo {
-  tier: integer;
-  type: TowerType;
-  range: integer;
-  damage: number;
-  attack_speed: number;
-  projectiles: number;
-  spread_angle: number;
-  area_of_effect_radius: number;
-  x: number;
-  y: number;
-  is_placed: boolean;
-  is_selected: boolean;
-
-  damage_dealt_lifetime: number;
-  damage_dealt_this_prestige: number;
+  status: TowerStatus,
+  attributes: TowerCalculatedAttributes,
 }
 
-const BasicTowerInfoDefaults: TowerInfo = {
+export interface TowerStatus {
+  id: TowerId,
+  tier: integer,
+  exp_level?: integer,
+  current_exp?: integer,
+  // do frames get exp? modifiers? hmm.
+  // I think I would like towers to both "level" and be "upgraded", essentially having two levels.
+  // should the exp levels carry between runs? What should carry between runs?
+  exp_for_next_tier?: CallableFunction, 
+  type: TowerType,
+  x: number,
+  y: number,
+  is_placed: boolean,
+  is_selected: boolean,
+  targeting_mode: TargetingMode
+}
+
+const BasicTowerStatusDefaults: TowerStatus = {
+  id: 'basic_1',
   tier: 0,
   type: 'basic',
-  range: 200,
-  damage: 50,
-  attack_speed: 1000,
-  projectiles: 1,
-  spread_angle: 0,
-  area_of_effect_radius: 0,
   x: 0,
   y: 0,
   is_placed: false,
   is_selected: false,
-  damage_dealt_lifetime: 0,
-  damage_dealt_this_prestige: 0,
+  targeting_mode: 'closest',
 }
 
-const MachineGunTowerInfoDefaults: TowerInfo = {
-  tier: 0,
+const MachineGunTowerStatusDefaults: TowerStatus = {
+  id: 'machine_gun_1',
+  tier: 1,
   type: 'machine_gun',
-  range: 100,
-  damage: 2,
-  attack_speed: 100,
-  projectiles: 1,
-  spread_angle: 0,
-  area_of_effect_radius: 0,
   x: 0,
   y: 0,
   is_placed: false,
   is_selected: false,
-  damage_dealt_lifetime: 0,
-  damage_dealt_this_prestige: 0,
+  targeting_mode: 'closest',
 }
 
 interface Stats {
-  [tower_id: string] : TowerStats
+  [tower_id: string] : TowerRecordedStats
 }
 
-interface TowerStats { 
+interface TowerRecordedStats { 
   kills: { lifetime: number, prestige: number, [enemy_name: string]: number },
   damage: {
     lifetime: number,
@@ -73,34 +72,10 @@ interface TowerStats {
   }
 }
 
-
-// TODO(jon): Need to generate default stats objects when a the slot tower_id's change?
-// Actually, we need to gen these stat objects when a tower is placed for the first time.
-// If a tower is removed, we need to keep the stats. If a tower is merged with another tower
-// should we combine the stats? Should we record a history of merges?
-const defaultStats: Stats = {
-  [BASIC_TOWER_DEFAULT_ID]: {
-    kills: {
-      lifetime: 0,
-      prestige: 0,
-      green_knight: 0,
-    },
-    damage: {
-      lifetime: 0,
-      prestige: 0,
-    }
-  },
-  [MACHINE_GUN_TOWER_DEFAULT_ID]: {
-    kills: {
-      lifetime: 0,
-      prestige: 0,
-      green_knight: 0,
-    },
-    damage: {
-      lifetime: 0,
-      prestige: 0,
-    }
-  }
+interface WaveInfo {
+  total: number,
+  spawned: number,
+  alive: number,
 }
 
 export type TowerType = 'basic' | 'machine_gun'
@@ -111,27 +86,44 @@ export class TowerDefense {
   @Exclude() public selection: { type: TowerType, id: TowerId, cursor: SelectionCursor } | null = null;
 
   // Need to expose below but it breaks
-  public towers: { [K in TowerType]: TowerId[][]};
-  private tower_map: { [tower_id: string]: TowerInfo };
-  public slots: Array<string | null>
-  public stats!: Stats = {}
+  private tower_map: { [id in TowerId]: TowerStatus };
+
+  private slot_tower_attribute_modifier_map: { [id in TowerId]: {id: AttributeModifierIds, level: integer}[]};
+
+  public slots: Array<TowerId | null>
+  public stats: Stats = {}
+  public waves: EnemyWave[] = [];
+  public current_wave_info: WaveInfo = { total: 0, spawned: 0, alive: 0 };
+  public current_wave_difficulty: number = 100;
 
   public constructor() {
-    this.towers = get_default_towers();
     this.tower_map = get_default_tower_map();
-    this.slots = [BASIC_TOWER_DEFAULT_ID, MACHINE_GUN_TOWER_DEFAULT_ID, null, null, null]
+    this.slot_tower_attribute_modifier_map = get_default_slot_tower_attribute_modifiers();
+    this.slots = ['basic_1', 'machine_gun_1', null, null, null]
     this.slots.forEach(tower_id => {
-      if (tower_id) {
-        this.stats[tower_id] = generate_default_stats()
-      }
-    })
+      if (tower_id) this.stats[tower_id] = generate_default_stats()
+    }); 
+
+    for (let i = 0; i < 10; i++) {
+      // Generate the first 10 waves
+      this.generateEnemyWave()
+    }
   }
 
-  public getTower(id: TowerId): TowerInfo | undefined {
-    return this.tower_map[id]
+  public getTower(id: TowerId): TowerInfo | null {
+    const status = this.tower_map[id]
+    if (!status) return null;
+    const attributes = getTowerAttributes(status)
+    // Apply modifiers to the attributes, these would mods that increase attack speed, projectiles, etc.
+    const attribute_modifier_ids = this.slot_tower_attribute_modifier_map[id]
+
+    // Lookup modifiers by id and pass tower attributes through the modifier functions.
+    const modified_attributes = applyTowerAttributeModifiers(attributes, attribute_modifier_ids)
+
+    return { status, attributes: modified_attributes }
   }
 
-  public getTowerStats(id: TowerId): TowerStats {
+  public getTowerStats(id: TowerId): TowerRecordedStats {
     const tower_stats = this.stats[id]
     if (tower_stats) return this.stats[id]
     this.stats[id] = generate_default_stats()
@@ -149,26 +141,9 @@ export class TowerDefense {
     }
   }
 
-  public selectHighestTierForPlacement(tower_type: TowerType) {
-    // Should I check if there is a "selectable" tower of this type available first?
-    const tower_list = this.towers[tower_type]
-    if (!tower_list) return
-    
-    // iterate backwards through list until we find an unplaced tower of this type
-    const highest_tier_available_tower_list = tower_list.slice().reverse().flat();
-
-    const highest_tier_available_tower_id = highest_tier_available_tower_list.find(tower_id => {
-      const tower = this.getTower(tower_id)
-      if (!tower) return
-      return !tower.is_placed
-    })
-    if (!highest_tier_available_tower_id) return
-
-    this.setSelection(highest_tier_available_tower_id)
-  }
-
   public placeTower(id: TowerId, x: number, y: number) {
     const tower = this.tower_map[id]
+    console.log('placeTower', tower, id, x, y)
     if (!tower) return
 
     tower.x = x;
@@ -178,39 +153,60 @@ export class TowerDefense {
   }
 
   public recordTowerDamage(tower_id: string, damage: number) {
-    const tower = this.getTower(tower_id)
+    const tower = this.getTower(tower_id as TowerId)
     if (!tower) return
 
-    const tower_stats = this.getTowerStats(tower_id)
+    const tower_stats = this.getTowerStats(tower_id as TowerId)
     tower_stats.damage.prestige += damage;
 
     // TODO(jon): track tower accuracy, projectiles fired, etc etc
   }
 
   public recordTowerKill(tower_id: string, enemy_name: string) {
-    const tower = this.getTower(tower_id)
+    const tower = this.getTower(tower_id as TowerId)
     if (!tower) return
 
-    const tower_stats = this.getTowerStats(tower_id)
+    const tower_stats = this.getTowerStats(tower_id as TowerId)
     if (!tower_stats.kills) tower_stats.kills = { lifetime: 0, prestige: 0 }
     if (!tower_stats.kills[enemy_name]) tower_stats.kills[enemy_name] = 0;
     tower_stats.kills.prestige++;
     tower_stats.kills[enemy_name]++;
   }
-}
 
-// By default you have a single "basic" tower and a single "machine_gun" tower.
-const get_default_towers = () => {
-  return {
-    'basic': [[BASIC_TOWER_DEFAULT_ID]],
-    'machine_gun': [[MACHINE_GUN_TOWER_DEFAULT_ID]]
+  public recordEnemyLeak(enemy: string) {
+    // record leak count per wave?
+    // TODO(jon): more, better stats. How many enemies were leaked? Current lives? etc.
+    this.current_wave_info.alive--;
+  }
+
+  public generateEnemyWave() {
+    this.waves.push(generateWave(this.current_wave_difficulty));
+    // TODO(jon): Figure out how to increase difficulty over time, 
+    // a linear increase wont match item/drop/upgrade power spikes.
+    this.current_wave_difficulty++;
+  }
+
+  public spawnNextWave() {
+    this.generateEnemyWave();
+    this.waves.shift()!;
+  }
+
+  public getCurrentWave() {
+    return this.waves[0];
   }
 }
 
 const get_default_tower_map = () => {
   return {
-    [BASIC_TOWER_DEFAULT_ID]: BasicTowerInfoDefaults,
-    [MACHINE_GUN_TOWER_DEFAULT_ID]: MachineGunTowerInfoDefaults
+    'basic_1': BasicTowerStatusDefaults,
+    'machine_gun_1': MachineGunTowerStatusDefaults
+  }
+}
+
+const get_default_slot_tower_attribute_modifiers = (): { [id in TowerId]: {id: AttributeModifierIds, level: integer}[]} => {
+  return {
+    'basic_1': [{ id: 'physical_1', level: 10 }, { id: 'chain_1', level: 100}],
+    'machine_gun_1': [{ id: 'physical_1', level: 10 }, { id: 'chain_1', level: 20}],
   }
 }
 

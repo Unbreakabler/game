@@ -43,7 +43,9 @@ export function saveToStorage(game_model: GameModel): void {
     // Use JSON.stringify to turn the object into a string, then compress with lz-string,
     // before setting it in localstorage
     // localStorage.setItem(storageName, compress(JSON.stringify(saveData)));
-    localStorage.setItem(storageName, game_model.exportToSave());
+    const exported_save = game_model.exportToSave()
+    console.log('saving', game_model)
+    localStorage.setItem(storageName, exported_save);
   } catch (error) {
     console.error(error); // log the error so at least we can see it
   }
