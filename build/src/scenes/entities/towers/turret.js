@@ -5,7 +5,7 @@ import { OutlinePipeline } from '../../../plugins/outline.js';
 const DEFAULT_RANGE = 200;
 const DEFAULT_ATTACK_SPEED = 1000;
 const DEFAULT_DAMAGE = 50;
-const PLACEABLE_MIN_DISTANCE_FROM_PATH = 25;
+const PLACEABLE_MIN_DISTANCE_FROM_PATH = 35;
 class Turret extends Phaser.GameObjects.Image {
     constructor(td_scene, tower_id, x = 0, y = 0, sprite_name = "turret") {
         super(td_scene, x, y, sprite_name);

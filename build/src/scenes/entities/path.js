@@ -1,4 +1,4 @@
-const DEFAULT_PATH_WIDTH = 30;
+const DEFAULT_PATH_WIDTH = 50;
 class Path extends Phaser.Curves.Path {
     constructor(scene, points, road_width = DEFAULT_PATH_WIDTH) {
         super(points[0][0], points[0][1]);

@@ -25,6 +25,14 @@ class TD extends Phaser.Scene {
             frameWidth: 20,
             frameHeight: 30,
         });
+        this.load.spritesheet("bug", "static/bug.png", {
+            frameWidth: 20,
+            frameHeight: 26,
+        });
+        this.load.spritesheet("blue_dragon", "static/blue_dragon.png", {
+            frameWidth: 24,
+            frameHeight: 30,
+        });
     }
     create() {
         this.generateAnimations();
@@ -58,6 +66,54 @@ class TD extends Phaser.Scene {
             key: "green_knight-walking-up",
             frames: this.anims.generateFrameNames("green_knight", { start: 12, end: 15 }),
             frameRate: 3,
+            repeat: -1,
+        });
+        this.anims.create({
+            key: "bug-walking-down",
+            frames: this.anims.generateFrameNames("bug", { start: 0, end: 1 }),
+            frameRate: 2,
+            repeat: -1,
+        });
+        this.anims.create({
+            key: "bug-walking-right",
+            frames: this.anims.generateFrameNames("bug", { start: 2, end: 3 }),
+            frameRate: 2,
+            repeat: -1,
+        });
+        this.anims.create({
+            key: "bug-walking-left",
+            frames: this.anims.generateFrameNames("bug", { start: 4, end: 5 }),
+            frameRate: 2,
+            repeat: -1,
+        });
+        this.anims.create({
+            key: "bug-walking-up",
+            frames: this.anims.generateFrameNames("bug", { start: 6, end: 7 }),
+            frameRate: 2,
+            repeat: -1,
+        });
+        this.anims.create({
+            key: "blue_dragon-walking-down",
+            frames: this.anims.generateFrameNames("blue_dragon", { start: 0, end: 1 }),
+            frameRate: 2,
+            repeat: -1,
+        });
+        this.anims.create({
+            key: "blue_dragon-walking-right",
+            frames: this.anims.generateFrameNames("blue_dragon", { start: 2, end: 3 }),
+            frameRate: 2,
+            repeat: -1,
+        });
+        this.anims.create({
+            key: "blue_dragon-walking-left",
+            frames: this.anims.generateFrameNames("blue_dragon", { start: 4, end: 5 }),
+            frameRate: 2,
+            repeat: -1,
+        });
+        this.anims.create({
+            key: "blue_dragon-walking-up",
+            frames: this.anims.generateFrameNames("blue_dragon", { start: 6, end: 7 }),
+            frameRate: 2,
             repeat: -1,
         });
     }

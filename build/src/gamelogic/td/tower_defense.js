@@ -30,7 +30,7 @@ class TowerDefense {
         this.stats = {};
         this.waves = [];
         this.current_wave_info = { total: 0, spawned: 0, alive: 0 };
-        this.current_wave_difficulty = 100;
+        this.current_wave_difficulty = 1000;
         this.tower_map = get_default_tower_map();
         this.slot_tower_attribute_modifier_map = get_default_slot_tower_attribute_modifiers();
         this.slots = ['basic_1', 'machine_gun_1', null, null, null];
