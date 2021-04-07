@@ -24,10 +24,10 @@
 
 <div class="resource-container">
   <div class="money">
-    <div>{money}</div>
+    <div>{money} </div>
     <div class="coin" />
     {#each resources as [key, val]}
-      <div>{key}: {val} </div>
+      <div>{key.toLocaleUpperCase()}:{val} </div>
     {/each}
   </div>
   <!-- <Button color="secondary" on:click={saveGame}>Save</Button>
@@ -39,14 +39,20 @@
     display: flex;
     justify-content: space-between;
     padding: 5px;
-    color: #fff;
-    font-style: bold;
+    color: black;
+    -webkit-text-fill-color: white; /* Will override color (regardless of order) */
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: black;
+    font-weight: 900;
+    font-size: 24px;
+    font-family: 'Courier New', Courier, monospace;
   }
   .money {
-    width: 300px;
+    width: 400px;
     padding: 10px;
     display: flex;
     justify-content: flex-end;
+    align-items: center;
     div {
       margin-right: 5px;
     }

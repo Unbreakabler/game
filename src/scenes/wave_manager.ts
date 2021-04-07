@@ -44,7 +44,8 @@ export class WaveManager {
     if (this.delta_to_next_enemy > 0) return;
 
     const enemy = this.enemies.get() as Enemy;
-    enemy.setName(this.current_wave.enemy_type);
+    // console.log('spawning', this.current_wave.enemy_type)
+    enemy.setEnemyName(this.current_wave.enemy_type);
 
     // Set enemy stats/sprite
     const stats = ENEMY_BASE_STATS[this.current_wave.enemy_type]

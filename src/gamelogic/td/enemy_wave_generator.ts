@@ -7,8 +7,10 @@
 // const DEFAULT_SEED = 'babies'
 // // set `Math.random()` to be a PRNG seeded with DEFAULT_SEED
 // seedrandom(DEFAULT_SEED, {global: true });
+import ENEMY_BASE_STATS, { calculateEnemyDifficulty } from './stats_base_enemies';
 
-export type EnemyType = 'green_knight'
+import { EnemyType } from './stats_base_enemies'
+
 export type ModifierId = EnemyMovementModifierIds | EnemySizeModifierIds | EnemyGroupModifierIds
 
 export interface EnemyModifier {
@@ -38,10 +40,80 @@ export const ENEMY_MODIFIERS: EnemyModifierLibrary = {
       health_points: 1.25,
     },
     visual_modifiers: {
+      width: 1.25,
+      height: 1.25,
+    },
+    difficulty_multiplier: 1.25,
+  },
+  'size_1': {
+    id: 'size_1',
+    name: 'Massive',
+    mod_type: 'size',
+    mod_tier: 0,
+    stat_multipliers: {
+      health_points: 1.5,
+    },
+    visual_modifiers: {
       width: 1.5,
       height: 1.5,
     },
     difficulty_multiplier: 1.5,
+  },
+  'size_2': {
+    id: 'size_2',
+    name: 'Giant',
+    mod_type: 'size',
+    mod_tier: 0,
+    stat_multipliers: {
+      health_points: 1.75,
+    },
+    visual_modifiers: {
+      width: 1.75,
+      height: 1.75,
+    },
+    difficulty_multiplier: 1.75,
+  },
+  'size_3': {
+    id: 'size_3',
+    name: 'Enormous',
+    mod_type: 'size',
+    mod_tier: 0,
+    stat_multipliers: {
+      health_points: 2,
+    },
+    visual_modifiers: {
+      width: 2,
+      height: 2,
+    },
+    difficulty_multiplier: 2,
+  },
+  'size_4': {
+    id: 'size_4',
+    name: 'Gargantuan',
+    mod_type: 'size',
+    mod_tier: 0,
+    stat_multipliers: {
+      health_points: 2.5,
+    },
+    visual_modifiers: {
+      width: 2.5,
+      height: 2.5,
+    },
+    difficulty_multiplier: 2.5,
+  },
+  'size_5': {
+    id: 'size_5',
+    name: 'Colossal',
+    mod_type: 'size',
+    mod_tier: 0,
+    stat_multipliers: {
+      health_points: 3,
+    },
+    visual_modifiers: {
+      width: 3,
+      height: 3,
+    },
+    difficulty_multiplier: 3,
   },
   'group_0': {
     id: 'group_0',
@@ -53,6 +125,46 @@ export const ENEMY_MODIFIERS: EnemyModifierLibrary = {
     },
     difficulty_multiplier: 2,
   },
+  'group_1': {
+    id: 'group_1',
+    name: 'Throng',
+    mod_type: 'group',
+    mod_tier: 0,
+    stat_multipliers: {
+      group_size: 1.5,
+    },
+    difficulty_multiplier: 3,
+  },
+  'group_2': {
+    id: 'group_2',
+    name: 'Multitude',
+    mod_type: 'group',
+    mod_tier: 0,
+    stat_multipliers: {
+      group_size: 1.75,
+    },
+    difficulty_multiplier: 4,
+  },
+  'group_3': {
+    id: 'group_3',
+    name: 'Horde',
+    mod_type: 'group',
+    mod_tier: 0,
+    stat_multipliers: {
+      group_size: 2,
+    },
+    difficulty_multiplier: 5,
+  },
+  'group_4': {
+    id: 'group_4',
+    name: 'Swarm',
+    mod_type: 'group',
+    mod_tier: 0,
+    stat_multipliers: {
+      group_size: 2.25,
+    },
+    difficulty_multiplier: 6,
+  },
   'movement_0': {
     id: 'movement_0',
     name: 'Accelerated',
@@ -63,14 +175,106 @@ export const ENEMY_MODIFIERS: EnemyModifierLibrary = {
     },
     difficulty_multiplier: 2, 
   },
+  'movement_1': {
+    id: 'movement_1',
+    name: 'Nimble',
+    mod_type: 'movement',
+    mod_tier: 0,
+    stat_multipliers: {
+      movement_speed: 2,
+    },
+    difficulty_multiplier: 2.5, 
+  },
+  'movement_2': {
+    id: 'movement_2',
+    name: 'Turbo',
+    mod_type: 'movement',
+    mod_tier: 0,
+    stat_multipliers: {
+      movement_speed: 2.5,
+    },
+    difficulty_multiplier: 3, 
+  },
+  'movement_3': {
+    id: 'movement_3',
+    name: 'Lagging',
+    mod_type: 'movement',
+    mod_tier: 0,
+    stat_multipliers: {
+      movement_speed: 0.9,
+    },
+    difficulty_multiplier: 0.9, 
+  },
+  'movement_4': {
+    id: 'movement_4',
+    name: 'Lumbering',
+    mod_type: 'movement',
+    mod_tier: 0,
+    stat_multipliers: {
+      movement_speed: 0.8,
+    },
+    difficulty_multiplier: 0.8, 
+  },
+  'movement_5': {
+    id: 'movement_5',
+    name: 'Plodding',
+    mod_type: 'movement',
+    mod_tier: 0,
+    stat_multipliers: {
+      movement_speed: 0.7,
+    },
+    difficulty_multiplier: 0.7, 
+  },
+}
+
+const TIER_MODIFIER_WEIGHTS = {
+  0: [
+    { id: 'size_0', weight: 1000 },
+    { id: 'group_0', weight: 1000 },
+    { id: 'movement_0', weight: 1000 },
+  ],
+  1: [
+    { id: 'size_1', weight: 1000 },
+    { id: 'group_1', weight: 1000 },
+    { id: 'movement_1', weight: 1000 },
+  ],
+  2: [
+    { id: 'size_2', weight: 1000 },
+    { id: 'group_2', weight: 1000 },
+    { id: 'movement_2', weight: 1000 },
+  ],
+  3: [
+    { id: 'size_3', weight: 1000 },
+    { id: 'group_3', weight: 1000 },
+    { id: 'movement_3', weight: 1000 },
+  ],
+  4: [
+    { id: 'size_4', weight: 1000 },
+    { id: 'group_4', weight: 1000 },
+    { id: 'movement_4', weight: 1000 },
+  ],
 }
 
 const ENEMY_TIER_MODIFIERS_WEIGHTS: ModList = {
-  green_knight: {
+  [EnemyType.green_knight]: {
     0: [
       { id: 'size_0', weight: 1000 },
       { id: 'group_0', weight: 1000 },
       { id: 'movement_0', weight: 1000 },
+    ]
+  },
+  [EnemyType.bug]: {
+    0: [
+      { id: 'size_0', weight: 100 },
+      { id: 'group_0', weight: 1000 },
+      { id: 'movement_0', weight: 1000 },
+    ]
+  },
+  [EnemyType.blue_dragon]: {
+    0: [
+      { id: 'size_0', weight: 1000 },
+      { id: 'group_0', weight: 500 },
+      { id: 'movement_0', weight: 500 },
     ]
   }
 }
@@ -92,9 +296,9 @@ interface WeightedMod {
   weight: integer,
 }
 
-type EnemySizeModifierIds = 'size_0'
-type EnemyGroupModifierIds = 'group_0'
-type EnemyMovementModifierIds = 'movement_0'
+type EnemySizeModifierIds = 'size_0' | 'size_1' | 'size_2' | 'size_3' | 'size_4' | 'size_5'
+type EnemyGroupModifierIds = 'group_0' | 'group_1' | 'group_2' | 'group_3' | 'group_4'
+type EnemyMovementModifierIds = 'movement_0' | 'movement_1' | 'movement_2' | 'movement_3' | 'movement_4' | 'movement_5'
 
 /**
  * Takes a list of objects with weights and selects a random object from the weighted list.
@@ -157,7 +361,7 @@ export const generateWave = (max_difficulty: number): EnemyWave => {
 
   const { enemy_type, enemy_type_difficulty } = chooseEnemyType(max_mob_difficulty);
 
-  const { modifiers, modifier_ids, mob_with_modifier_difficulty } = chooseEnemyModifiers(enemy_type, enemy_type_difficulty, max_mob_difficulty, max_modifiers);
+  const { modifiers, modifier_ids, mob_with_modifier_difficulty } = chooseEnemyModifiers(enemy_type, enemy_type_difficulty, max_mob_difficulty, max_difficulty, max_modifiers);
 
   const { mob_count, mob_difficulty, enemy_spawn_delta } = generateEnemyList(mob_with_modifier_difficulty, modifiers, max_difficulty);
 
@@ -200,20 +404,28 @@ const chooseEnemyType = (max_difficulty: number): { enemy_type: EnemyType, enemy
   - Certain enemy types are more likely to spawn in certain difficulty ranges. Think of Act 1/2/3/4 enemies are exclusive to their act, and then late game all enemies appear in "maps".
   */
 
-  const enemy_type: EnemyType = 'green_knight'
-  const enemy_type_difficulty = 1;
+  const enemy_types = [
+    { enemy: EnemyType.green_knight, weight: 1000 },
+  ]
+  if (max_difficulty > 50) {
+    enemy_types.push({ enemy: EnemyType.bug, weight: 2000 })
+  }
+  if (max_difficulty > 100) {
+    enemy_types.push({ enemy: EnemyType.blue_dragon, weight: 3000 })
+  }
 
-  return { enemy_type, enemy_type_difficulty};
+  const enemy_type = weightedRandom(enemy_types)
+  const enemy_stats = ENEMY_BASE_STATS[enemy_type.enemy]
+
+  const enemy_type_difficulty = calculateEnemyDifficulty(enemy_stats)
+
+  return { enemy_type: enemy_type.enemy, enemy_type_difficulty};
 }
 
 /**
  * Enemy Modifiers:
  * 
  * IMPLEMENTED:
- * - 
- * 
- * CAN BE IMPLEMENTED:
- * 
  * Size/HP modifiers:
  * - Colossal (5x hp, size, diff, exp)
  * - Gargantuan (4x hp, size, diff, exp)
@@ -235,6 +447,9 @@ const chooseEnemyType = (max_difficulty: number): { enemy_type: EnemyType, enemy
  * - Lagging (0.9x movement, diff, exp)
  * - Lumbering (0.8x movement, diff, exp)
  * - Plodding (0.7x movement, diff, exp)
+ * 
+ * CAN BE IMPLEMENTED:
+ * 
  * - Stiff (0.6x movement, diff, exp)
  * - Labored (0.5x movement, diff, exp)
  * 
@@ -262,12 +477,12 @@ const chooseEnemyType = (max_difficulty: number): { enemy_type: EnemyType, enemy
  *    - Minimal
  *    - Trivial
  */
-const chooseEnemyModifiers = (enemy_type: EnemyType, enemy_type_difficulty: number, max_mob_difficulty: number, max_mods: number) => {
+const chooseEnemyModifiers = (enemy_type: EnemyType, enemy_type_difficulty: number, max_mob_difficulty: number, max_wave_difficulty: number, max_mods: number) => {
 
   const modifiers: EnemyModifier[] = []
   let mob_with_modifier_difficulty = enemy_type_difficulty;
 
-  const modifier_pool = getAvailableModifiers(enemy_type);
+  const modifier_pool = getAvailableModifiers(enemy_type, max_wave_difficulty);
 
   // console.log('mob_with_modifier_difficulty', mob_with_modifier_difficulty, max_mob_difficulty)
   while (mob_with_modifier_difficulty < max_mob_difficulty && modifier_pool.length) {
@@ -296,8 +511,8 @@ const chooseEnemyModifiers = (enemy_type: EnemyType, enemy_type_difficulty: numb
  * @param difficulty 
  * @returns 
  */
-const getAvailableModifiers = (enemy_type: EnemyType) => {
-  const enemy_tier = getEnemyTypeTier(enemy_type);
+const getAvailableModifiers = (enemy_type: EnemyType, max_wave_difficulty: number) => {
+  const enemy_tier = getEnemyTypeTier(enemy_type, max_wave_difficulty);
   return getEnemyTierModifiers(enemy_type, enemy_tier);
 }
 
@@ -308,9 +523,18 @@ const getAvailableModifiers = (enemy_type: EnemyType) => {
  * @param enemy_type 
  * @returns 
  */
-const getEnemyTypeTier = (enemy_type: EnemyType): ModTier => {
-  if (enemy_type === 'green_knight') return 0;
-  return 0;
+const getEnemyTypeTier = (enemy_type: EnemyType, max_wave_difficulty: number): ModTier => {
+  let tier = 0;
+  if (enemy_type === EnemyType.green_knight) {
+    tier = Math.floor(max_wave_difficulty/100)
+  }
+  if (enemy_type === EnemyType.bug) {
+    tier = Math.floor(max_wave_difficulty/100)
+  };
+  if (enemy_type === EnemyType.blue_dragon) {
+    tier = Math.floor(max_wave_difficulty/100)
+  };
+  return tier as ModTier
 }
 
 /**
@@ -322,7 +546,8 @@ const getEnemyTypeTier = (enemy_type: EnemyType): ModTier => {
 const getEnemyTierModifiers = (enemy_type: EnemyType, tier: ModTier) => {
   let modifiers: WeightedMod[] = []
   while (tier >= 0) {
-    let weighted_mod_ids = ENEMY_TIER_MODIFIERS_WEIGHTS[enemy_type][tier]
+    // NOTE(jon): May also be enemy_type specific modifiers added here.
+    let weighted_mod_ids = TIER_MODIFIER_WEIGHTS[tier]
     if (weighted_mod_ids && weighted_mod_ids.length) modifiers = modifiers.concat(weighted_mod_ids)
     tier--
   }

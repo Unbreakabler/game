@@ -2,6 +2,7 @@ import type TD from "../../td";
 import { CombatText } from '../combat_text';
 import { HealthBar } from '../health_bar';
 import { EnemyModifier, ENEMY_MODIFIERS, ModifierId } from '../../../gamelogic/td/enemy_wave_generator'
+import { EnemyType } from '../../../gamelogic/td/stats_base_enemies'
 import type { Wallet } from "../../../gamelogic/gamemodel";
 
 const DEFAULT_ENEMY_SPEED = 1 / 10;
@@ -75,9 +76,9 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
     this.original_speed = this.speed;
   }
 
-  public setName(name: string): this {
-    this.name = name;
-    this.sprite_name = name;
+  public setEnemyName(name: EnemyType): this {
+    this.name = EnemyType[name];
+    this.sprite_name = EnemyType[name];
     return this;
   }
 
@@ -92,12 +93,13 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
   public setHealthPoints(health_points: number): void {
     this.health_points = health_points;
     this.original_health_points = this.health_points;
+    this.health_bar.resetHp(this.health_points)
   }
-
+ 
   public setDifficulty(difficulty: number): void {
     this.difficulty = difficulty;
   }
-
+ 
   public setModifiers(modifiers: string[]): void {
     // this.modifiers = modifiers;
     // reset to display height/width to original size
@@ -115,6 +117,7 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
       if (mod.stat_multipliers?.health_points) {
         this.original_health_points *= mod.stat_multipliers.health_points
         this.health_points *= mod.stat_multipliers.health_points
+        this.health_bar.resetHp(this.health_points);
       }
 
       if (mod.stat_multipliers?.movement_speed) {
@@ -123,7 +126,7 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
 
       if (mod.visual_modifiers?.height) {
         this.displayHeight *= mod.visual_modifiers.height
-      }
+      } 
 
       if (mod.visual_modifiers?.width) {
         this.displayWidth *= mod.visual_modifiers?.width
@@ -140,7 +143,6 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
   public update(time: number, delta: number): void {
     // move the t point along the path, 0 is the start and 0 is the end
     if (!this.path) return; // skip updates if path has not be set by startOnPath
-    this.health_bar.setCurrentHp(this.health_points)
     this.health_bar.setPosition(this.x, this.y - this.height)
     this.follower.t += (this.speed / this.path.getLength()) * delta;
 
@@ -186,6 +188,7 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
 
   public receiveDamage(damage: number, wallet: Wallet): boolean {
     this.health_points -= damage;
+    this.health_bar.setCurrentHp(this.health_points)
     // combat text is self managed and destroys itself from the scene after it's lifespan (default 250ms) has expired.
     // Generates a new floating combat text instance for each instance of damage
     new CombatText(this.td_scene, this.x, this.y - this.height, `${damage}`);

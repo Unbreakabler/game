@@ -94,7 +94,7 @@ export class TowerDefense {
   public stats: Stats = {}
   public waves: EnemyWave[] = [];
   public current_wave_info: WaveInfo = { total: 0, spawned: 0, alive: 0 };
-  public current_wave_difficulty: number = 100;
+  public current_wave_difficulty: number = 1000;
 
   public constructor() {
     this.tower_map = get_default_tower_map();

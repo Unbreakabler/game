@@ -1,4 +1,4 @@
-const DEFAULT_PATH_WIDTH = 30;
+const DEFAULT_PATH_WIDTH = 50;
 
 export class Path extends Phaser.Curves.Path {
   public road_width: number;

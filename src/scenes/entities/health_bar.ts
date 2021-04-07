@@ -24,6 +24,12 @@ export class HealthBar extends Phaser.GameObjects.Rectangle {
     this.background_bar.destroy();
   }
 
+  public resetHp(health_points: number) {
+    this.starting_hp = health_points;
+    this.current_hp = this.starting_hp;
+    this.setVisible(false);
+  }
+
   public setCurrentHp(health_points: number) {
     if (health_points !== this.current_hp) {
       this.current_hp = health_points;
@@ -31,7 +37,7 @@ export class HealthBar extends Phaser.GameObjects.Rectangle {
       const r = this.current_hp / this.starting_hp
       this.width = this.starting_width * r;
     }
-    if (this.current_hp < this.starting_hp && !this.visible) {
+    if (this.current_hp < this.starting_hp) {
       this.setVisible(true);
       this.background_bar.setVisible(true);
       this.background_bar.setActive(true);
