@@ -6,25 +6,25 @@ import { formatNumber } from '../gamelogic/util/utils.js';
 
 function add_css() {
 	var style = element("style");
-	style.id = "svelte-ta66yf-style";
-	style.textContent = ".resource-container.svelte-ta66yf.svelte-ta66yf{display:flex;justify-content:space-between;padding:5px;color:black;-webkit-text-fill-color:white;-webkit-text-stroke-width:1px;-webkit-text-stroke-color:black;font-weight:900;font-size:24px;font-family:\"Courier New\", Courier, monospace}.money.svelte-ta66yf.svelte-ta66yf{width:400px;padding:10px;display:flex;justify-content:flex-end;align-items:center}.money.svelte-ta66yf div.svelte-ta66yf{margin-right:5px}.coin{width:15px;height:15px;background-color:#ddb843;display:inline-block;border-radius:100px;box-shadow:1px 1px}";
+	style.id = "svelte-p92o5x-style";
+	style.textContent = ".resource-container.svelte-p92o5x.svelte-p92o5x{display:flex;justify-content:space-between;padding:5px}.money.svelte-p92o5x.svelte-p92o5x{width:400px;padding:10px;display:flex;justify-content:flex-end;align-items:center}.money.svelte-p92o5x div.svelte-p92o5x{margin-right:5px}.coin{width:15px;height:15px;background-color:#ddb843;display:inline-block;border-radius:100px;box-shadow:1px 1px}";
 	append(document.head, style);
 }
 
 function get_each_context(ctx, list, i) {
 	const child_ctx = ctx.slice();
-	child_ctx[5] = list[i][0];
-	child_ctx[6] = list[i][1];
+	child_ctx[3] = list[i][0];
+	child_ctx[4] = list[i][1];
 	return child_ctx;
 }
 
-// (23:4) {#each resources as [key, val]}
+// (13:4) {#each resources as [key, val]}
 function create_each_block(ctx) {
 	let div;
-	let t0_value = /*key*/ ctx[5].toLocaleUpperCase() + "";
+	let t0_value = /*key*/ ctx[3].toLocaleUpperCase() + "";
 	let t0;
 	let t1;
-	let t2_value = /*val*/ ctx[6] + "";
+	let t2_value = /*val*/ ctx[4] + "";
 	let t2;
 	let t3;
 
@@ -35,7 +35,7 @@ function create_each_block(ctx) {
 			t1 = text(":");
 			t2 = text(t2_value);
 			t3 = space();
-			attr(div, "class", "svelte-ta66yf");
+			attr(div, "class", "svelte-p92o5x");
 		},
 		m(target, anchor) {
 			insert(target, div, anchor);
@@ -45,8 +45,8 @@ function create_each_block(ctx) {
 			append(div, t3);
 		},
 		p(ctx, dirty) {
-			if (dirty & /*resources*/ 2 && t0_value !== (t0_value = /*key*/ ctx[5].toLocaleUpperCase() + "")) set_data(t0, t0_value);
-			if (dirty & /*resources*/ 2 && t2_value !== (t2_value = /*val*/ ctx[6] + "")) set_data(t2, t2_value);
+			if (dirty & /*resources*/ 2 && t0_value !== (t0_value = /*key*/ ctx[3].toLocaleUpperCase() + "")) set_data(t0, t0_value);
+			if (dirty & /*resources*/ 2 && t2_value !== (t2_value = /*val*/ ctx[4] + "")) set_data(t2, t2_value);
 		},
 		d(detaching) {
 			if (detaching) detach(div);
@@ -83,10 +83,10 @@ function create_fragment(ctx) {
 				each_blocks[i].c();
 			}
 
-			attr(div0, "class", "svelte-ta66yf");
-			attr(div1, "class", "coin svelte-ta66yf");
-			attr(div2, "class", "money svelte-ta66yf");
-			attr(div3, "class", "resource-container svelte-ta66yf");
+			attr(div0, "class", "svelte-p92o5x");
+			attr(div1, "class", "coin svelte-p92o5x");
+			attr(div2, "class", "money svelte-p92o5x");
+			attr(div3, "class", "resource-container svelte-p92o5x");
 		},
 		m(target, anchor) {
 			insert(target, div3, anchor);
@@ -158,7 +158,7 @@ function instance($$self, $$props, $$invalidate) {
 class Resources extends SvelteComponent {
 	constructor(options) {
 		super();
-		if (!document.getElementById("svelte-ta66yf-style")) add_css();
+		if (!document.getElementById("svelte-p92o5x-style")) add_css();
 		init(this, options, instance, create_fragment, safe_not_equal, {});
 	}
 }

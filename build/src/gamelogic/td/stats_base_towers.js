@@ -29,7 +29,6 @@ const getTowerAttributes = (tower_status) => {
     for (const [key, val] of Object.entries(base_attributes)) {
         res[key] = typeof val === 'function' ? val(tower_status.tier) : val;
     }
-    // console.log('getTowerAttributes', res)
     return res;
 };
 

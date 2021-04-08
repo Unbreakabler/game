@@ -1,3 +1,5 @@
+import { ENEMY_MODIFIERS } from './enemy_wave_generator.js';
+
 // import { EnemyType } from './enemy_wave_generator'
 var EnemyType;
 (function (EnemyType) {
@@ -41,7 +43,25 @@ const calculateEnemyDifficulty = (enemy_stats) => {
     difficulty += (enemy_stats.speed / 1) * SPEED_FACTOR; // normalize speed and scale by constant factor
     return difficulty;
 };
+const applyEnemyModifiers = (enemy_stats, modifier_ids) => {
+    let modified_stats = { ...enemy_stats };
+    for (let i = 0; i < modifier_ids.length; i++) {
+        const mod = ENEMY_MODIFIERS[modifier_ids[i]];
+        if (!mod)
+            continue;
+        // group mods have already affected group size, skip, should be removed from list.
+        if (mod.mod_type === 'group')
+            continue;
+        if (mod.stat_multipliers?.health_points) {
+            modified_stats.health_points *= mod.stat_multipliers.health_points;
+        }
+        if (mod.stat_multipliers?.movement_speed) {
+            modified_stats.speed *= mod.stat_multipliers.movement_speed;
+        }
+    }
+    return modified_stats;
+};
 
 export default ENEMY_BASE_STATS;
-export { EnemyType, calculateEnemyDifficulty };
+export { EnemyType, applyEnemyModifiers, calculateEnemyDifficulty };
 //# sourceMappingURL=stats_base_enemies.js.map

@@ -1,5 +1,5 @@
 import { gameModel } from '../gamelogic/gamemodel.js';
-import ENEMY_BASE_STATS from '../gamelogic/td/stats_base_enemies.js';
+import ENEMY_BASE_STATS, { applyEnemyModifiers } from '../gamelogic/td/stats_base_enemies.js';
 import Enemy from './entities/enemies/enemy.js';
 
 class WaveManager {
@@ -32,14 +32,14 @@ class WaveManager {
         if (this.delta_to_next_enemy > 0)
             return;
         const enemy = this.enemies.get();
-        // console.log('spawning', this.current_wave.enemy_type)
         enemy.setEnemyName(this.current_wave.enemy_type);
         // Set enemy stats/sprite
-        const stats = ENEMY_BASE_STATS[this.current_wave.enemy_type];
-        enemy.setSpeed(stats?.speed);
-        enemy.setHealthPoints(stats?.health_points);
-        enemy.setExperience(stats?.experience);
-        enemy.setValue(stats?.money);
+        const enemy_stats = ENEMY_BASE_STATS[this.current_wave.enemy_type];
+        const modified_status = applyEnemyModifiers(enemy_stats, this.current_wave.modifier_ids);
+        enemy.setSpeed(modified_status?.speed);
+        enemy.setHealthPoints(modified_status?.health_points);
+        enemy.setExperience(modified_status?.experience);
+        enemy.setValue(modified_status?.money);
         // Set difficulty per mob, we can show this number when selecting the mobs.
         enemy.setDifficulty(this.current_wave.mob_difficulty);
         // Set modifiers (width/height changes, colour changes, auras, effects, etc)
@@ -60,6 +60,7 @@ class WaveManager {
     }
     recordEnemyLeak() {
         this.tower_defense_state.current_wave_info.alive--;
+        this.tower_defense_state.current_wave_info.leaked++;
     }
 }
 

@@ -29,7 +29,7 @@ class TowerDefense {
         this.selection = null;
         this.stats = {};
         this.waves = [];
-        this.current_wave_info = { total: 0, spawned: 0, alive: 0 };
+        this.current_wave_info = { total: 0, spawned: 0, alive: 0, killed: 0, leaked: 0, lives: 0 };
         this.current_wave_difficulty = 1000;
         this.tower_map = get_default_tower_map();
         this.slot_tower_attribute_modifier_map = get_default_slot_tower_attribute_modifiers();
@@ -100,11 +100,14 @@ class TowerDefense {
             tower_stats.kills[enemy_name] = 0;
         tower_stats.kills.prestige++;
         tower_stats.kills[enemy_name]++;
+        this.current_wave_info.alive--;
+        this.current_wave_info.killed++;
     }
     recordEnemyLeak(enemy) {
         // record leak count per wave?
         // TODO(jon): more, better stats. How many enemies were leaked? Current lives? etc.
         this.current_wave_info.alive--;
+        this.current_wave_info.leaked++;
     }
     generateEnemyWave() {
         this.waves.push(generateWave(this.current_wave_difficulty));

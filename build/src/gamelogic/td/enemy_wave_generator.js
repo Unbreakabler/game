@@ -401,10 +401,8 @@ const chooseEnemyModifiers = (enemy_type, enemy_type_difficulty, max_mob_difficu
     const modifiers = [];
     let mob_with_modifier_difficulty = enemy_type_difficulty;
     const modifier_pool = getAvailableModifiers(enemy_type, max_wave_difficulty);
-    // console.log('mob_with_modifier_difficulty', mob_with_modifier_difficulty, max_mob_difficulty)
     while (mob_with_modifier_difficulty < max_mob_difficulty && modifier_pool.length) {
         const selected_mod_weight = weightedRandom(modifier_pool);
-        // console.log('selected_mod_weight', selected_mod_weight, modifier_pool)
         const selected_mod = ENEMY_MODIFIERS[selected_mod_weight.id];
         if (selected_mod) {
             let difficulty_with_modifier = mob_with_modifier_difficulty * selected_mod.difficulty_multiplier;
