@@ -7,12 +7,10 @@
   gameModel.subscribe((m) => (gameModelInstance = m));
 
   const towerInfo = (tower_id: TowerId) => {
-    // console.log('called slot control tower info')
     return gameModelInstance.tower_defense.getTower(tower_id)
   }
 
   $: slots = gameModelInstance.tower_defense.slots
-  // $: console.log('slots changed?', slots)
   $: slot_tower_info = slots.map(slot_id => slot_id ? towerInfo(slot_id): null)
 
 </script>

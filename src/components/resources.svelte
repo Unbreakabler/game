@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { GameModel, gameModel, updateGameModel } from "../gamelogic/gamemodel";
-  import { resetSaveGame, saveToStorage } from "../gamelogic/util/saveloadfunctions";
+  import { GameModel, gameModel } from "../gamelogic/gamemodel";
   import { formatNumber } from "../gamelogic/util/utils";
 
   let gameModelInstance: GameModel;
@@ -9,17 +8,6 @@
   $: money = formatNumber(gameModelInstance.wallet.money, 2);
 
   $: resources = Object.entries(gameModelInstance.resources);
-
-  function saveGame() {
-    saveToStorage(gameModelInstance);
-  }
-  function hardReset() {
-    if (window.confirm("You will lose all progress. Are you sure?")) {
-      resetSaveGame();
-      saveGame();
-
-    }
-  }
 </script>
 
 <div class="resource-container">
@@ -30,8 +18,6 @@
       <div>{key.toLocaleUpperCase()}:{val} </div>
     {/each}
   </div>
-  <!-- <Button color="secondary" on:click={saveGame}>Save</Button>
-  <Button color="secondary" on:click={hardReset}>Hard Reset</Button> -->
 </div>
 
 <style lang='scss'>
@@ -39,13 +25,6 @@
     display: flex;
     justify-content: space-between;
     padding: 5px;
-    color: black;
-    -webkit-text-fill-color: white; /* Will override color (regardless of order) */
-    -webkit-text-stroke-width: 1px;
-    -webkit-text-stroke-color: black;
-    font-weight: 900;
-    font-size: 24px;
-    font-family: 'Courier New', Courier, monospace;
   }
   .money {
     width: 400px;

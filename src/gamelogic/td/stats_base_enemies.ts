@@ -1,5 +1,7 @@
 // import { EnemyType } from './enemy_wave_generator'
 
+import { ENEMY_MODIFIERS, ModifierId } from "./enemy_wave_generator";
+
 export enum EnemyType {
   green_knight,
   bug,
@@ -57,6 +59,27 @@ export const calculateEnemyDifficulty = (enemy_stats: EnemyStats) => {
   difficulty += (enemy_stats.speed/1)*SPEED_FACTOR // normalize speed and scale by constant factor
 
   return difficulty
+}
+
+export const applyEnemyModifiers = (enemy_stats: EnemyStats, modifier_ids: ModifierId[]) => {
+  let modified_stats = { ...enemy_stats }
+
+  for (let i = 0; i < modifier_ids.length; i ++) {
+    const mod = ENEMY_MODIFIERS[modifier_ids[i]]
+    if (!mod) continue
+    // group mods have already affected group size, skip, should be removed from list.
+    if (mod.mod_type === 'group') continue;
+
+    if (mod.stat_multipliers?.health_points) {
+      modified_stats.health_points *= mod.stat_multipliers.health_points
+    }
+
+    if (mod.stat_multipliers?.movement_speed) {
+      modified_stats.speed *= mod.stat_multipliers.movement_speed
+    }  
+  }
+
+  return modified_stats
 }
 
 export default ENEMY_BASE_STATS

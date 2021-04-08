@@ -10,6 +10,7 @@
   import WaveIndicator from '../components/wave_indicator.svelte'
   import { OutlinePipeline } from '../plugins/outline'
   import Resources from "../components/resources.svelte";
+  import WaveStatus from "../components/wave_status.svelte";
 
   let canvas: HTMLCanvasElement, game: any;
 
@@ -46,6 +47,7 @@
   <div class="parent" id="parent">
     <canvas bind:this={canvas} id="game-container" />
     <div class="resources">
+      <WaveStatus />
       <Resources />
     </div>
     <div class="details">
@@ -96,9 +98,19 @@
     z-index: -1;
   }
   .resources {
+    display: flex;
+    flex-direction: row;
     position: absolute;
     right: 250px;
     top: 0px;
+    align-items: center;
+    color: black;
+    -webkit-text-fill-color: white; /* Will override color (regardless of order) */
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: black;
+    font-weight: 900;
+    font-size: 24px;
+    font-family: 'Courier New', Courier, monospace;
   }
   .details {
     position: absolute;

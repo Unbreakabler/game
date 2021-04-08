@@ -25,7 +25,6 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
   private prev_ang: number = 0;
   private td_scene: TD;
   private health_bar: HealthBar;
-  private modifiers: EnemyModifier[] = [];
   private difficulty: number = 0;
   private experience: number = 0;
   private money: number = 0;
@@ -101,7 +100,6 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
   }
  
   public setModifiers(modifiers: string[]): void {
-    // this.modifiers = modifiers;
     // reset to display height/width to original size
     this.displayHeight = this.height
     this.displayWidth = this.width
@@ -109,20 +107,8 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
     for (let i = 0; i < modifiers.length; i ++) {
       const mod = ENEMY_MODIFIERS[modifiers[i] as ModifierId]
       if (!mod) return
-      this.modifiers[i] = mod
       // group mods have already affected group size, skip, should be removed from list.
       if (mod.mod_type === 'group') continue;
-
-
-      if (mod.stat_multipliers?.health_points) {
-        this.original_health_points *= mod.stat_multipliers.health_points
-        this.health_points *= mod.stat_multipliers.health_points
-        this.health_bar.resetHp(this.health_points);
-      }
-
-      if (mod.stat_multipliers?.movement_speed) {
-        this.setSpeed(this.speed * mod.stat_multipliers.movement_speed)
-      }
 
       if (mod.visual_modifiers?.height) {
         this.displayHeight *= mod.visual_modifiers.height
@@ -131,7 +117,6 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
       if (mod.visual_modifiers?.width) {
         this.displayWidth *= mod.visual_modifiers?.width
       }
-      
     }
   }
 

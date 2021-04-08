@@ -329,7 +329,7 @@ function weightedRandom<T>(items: T[], pop?: boolean): T {
 export interface EnemyWave { 
   wave_type: string, 
   enemy_type: EnemyType, 
-  modifier_ids: string[],
+  modifier_ids: ModifierId[],
   mob_count: integer,
   mob_difficulty: number,
   wave_difficulty: number,
@@ -484,10 +484,8 @@ const chooseEnemyModifiers = (enemy_type: EnemyType, enemy_type_difficulty: numb
 
   const modifier_pool = getAvailableModifiers(enemy_type, max_wave_difficulty);
 
-  // console.log('mob_with_modifier_difficulty', mob_with_modifier_difficulty, max_mob_difficulty)
   while (mob_with_modifier_difficulty < max_mob_difficulty && modifier_pool.length) {
     const selected_mod_weight = weightedRandom(modifier_pool, true);
-    // console.log('selected_mod_weight', selected_mod_weight, modifier_pool)
     const selected_mod = ENEMY_MODIFIERS[selected_mod_weight.id as ModifierId]
     if (selected_mod) {
       let difficulty_with_modifier = mob_with_modifier_difficulty * selected_mod.difficulty_multiplier

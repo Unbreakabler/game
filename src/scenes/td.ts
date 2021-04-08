@@ -231,7 +231,7 @@ export default class TD extends Phaser.Scene {
             this.selected_turret?.setVisible(false);
             this.selected_turret = null;
             this.selection = null;
-          }
+          } 
 
           // Update selection
           this.selection = cur_selection;
@@ -331,7 +331,7 @@ export default class TD extends Phaser.Scene {
   }
 
   public selectUnderCursor(pointer: Phaser.Input.Pointer, game_objects_under_pointer: Phaser.GameObjects.GameObject[]) {
-    if (!game_objects_under_pointer.length) gameModelInstance.tower_defense.setSelection(null)
+    if (!game_objects_under_pointer.length && !this.selection) gameModelInstance.tower_defense.setSelection(null)
     game_objects_under_pointer.forEach(g => {
       if (g.hasOwnProperty('tower_id')) {
         gameModelInstance.tower_defense.setSelection((g as Turret).tower_id)
@@ -349,7 +349,6 @@ export default class TD extends Phaser.Scene {
       const still_alive = enemy.receiveDamage(bullet_damage, gameModelInstance.wallet);
       if (!still_alive) {
         gameModelInstance.tower_defense.recordTowerKill(bullet.tower_id, enemy.name)
-        gameModelInstance.tower_defense.current_wave_info.alive--;
       }
       // gameModelInstance.tower_defense.recordTowerDamage(bullet.tower_id, bullet_damage, still_alive)
     }

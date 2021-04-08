@@ -76,6 +76,9 @@ interface WaveInfo {
   total: number,
   spawned: number,
   alive: number,
+  killed: number,
+  leaked: number,
+  lives: number,
 }
 
 export type TowerType = 'basic' | 'machine_gun'
@@ -93,7 +96,7 @@ export class TowerDefense {
   public slots: Array<TowerId | null>
   public stats: Stats = {}
   public waves: EnemyWave[] = [];
-  public current_wave_info: WaveInfo = { total: 0, spawned: 0, alive: 0 };
+  public current_wave_info: WaveInfo = { total: 0, spawned: 0, alive: 0, killed: 0, leaked: 0, lives: 0 };
   public current_wave_difficulty: number = 1000;
 
   public constructor() {
@@ -171,12 +174,15 @@ export class TowerDefense {
     if (!tower_stats.kills[enemy_name]) tower_stats.kills[enemy_name] = 0;
     tower_stats.kills.prestige++;
     tower_stats.kills[enemy_name]++;
+    this.current_wave_info.alive--;
+    this.current_wave_info.killed++;
   }
 
   public recordEnemyLeak(enemy: string) {
     // record leak count per wave?
     // TODO(jon): more, better stats. How many enemies were leaked? Current lives? etc.
     this.current_wave_info.alive--;
+    this.current_wave_info.leaked++;
   }
 
   public generateEnemyWave() {
