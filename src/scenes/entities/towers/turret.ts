@@ -29,6 +29,7 @@ export default class Turret extends Phaser.GameObjects.Image {
   private target!: Enemy | null;
   private target_indicator!: Phaser.GameObjects.Arc;
   private targeting_mode: TargetingMode = 'first'
+  private current_time: number = 0;
 
   public constructor(
     td_scene: TD,
@@ -42,7 +43,7 @@ export default class Turret extends Phaser.GameObjects.Image {
     this.tower_id = tower_id;
 
     // TODO(jon): Projectiles will have to be managed differently to allow different projectiles for each turret.
-    this.projectiles = this.td_scene.add.group({ classType: Bullet, active: true, runChildUpdate: true }) as BetterGroup<Bullet>;
+    this.projectiles = this.td_scene.add.group({ classType: Bullet, active: true }) as BetterGroup<Bullet>;
     this.display_range = this.td_scene.add.circle(0, 0, this.range, 0xff0000, 0.5);
     this.display_range.setVisible(false);
     this.setupTowerSubscription(tower_id)
@@ -82,6 +83,7 @@ export default class Turret extends Phaser.GameObjects.Image {
   public preUpdate() { this.setDisplayRange() }
 
   public update(time: number, delta: number): void {
+    for (const proj of this.projectiles.getChildren()) proj.update(time, delta)
     if (this.is_selected || this.is_hovered) {
       const already_applied = this.getPostPipeline(OutlinePipeline)
       if (already_applied instanceof Array && !already_applied.length) this.setPostPipeline(OutlinePipeline)
@@ -97,15 +99,16 @@ export default class Turret extends Phaser.GameObjects.Image {
     if (this.targeting_mode === 'first') e = this.findFirstEnemyInRange(20);
     if (this.targeting_mode === 'strongest') e = this.findStrongestEnemyInRange(20);
 
-    if (e) {
-      this.targetEnemy(e);
-    } else if (this.target_indicator) {
-      this.target_indicator.setVisible(false);
-    }
     // time to shoot
-    if (time > this.next_tick) {
+    this.current_time += delta;
+    if (this.current_time > this.next_tick) {
+      if (e) {
+        this.targetEnemy(e);
+      } else if (this.target_indicator) {
+        this.target_indicator.setVisible(false);
+      }
       //If fired at enemy, start cooldown
-      if (this.attemptToFire()) this.next_tick = time + this.attack_speed;
+      if (this.attemptToFire()) this.next_tick = this.current_time + this.attack_speed;
     }
   }
 
@@ -168,7 +171,7 @@ export default class Turret extends Phaser.GameObjects.Image {
     this.is_placed = true;
     this.select(false);
     this.enableBulletCollisions();
-    return true;
+    return true; 
   }
 
   public setDisplayRange() {

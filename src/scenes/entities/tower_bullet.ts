@@ -19,6 +19,8 @@ export default class Bullet extends Phaser.GameObjects.Image {
 
   public constructor(scene: Phaser.Scene) {
     super(scene, 0, 0, "small_bullet");
+    this.width = 100;
+    this.height = 100;
     this.td_scene = scene as TD;
     scene.add.existing(this);
     scene.physics.add.existing(this);

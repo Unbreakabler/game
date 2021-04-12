@@ -10,17 +10,33 @@
   $: killed = gameModelInstance.tower_defense.current_wave_info.killed
   $: leaked = gameModelInstance.tower_defense.current_wave_info.leaked
   $: lives = gameModelInstance.tower_defense.current_wave_info.lives
+  $: wave = gameModelInstance.tower_defense.current_wave_info.level;
 </script>
 
 <div class="main">
-  <div>Spawned: {spawned} / {total} </div> 
-  <div>Alive: {alive} / {spawned} </div> 
-  <div>Leaked: {leaked}</div>
+  <div>S: {spawned}/{total}</div> 
+  <div>A: {alive}</div> 
+  <div>K: {killed}</div> 
+  <div>L: {leaked}</div>
+  <div>lives: {lives}</div> 
+  <div>wave: {wave}</div>
 </div>
 
-<style>
+<style lang='scss'>
   .main {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    padding: 0 10px;
+    background: rgba(63, 63, 63, 0.5);
+    border: 4px solid #ffffff;
+    border-radius: 8px;
+    max-width: 400px;
+    transform: skew(-25deg);
+    :not(:first-child) {
+      padding-left: 5px;
+    }
+    div {
+      transform: skew(25deg);
+    }
   }
 </style>
