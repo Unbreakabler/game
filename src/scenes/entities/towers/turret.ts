@@ -170,7 +170,7 @@ export default class Turret extends Phaser.GameObjects.Image {
     console.log(`placing turret @ x:${place_x}, y:${place_y}`);
     this.is_placed = true;
     this.select(false);
-    this.enableBulletCollisions();
+    // this.enableBulletCollisions();
     return true; 
   }
 
@@ -309,6 +309,8 @@ export default class Turret extends Phaser.GameObjects.Image {
     // spawn in front of the turret. Another approach here is to have all projectiles spawn at the turret center, but render
     // under the tower sprite.
     b.fire(this.tower_id, x + (dx * (this.width - 10)), y + (dy * (this.height - 10)), angle, this.range, this.damage, this.tower_info?.attributes.projectile_modifiers);
+
+    // We also want to create an invis "trail" between the new position, and the previous position on each bullet update. If the bullet OR trail collides with an enemy, its a hit.
   }
 
   public enableBulletCollisions(): void {

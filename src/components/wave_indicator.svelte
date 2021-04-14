@@ -2,7 +2,8 @@
 import { beforeUpdate } from "svelte";
 
   import { GameModel, gameModel } from "../gamelogic/gamemodel";
-  import { ENEMY_MODIFIERS, ModifierId } from "../gamelogic/td/enemy_wave_generator";
+  import { ENEMY_MODIFIERS } from "../gamelogic/td/enemy_wave_generator";
+  import type { ModifierId } from '../gamelogic/td/enemy_wave_generator'
   import { EnemyType } from '../gamelogic/td/stats_base_enemies'
 
   let gameModelInstance: GameModel;

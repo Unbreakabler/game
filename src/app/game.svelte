@@ -20,8 +20,8 @@
   onMount(() => {
     const config: Phaser.Types.Core.GameConfig = {
       type: Phaser.WEBGL,
-      width: 1280,
-      height: 720,
+      width: 1920,
+      height: 1080,
       scale: {
         parent: 'parent',
         mode: Phaser.Scale.FIT,
@@ -29,10 +29,13 @@
       },
       physics: {
         default: "arcade",
+        arcade: {
+          debug: true
+        }
       },
       canvas: canvas,
       scene: [TD, Main],
-      pipeline: [OutlinePipeline]
+      pipeline: [OutlinePipeline],
     };
 
     game = new Phaser.Game(config);
