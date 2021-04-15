@@ -10,7 +10,7 @@ let FragmentShader = GetFrag(Quality)
 
 export class OutlinePipeline extends PostFXPipeline {
 
-  private _thickness = 3;
+  private _thickness = 5;
   private _outlineColor = new Color(255, 255, 255);
 
   constructor(game: Phaser.Game) {
@@ -23,7 +23,7 @@ export class OutlinePipeline extends PostFXPipeline {
   }
 
   resetFromJSON(o: any) {
-    this.setThickness(GetValue(o, 'thickness', 3));
+    this.setThickness(GetValue(o, 'thickness', 5));
     this.setOutlineColor(GetValue(o, 'outlineColor', 0xffffff));
     return this;
   }

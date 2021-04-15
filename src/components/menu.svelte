@@ -10,7 +10,7 @@
 
   const updateTimestep = (delta: number) => {
     gameModelInstance.tower_defense.time_multiplier += delta
-    gameModelInstance.tower_defense.time_multiplier = Math.min(Math.max(gameModelInstance.tower_defense.time_multiplier, 0), 10);
+    gameModelInstance.tower_defense.time_multiplier = Math.min(Math.max(gameModelInstance.tower_defense.time_multiplier, 0), 100);
   }
 
   let showModal: null | string = null;

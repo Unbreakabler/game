@@ -83,6 +83,7 @@ export default class Turret extends Phaser.GameObjects.Image {
   public preUpdate() { this.setDisplayRange() }
 
   public update(time: number, delta: number): void {
+    // Have to manually update the projectiles to pass multiplied delta time from td.ts
     for (const proj of this.projectiles.getChildren()) proj.update(time, delta)
     if (this.is_selected || this.is_hovered) {
       const already_applied = this.getPostPipeline(OutlinePipeline)
@@ -170,7 +171,7 @@ export default class Turret extends Phaser.GameObjects.Image {
     console.log(`placing turret @ x:${place_x}, y:${place_y}`);
     this.is_placed = true;
     this.select(false);
-    // this.enableBulletCollisions();
+    this.enableBulletCollisions();
     return true; 
   }
 
@@ -180,14 +181,21 @@ export default class Turret extends Phaser.GameObjects.Image {
     const blue = 0x0000ff
     this.display_range.x = this.x;
     this.display_range.y = this.y;
+    let outline_color: Phaser.Display.Color;
     if (this.is_selected) {
       this.display_range.setVisible(true);
       this.display_range.setStrokeStyle(2, 0xffffff);
       if (!this.is_placed) {
         if (this.isPlaceable(this.x, this.y)) {
           this.display_range.setFillStyle(green, 0.3);
+          outline_color = new Phaser.Display.Color(0, 255, 0);
         } else {
           this.display_range.setFillStyle(red, 0.3);
+          outline_color = new Phaser.Display.Color(255, 0, 0);
+        }
+        const outline = this.getPostPipeline(OutlinePipeline)
+        if (outline) {
+          (outline as OutlinePipeline).outlineColor = outline_color;
         }
       } else {
         this.display_range.setFillStyle(blue, 0.15);
