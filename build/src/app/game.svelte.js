@@ -2,7 +2,7 @@ import { SvelteComponent, init, safe_not_equal, element, append, create_componen
 import '../../node_modules/phaser/dist/phaser.js';
 import Slot_controls from '../components/slot_controls.svelte.js';
 import Tower_details from '../components/tower_details.svelte.js';
-import Frames from '../components/frames.svelte.js';
+import Menu from '../components/menu.svelte.js';
 import { gameModel } from '../gamelogic/gamemodel.js';
 import Main from '../scenes/main.js';
 import TD from '../scenes/td.js';
@@ -15,8 +15,8 @@ import Wave_status from '../components/wave_status.svelte.js';
 
 function add_css() {
 	var style = element("style");
-	style.id = "svelte-10g4sff-style";
-	style.textContent = ".main.svelte-10g4sff{overflow:hidden;width:100%;height:100%;display:grid;grid-template-columns:auto minmax(0, 1fr);grid-template-rows:minmax(0, 1fr) minmax(100px, 0.5fr);grid-template-areas:\"indicator parent\" \"frames parent\"}.indicator.svelte-10g4sff{display:flex;grid-area:indicator;overflow-y:hidden}.parent.svelte-10g4sff{grid-area:parent;position:relative}.inventory.svelte-10g4sff{grid-area:inventory;position:absolute;bottom:0px;left:0px}.frames.svelte-10g4sff{grid-area:frames}canvas.svelte-10g4sff{z-index:-1}.resources.svelte-10g4sff{display:flex;flex-direction:row;position:absolute;right:250px;top:0px;align-items:center;color:black;-webkit-text-fill-color:white;-webkit-text-stroke-width:1px;-webkit-text-stroke-color:black;font-weight:900;font-size:24px;font-family:\"Courier New\", Courier, monospace}.details.svelte-10g4sff{position:absolute;right:0px;top:0px;height:100%;display:flex;flex-direction:column;justify-content:space-between}";
+	style.id = "svelte-2vycs8-style";
+	style.textContent = ".main.svelte-2vycs8{overflow:hidden;width:100%;height:100%;display:grid;grid-template-columns:auto minmax(0, 1fr);grid-template-rows:minmax(0, 1fr) minmax(100px, 0.5fr);grid-template-areas:\"indicator parent\" \"menu parent\"}.indicator.svelte-2vycs8{display:flex;grid-area:indicator;overflow-y:hidden}.parent.svelte-2vycs8{grid-area:parent;position:relative}.inventory.svelte-2vycs8{grid-area:inventory;position:absolute;bottom:0px;left:0px}.menu.svelte-2vycs8{display:flex;grid-area:menu}canvas.svelte-2vycs8{z-index:-1}.resources.svelte-2vycs8{display:flex;flex-direction:row;position:absolute;right:250px;top:0px;align-items:center;color:black;-webkit-text-fill-color:white;-webkit-text-stroke-width:1px;-webkit-text-stroke-color:black;font-weight:900;font-size:24px;font-family:\"Courier New\", Courier, monospace}.details.svelte-2vycs8{position:absolute;right:0px;top:0px;height:100%;display:flex;flex-direction:column;justify-content:space-between}";
 	append(document.head, style);
 }
 
@@ -41,14 +41,14 @@ function create_fragment(ctx) {
 	let slotcontrols;
 	let t5;
 	let div6;
-	let frames;
+	let menu;
 	let current;
 	waveindicator = new Wave_indicator({});
 	wavestatus = new Wave_status({});
 	resources = new Resources({});
 	towerdetails = new Tower_details({});
 	slotcontrols = new Slot_controls({});
-	frames = new Frames({});
+	menu = new Menu({});
 
 	return {
 		c() {
@@ -72,18 +72,18 @@ function create_fragment(ctx) {
 			create_component(slotcontrols.$$.fragment);
 			t5 = space();
 			div6 = element("div");
-			create_component(frames.$$.fragment);
-			attr(div0, "class", "indicator svelte-10g4sff");
+			create_component(menu.$$.fragment);
+			attr(div0, "class", "indicator svelte-2vycs8");
 			attr(canvas_1, "id", "game-container");
-			attr(canvas_1, "class", "svelte-10g4sff");
-			attr(div1, "class", "resources svelte-10g4sff");
-			attr(div2, "class", "details svelte-10g4sff");
+			attr(canvas_1, "class", "svelte-2vycs8");
+			attr(div1, "class", "resources svelte-2vycs8");
+			attr(div2, "class", "details svelte-2vycs8");
 			attr(div3, "class", "column");
-			attr(div4, "class", "inventory svelte-10g4sff");
-			attr(div5, "class", "parent svelte-10g4sff");
+			attr(div4, "class", "inventory svelte-2vycs8");
+			attr(div5, "class", "parent svelte-2vycs8");
 			attr(div5, "id", "parent");
-			attr(div6, "class", "frames svelte-10g4sff");
-			attr(div7, "class", "main svelte-10g4sff");
+			attr(div6, "class", "menu svelte-2vycs8");
+			attr(div7, "class", "main svelte-2vycs8");
 		},
 		m(target, anchor) {
 			insert(target, div7, anchor);
@@ -107,7 +107,7 @@ function create_fragment(ctx) {
 			mount_component(slotcontrols, div3, null);
 			append(div7, t5);
 			append(div7, div6);
-			mount_component(frames, div6, null);
+			mount_component(menu, div6, null);
 			current = true;
 		},
 		p: noop,
@@ -118,7 +118,7 @@ function create_fragment(ctx) {
 			transition_in(resources.$$.fragment, local);
 			transition_in(towerdetails.$$.fragment, local);
 			transition_in(slotcontrols.$$.fragment, local);
-			transition_in(frames.$$.fragment, local);
+			transition_in(menu.$$.fragment, local);
 			current = true;
 		},
 		o(local) {
@@ -127,7 +127,7 @@ function create_fragment(ctx) {
 			transition_out(resources.$$.fragment, local);
 			transition_out(towerdetails.$$.fragment, local);
 			transition_out(slotcontrols.$$.fragment, local);
-			transition_out(frames.$$.fragment, local);
+			transition_out(menu.$$.fragment, local);
 			current = false;
 		},
 		d(detaching) {
@@ -138,7 +138,7 @@ function create_fragment(ctx) {
 			destroy_component(resources);
 			destroy_component(towerdetails);
 			destroy_component(slotcontrols);
-			destroy_component(frames);
+			destroy_component(menu);
 		}
 	};
 }
@@ -157,7 +157,10 @@ function instance($$self, $$props, $$invalidate) {
 				mode: Phaser.Scale.FIT,
 				autoCenter: Phaser.Scale.NO_CENTER
 			},
-			physics: { default: "arcade" },
+			physics: {
+				default: "arcade",
+				arcade: { debug: false }
+			},
 			canvas,
 			scene: [TD, Main],
 			pipeline: [OutlinePipeline]
@@ -179,7 +182,7 @@ function instance($$self, $$props, $$invalidate) {
 class Game extends SvelteComponent {
 	constructor(options) {
 		super();
-		if (!document.getElementById("svelte-10g4sff-style")) add_css();
+		if (!document.getElementById("svelte-2vycs8-style")) add_css();
 		init(this, options, instance, create_fragment, safe_not_equal, {});
 	}
 }

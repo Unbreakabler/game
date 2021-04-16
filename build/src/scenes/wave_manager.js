@@ -7,7 +7,7 @@ class WaveManager {
         this.delta_to_next_enemy = 0;
         this.td_scene = scene;
         this.path = path;
-        this.enemies = this.td_scene.add.group({ classType: Enemy, runChildUpdate: true });
+        this.enemies = this.td_scene.add.group({ classType: Enemy });
         this.setupWaveSubscription();
     }
     setupWaveSubscription() {
@@ -20,6 +20,9 @@ class WaveManager {
         });
     }
     update(time, delta) {
+        for (const enemy of this.enemies.getChildren()) {
+            enemy.update(time, delta);
+        }
         if (this.current_wave && (this.tower_defense_state.current_wave_info.spawned < this.tower_defense_state.current_wave_info.total)) {
             this.spawnEnemy(time, delta);
         }

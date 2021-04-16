@@ -30,7 +30,7 @@ function get_each_context_2(ctx, list, i) {
 	return child_ctx;
 }
 
-// (23:4) {#if current_wave.modifier_ids.length}
+// (24:4) {#if current_wave.modifier_ids.length}
 function create_if_block_1(ctx) {
 	let span;
 	let each_value_2 = /*current_wave*/ ctx[1].modifier_ids;
@@ -88,7 +88,7 @@ function create_if_block_1(ctx) {
 	};
 }
 
-// (25:8) {#each current_wave.modifier_ids as mod_id}
+// (26:8) {#each current_wave.modifier_ids as mod_id}
 function create_each_block_2(ctx) {
 	let t_value = /*getMod*/ ctx[3](/*mod_id*/ ctx[8])?.name + "";
 	let t;
@@ -109,7 +109,7 @@ function create_each_block_2(ctx) {
 	};
 }
 
-// (41:8) {#if wave.modifier_ids.length}
+// (42:8) {#if wave.modifier_ids.length}
 function create_if_block(ctx) {
 	let span;
 	let each_value_1 = /*wave*/ ctx[5].modifier_ids;
@@ -167,7 +167,7 @@ function create_if_block(ctx) {
 	};
 }
 
-// (43:12) {#each wave.modifier_ids as mod_id}
+// (44:12) {#each wave.modifier_ids as mod_id}
 function create_each_block_1(ctx) {
 	let t_value = /*getMod*/ ctx[3](/*mod_id*/ ctx[8])?.name + "";
 	let t;
@@ -188,7 +188,7 @@ function create_each_block_1(ctx) {
 	};
 }
 
-// (36:4) {#each waves as wave}
+// (37:4) {#each waves as wave}
 function create_each_block(ctx) {
 	let div3;
 	let div1;
@@ -419,6 +419,7 @@ function instance($$self, $$props, $$invalidate) {
 	let waves;
 	let current_wave;
 	let current_enemy_image;
+	
 	let gameModelInstance;
 	gameModel.subscribe(m => $$invalidate(4, gameModelInstance = m));
 

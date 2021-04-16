@@ -3,62 +3,67 @@ class Bullet extends Phaser.GameObjects.Image {
         super(scene, 0, 0, "small_bullet");
         this.dx = 0;
         this.dy = 0;
-        this.lifespan = 0;
-        this.speed = 0;
+        this.lifespan = 1000;
+        this.speed = 400;
         this.damage = 0;
-        this.range = 0;
+        this.range = 600;
         this.chains = 0;
+        this.original_lifespan = 1000;
         this.td_scene = scene;
         scene.add.existing(this);
         scene.physics.add.existing(this);
-        this.dx = 0;
-        this.dy = 0;
-        this.lifespan = 0;
-        this.speed = Phaser.Math.GetSpeed(600, 1);
+        this.body.setSize(25, 25); // set physics body collision size
+        this.setActive(false);
+        this.setVisible(false);
     }
     fire(tower_id, x, y, angle, range, damage, projectile_modifiers) {
         this.tower_id = tower_id;
-        if (!this.mods)
-            this.initialize_mods(projectile_modifiers);
         this.setActive(true);
         this.setVisible(true);
+        if (!this.mods)
+            this.initialize_mods(projectile_modifiers);
         this.setPosition(x, y);
-        this.setRotation(angle - Phaser.Math.PI2 / 4); // FIXME(jon): not necessary if proj is round
-        this.dx = Math.cos(angle);
-        this.dy = Math.sin(angle);
-        this.lifespan = range * 1.3;
+        this.setRotation(angle - Math.PI / 2); // FIXME(jon): not necessary if proj is round
+        const dx = Math.cos(angle);
+        const dy = Math.sin(angle);
+        this.body.setVelocity(dx * this.speed, dy * this.speed);
         this.damage = damage;
         this.range = range;
     }
     update(time, delta) {
         this.lifespan -= delta;
-        this.x += this.dx * (this.speed * delta);
-        this.y += this.dy * (this.speed * delta);
         if (this.lifespan <= 0) {
+            console.log('BULLET LIFESPAN EXPIRED');
             this.setActive(false);
             this.setVisible(false);
+            this.destroy();
         }
     }
-    // returns damage
-    // This is where a "chain" or "aoe" caluclation would take place if present on the projectile.
+    /**
+     * Returns damage done by hit.
+     *
+     * Retargets and refires projectile for certain modifiers (chain).
+     */
     hit(enemy) {
         if (enemy === this.last_enemy_hit)
             return null;
         let still_alive = false;
         if (this.chains > 0) {
-            // target new enemy
-            // set chain range
-            // "fire" bullet in new direction
+            this.lifespan = this.original_lifespan;
             const e = this.findClosestEnemyInRange(this.range, enemy);
             if (e) {
                 this.last_enemy_hit = enemy;
                 still_alive = true;
                 this.chains--;
                 const angle = Phaser.Math.Angle.Between(this.x, this.y, e.x, e.y);
-                this.fire(this.tower_id, this.x, this.y, angle, this.range, this.damage, this.mods);
+                const dx = Math.cos(angle);
+                const dy = Math.sin(angle);
+                this.body.setVelocity(dx * this.speed, dy * this.speed);
             }
             else {
+                console.log('NO ENEMY IN CHAIN RANGE');
                 this.chains = 0;
+                this.lifespan = 0;
             }
         }
         if (!still_alive)
@@ -77,11 +82,8 @@ class Bullet extends Phaser.GameObjects.Image {
         let closest_enemy;
         let closest_distance = Number.MAX_VALUE;
         for (const e of enemies.getChildren()) {
-            if (e === current_target)
+            if (e === current_target || e === this.last_enemy_hit)
                 continue;
-            if (e === this.last_enemy_hit) {
-                continue;
-            }
             const d = Phaser.Math.Distance.Squared(this.x, this.y, e.x, e.y);
             if (d < range * range && d < closest_distance) {
                 closest_distance = d;

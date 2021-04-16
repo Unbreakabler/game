@@ -78,14 +78,11 @@ class Enemy extends Phaser.GameObjects.Sprite {
             const mod = ENEMY_MODIFIERS[modifiers[i]];
             if (!mod)
                 return;
-            // group mods have already affected group size, skip, should be removed from list.
-            if (mod.mod_type === 'group')
-                continue;
             if (mod.visual_modifiers?.height) {
                 this.displayHeight *= mod.visual_modifiers.height;
             }
             if (mod.visual_modifiers?.width) {
-                this.displayWidth *= mod.visual_modifiers?.width;
+                this.displayWidth *= mod.visual_modifiers.width;
             }
         }
     }
@@ -97,8 +94,10 @@ class Enemy extends Phaser.GameObjects.Sprite {
         // move the t point along the path, 0 is the start and 0 is the end
         if (!this.path)
             return; // skip updates if path has not be set by startOnPath
-        this.health_bar.setPosition(this.x, this.y - this.height);
-        this.follower.t += (this.speed / this.path.getLength()) * delta;
+        const path_length = this.path.getLength();
+        const dist_from_start = path_length * this.follower.t;
+        const new_dist_from_start = dist_from_start + this.speed * delta;
+        this.follower.t = new_dist_from_start / path_length;
         // get the new x and y coordinates in vec
         this.path.getPoint(this.follower.t, this.follower.vec);
         // angle between 0 and 2*PI
@@ -124,6 +123,7 @@ class Enemy extends Phaser.GameObjects.Sprite {
         this.prev_ang = ang;
         // update enemy x and y to the newly obtained x and y
         this.setPosition(this.follower.vec.x, this.follower.vec.y);
+        this.health_bar.setPosition(this.x, this.y - this.height);
         // We should probably add a small amount of left/right movement based on the forward vector so that every
         // enemy isn't following an identical path
         // if we have reached the end of the path, remove the enemy

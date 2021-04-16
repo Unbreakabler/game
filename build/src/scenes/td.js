@@ -119,7 +119,7 @@ class TD extends Phaser.Scene {
     }
     drawPath() {
         const points = [
-            [96, -32],
+            [96, -132],
             [96, 264],
             [500, 264],
             [500, 114],
@@ -251,9 +251,16 @@ class TD extends Phaser.Scene {
         this.input.on('pointermove', this.testTurretPlacement.bind(this));
     }
     update(time, delta) {
+        // delta = delta * gameModelInstance.tower_defense.time_multiplier;
+        this.physics.world.timeScale = 1 / gameModelInstance.tower_defense.time_multiplier;
+        this.tweens.timeScale = 1 / gameModelInstance.tower_defense.time_multiplier;
+        this.time.timeScale = 1 / gameModelInstance.tower_defense.time_multiplier;
+        this.anims.globalTimeScale = 1 / gameModelInstance.tower_defense.time_multiplier;
+        delta /= this.physics.world.timeScale;
         this.tower_map.forEach((tower) => tower.update(time, delta));
         this.wave_manager.update(time, delta);
     }
+    // TODO(jon): This should track when objects are hovered and not assume it's a tower.
     checkUnderCursor(pointer, game_objects_under_pointer) {
         if (game_objects_under_pointer.length) {
             document.body.style.cursor = 'pointer';
@@ -281,8 +288,8 @@ class TD extends Phaser.Scene {
     placeTurret(pointer, game_objects_under_pointer) {
         if (!this.selection || this.selection.cursor !== "placement" || !this.selected_turret)
             return false;
-        const place_x = Math.floor(pointer.x);
-        const place_y = Math.floor(pointer.y);
+        const place_x = pointer.x;
+        const place_y = pointer.y;
         const t = this.selected_turret;
         if (!t.place(place_x, place_y)) {
             return false;
@@ -295,7 +302,7 @@ class TD extends Phaser.Scene {
         return true;
     }
     selectUnderCursor(pointer, game_objects_under_pointer) {
-        if (!game_objects_under_pointer.length && !this.selection)
+        if (!game_objects_under_pointer.length && this.selected_turret?.is_placed)
             gameModelInstance.tower_defense.setSelection(null);
         game_objects_under_pointer.forEach(g => {
             if (g.hasOwnProperty('tower_id')) {
@@ -306,6 +313,7 @@ class TD extends Phaser.Scene {
     damageEnemy(enemy, bullet) {
         // only if both enemy and bullet are alive
         if (enemy.active === true && bullet.active === true) {
+            // debugger;
             // decrease the enemy hp with BULLET_DAMAGE
             const bullet_damage = bullet.hit(enemy);
             if (!bullet_damage)
@@ -314,7 +322,7 @@ class TD extends Phaser.Scene {
             if (!still_alive) {
                 gameModelInstance.tower_defense.recordTowerKill(bullet.tower_id, enemy.name);
             }
-            // gameModelInstance.tower_defense.recordTowerDamage(bullet.tower_id, bullet_damage, still_alive)
+            gameModelInstance.tower_defense.recordTowerDamage(bullet.tower_id, bullet_damage);
         }
     }
 }

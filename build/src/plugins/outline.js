@@ -14,11 +14,11 @@ class OutlinePipeline extends PostFXPipeline {
             fragShader: FragmentShader,
             name: 'outline',
         });
-        this._thickness = 3;
+        this._thickness = 5;
         this._outlineColor = new Color(255, 255, 255);
     }
     resetFromJSON(o) {
-        this.setThickness(GetValue(o, 'thickness', 3));
+        this.setThickness(GetValue(o, 'thickness', 5));
         this.setOutlineColor(GetValue(o, 'outlineColor', 0xffffff));
         return this;
     }

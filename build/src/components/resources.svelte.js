@@ -6,8 +6,8 @@ import { formatNumber } from '../gamelogic/util/utils.js';
 
 function add_css() {
 	var style = element("style");
-	style.id = "svelte-p92o5x-style";
-	style.textContent = ".resource-container.svelte-p92o5x.svelte-p92o5x{display:flex;justify-content:space-between;padding:5px}.money.svelte-p92o5x.svelte-p92o5x{width:400px;padding:10px;display:flex;justify-content:flex-end;align-items:center}.money.svelte-p92o5x div.svelte-p92o5x{margin-right:5px}.coin{width:15px;height:15px;background-color:#ddb843;display:inline-block;border-radius:100px;box-shadow:1px 1px}";
+	style.id = "svelte-1g266gb-style";
+	style.textContent = ".resource-container.svelte-1g266gb.svelte-1g266gb{display:flex;justify-content:space-between;padding:0 10px;background:rgba(63, 63, 63, 0.5);border:4px solid #ffffff;border-radius:8px;max-width:400px;transform:skew(-25deg)}.money.svelte-1g266gb.svelte-1g266gb{transform:skew(25deg);display:flex;justify-content:flex-end;align-items:center}.money.svelte-1g266gb div.svelte-1g266gb{margin-right:5px}.coin{width:15px;height:15px;background-color:#ddb843;display:inline-block;border-radius:100px;box-shadow:1px 1px}";
 	append(document.head, style);
 }
 
@@ -35,7 +35,7 @@ function create_each_block(ctx) {
 			t1 = text(":");
 			t2 = text(t2_value);
 			t3 = space();
-			attr(div, "class", "svelte-p92o5x");
+			attr(div, "class", "svelte-1g266gb");
 		},
 		m(target, anchor) {
 			insert(target, div, anchor);
@@ -83,10 +83,10 @@ function create_fragment(ctx) {
 				each_blocks[i].c();
 			}
 
-			attr(div0, "class", "svelte-p92o5x");
-			attr(div1, "class", "coin svelte-p92o5x");
-			attr(div2, "class", "money svelte-p92o5x");
-			attr(div3, "class", "resource-container svelte-p92o5x");
+			attr(div0, "class", "svelte-1g266gb");
+			attr(div1, "class", "coin svelte-1g266gb");
+			attr(div2, "class", "money svelte-1g266gb");
+			attr(div3, "class", "resource-container svelte-1g266gb");
 		},
 		m(target, anchor) {
 			insert(target, div3, anchor);
@@ -158,7 +158,7 @@ function instance($$self, $$props, $$invalidate) {
 class Resources extends SvelteComponent {
 	constructor(options) {
 		super();
-		if (!document.getElementById("svelte-p92o5x-style")) add_css();
+		if (!document.getElementById("svelte-1g266gb-style")) add_css();
 		init(this, options, instance, create_fragment, safe_not_equal, {});
 	}
 }

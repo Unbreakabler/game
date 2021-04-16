@@ -44,7 +44,7 @@ class Mine extends Achievable {
         console.log('requestLevelUp', wallet, cost);
         if (wallet.money >= cost) {
             wallet.money -= cost;
-            this.level++;
+            this.level += level;
             if (this.level > 1)
                 this.production *= this.production_multiplier;
             this.active = true;

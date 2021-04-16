@@ -18,10 +18,11 @@ class Turret extends Phaser.GameObjects.Image {
         this.is_placed = false;
         this.next_tick = 0;
         this.targeting_mode = 'first';
+        this.current_time = 0;
         this.td_scene = td_scene;
         this.tower_id = tower_id;
         // TODO(jon): Projectiles will have to be managed differently to allow different projectiles for each turret.
-        this.projectiles = this.td_scene.add.group({ classType: Bullet, active: true, runChildUpdate: true });
+        this.projectiles = this.td_scene.add.group({ classType: Bullet, active: true });
         this.display_range = this.td_scene.add.circle(0, 0, this.range, 0xff0000, 0.5);
         this.display_range.setVisible(false);
         this.setupTowerSubscription(tower_id);
@@ -57,6 +58,9 @@ class Turret extends Phaser.GameObjects.Image {
     }
     preUpdate() { this.setDisplayRange(); }
     update(time, delta) {
+        // Have to manually update the projectiles to pass multiplied delta time from td.ts
+        for (const proj of this.projectiles.getChildren())
+            proj.update(time, delta);
         if (this.is_selected || this.is_hovered) {
             const already_applied = this.getPostPipeline(OutlinePipeline);
             if (already_applied instanceof Array && !already_applied.length)
@@ -76,17 +80,18 @@ class Turret extends Phaser.GameObjects.Image {
             e = this.findFirstEnemyInRange(20);
         if (this.targeting_mode === 'strongest')
             e = this.findStrongestEnemyInRange(20);
-        if (e) {
-            this.targetEnemy(e);
-        }
-        else if (this.target_indicator) {
-            this.target_indicator.setVisible(false);
-        }
         // time to shoot
-        if (time > this.next_tick) {
+        this.current_time += delta;
+        if (this.current_time > this.next_tick) {
+            if (e) {
+                this.targetEnemy(e);
+            }
+            else if (this.target_indicator) {
+                this.target_indicator.setVisible(false);
+            }
             //If fired at enemy, start cooldown
             if (this.attemptToFire())
-                this.next_tick = time + this.attack_speed;
+                this.next_tick = this.current_time + this.attack_speed;
         }
     }
     preDestroy() {
@@ -147,15 +152,22 @@ class Turret extends Phaser.GameObjects.Image {
         const blue = 0x0000ff;
         this.display_range.x = this.x;
         this.display_range.y = this.y;
+        let outline_color;
         if (this.is_selected) {
             this.display_range.setVisible(true);
             this.display_range.setStrokeStyle(2, 0xffffff);
             if (!this.is_placed) {
                 if (this.isPlaceable(this.x, this.y)) {
                     this.display_range.setFillStyle(green, 0.3);
+                    outline_color = new Phaser.Display.Color(0, 255, 0);
                 }
                 else {
                     this.display_range.setFillStyle(red, 0.3);
+                    outline_color = new Phaser.Display.Color(255, 0, 0);
+                }
+                const outline = this.getPostPipeline(OutlinePipeline);
+                if (outline) {
+                    outline.outlineColor = outline_color;
                 }
             }
             else {
@@ -274,6 +286,7 @@ class Turret extends Phaser.GameObjects.Image {
         // spawn in front of the turret. Another approach here is to have all projectiles spawn at the turret center, but render
         // under the tower sprite.
         b.fire(this.tower_id, x + (dx * (this.width - 10)), y + (dy * (this.height - 10)), angle, this.range, this.damage, this.tower_info?.attributes.projectile_modifiers);
+        // We also want to create an invis "trail" between the new position, and the previous position on each bullet update. If the bullet OR trail collides with an enemy, its a hit.
     }
     enableBulletCollisions() {
         this.scene.physics.add.overlap(this.td_scene.wave_manager.enemies, this.projectiles, this.td_scene.damageEnemy);

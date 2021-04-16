@@ -29,8 +29,10 @@ class TowerDefense {
         this.selection = null;
         this.stats = {};
         this.waves = [];
-        this.current_wave_info = { total: 0, spawned: 0, alive: 0, killed: 0, leaked: 0, lives: 0 };
-        this.current_wave_difficulty = 1000;
+        this.current_wave = 1;
+        this.current_wave_info = { total: 0, spawned: 0, alive: 0, killed: 0, leaked: 0, lives: 0, level: 0 };
+        this.current_wave_difficulty = 100;
+        this.time_multiplier = 1;
         this.tower_map = get_default_tower_map();
         this.slot_tower_attribute_modifier_map = get_default_slot_tower_attribute_modifiers();
         this.slots = ['basic_1', 'machine_gun_1', null, null, null];
@@ -117,6 +119,7 @@ class TowerDefense {
     }
     spawnNextWave() {
         this.generateEnemyWave();
+        this.current_wave_info.level++;
         this.waves.shift();
     }
     getCurrentWave() {
