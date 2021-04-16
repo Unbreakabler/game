@@ -1,8 +1,6 @@
 <script lang="ts">
   import { GameModel, gameModel } from "../gamelogic/gamemodel";
   import type { TargetingMode, TowerInfo } from "../gamelogic/td/tower_defense";
-  import { resetSaveGame, saveToStorage } from "../gamelogic/util/saveloadfunctions";
-  import Button from "smelte/src/components/Button";
 
   let gameModelInstance: GameModel;
   gameModel.subscribe((m) => (gameModelInstance = m));
@@ -38,17 +36,6 @@
     const new_targeting_mode = targeting_modes[new_index]
     if (tower_info) tower_info.status.targeting_mode = new_targeting_mode;
   }
-
-  function saveGame() {
-    saveToStorage(gameModelInstance);
-  }
-  function hardReset() {
-    if (window.confirm("You will lose all progress. Are you sure?")) {
-      resetSaveGame();
-      saveGame();
-
-    }
-  }
 </script>
 
 {#if tower_info}
@@ -67,10 +54,7 @@
     <div>damage per hit: {tower_info.attributes.damage}</div>
     <div>attack time: {tower_info.attributes.attack_speed/1000}s</div>
     <div>proj mods: {JSON.stringify(tower_info.attributes.projectile_modifiers, null, 2)}</div>
-    <div class="controls">
-      <Button color="secondary" on:click={saveGame}>Save</Button>
-      <Button color="secondary" on:click={hardReset}>Hard Reset</Button>
-    </div>
+    
   </div>
 {/if}
 

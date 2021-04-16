@@ -3,7 +3,7 @@
   import { onMount } from "svelte";
   import SlotControls from "../components/slot_controls.svelte";
   import TowerDetails from "../components/tower_details.svelte";
-  import Frames from '../components/frames.svelte';
+  import Menu from '../components/menu.svelte';
   import { GameModel, gameModel } from "../gamelogic/gamemodel";
   import Main from "../scenes/main";
   import TD from "../scenes/td";
@@ -29,10 +29,13 @@
       },
       physics: {
         default: "arcade",
+        arcade: {
+          debug: false
+        }
       },
       canvas: canvas,
       scene: [TD, Main],
-      pipeline: [OutlinePipeline]
+      pipeline: [OutlinePipeline],
     };
 
     game = new Phaser.Game(config);
@@ -59,8 +62,8 @@
       </div>
     </div>
   </div>
-  <div class="frames">
-    <Frames />
+  <div class="menu">
+    <Menu />
   </div>
 </div>
 
@@ -74,7 +77,7 @@
     grid-template-rows: minmax(0, 1fr) minmax(100px, 0.5fr);
     grid-template-areas: 
       "indicator parent"
-      "frames parent";
+      "menu parent";
   }
   .indicator {
     display: flex;
@@ -91,8 +94,9 @@
     bottom: 0px;
     left: 0px;
   }
-  .frames {
-    grid-area: frames;
+  .menu {
+    display: flex;
+    grid-area: menu;
   }
   canvas {
     z-index: -1;

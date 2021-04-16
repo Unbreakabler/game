@@ -79,6 +79,7 @@ interface WaveInfo {
   killed: number,
   leaked: number,
   lives: number,
+  level: number,
 }
 
 export type TowerType = 'basic' | 'machine_gun'
@@ -96,8 +97,10 @@ export class TowerDefense {
   public slots: Array<TowerId | null>
   public stats: Stats = {}
   public waves: EnemyWave[] = [];
-  public current_wave_info: WaveInfo = { total: 0, spawned: 0, alive: 0, killed: 0, leaked: 0, lives: 0 };
-  public current_wave_difficulty: number = 1000;
+  public current_wave: number = 1;
+  public current_wave_info: WaveInfo = { total: 0, spawned: 0, alive: 0, killed: 0, leaked: 0, lives: 0, level: 0 };
+  public current_wave_difficulty: number = 100;
+  public time_multiplier: number = 1;
 
   public constructor() {
     this.tower_map = get_default_tower_map();
@@ -191,9 +194,10 @@ export class TowerDefense {
     // a linear increase wont match item/drop/upgrade power spikes.
     this.current_wave_difficulty++;
   }
-
+  
   public spawnNextWave() {
     this.generateEnemyWave();
+    this.current_wave_info.level++;
     this.waves.shift()!;
   }
 

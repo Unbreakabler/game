@@ -1,4 +1,3 @@
-import type { GameModel } from "../../gamelogic/gamemodel";
 import type { SlotProjectileModifier } from "../../gamelogic/td/stats_tower_modifiers";
 import type TD from "../td";
 import type Enemy from "./enemies/enemy";
@@ -6,73 +5,76 @@ import type Enemy from "./enemies/enemy";
 export default class Bullet extends Phaser.GameObjects.Image {
   public dx: number = 0;
   public dy: number = 0;
-  public lifespan: number = 0;
-  public speed: number = 0;
+  public lifespan: number = 1000;
+  public speed: number = 400;
   public damage: number = 0;
-  public range: number = 0;
+  public range: number = 600;
   public tower_id!: string;
 
   private td_scene: TD;
   private mods!: SlotProjectileModifier[];
   private chains: number = 0;
   private last_enemy_hit!: Enemy;
+  private original_lifespan: number = 1000;
 
   public constructor(scene: Phaser.Scene) {
     super(scene, 0, 0, "small_bullet");
     this.td_scene = scene as TD;
     scene.add.existing(this);
     scene.physics.add.existing(this);
-    this.dx = 0;
-    this.dy = 0;
-    this.lifespan = 0;
-    this.speed = Phaser.Math.GetSpeed(600, 1);
+    this.body.setSize(25, 25); // set physics body collision size
+    this.setActive(false);
+    this.setVisible(false);
   }
+
 
   public fire(tower_id: string, x: number, y: number, angle: number, range: number, damage: number, projectile_modifiers: SlotProjectileModifier[]): void {
     this.tower_id = tower_id;
-    if (!this.mods) this.initialize_mods(projectile_modifiers)
     this.setActive(true);
     this.setVisible(true);
+    if (!this.mods) this.initialize_mods(projectile_modifiers)
     this.setPosition(x, y);
-    this.setRotation(angle - Phaser.Math.PI2 / 4); // FIXME(jon): not necessary if proj is round
-    this.dx = Math.cos(angle);
-    this.dy = Math.sin(angle);
-    this.lifespan = range * 1.3;
+    this.setRotation(angle - Math.PI / 2); // FIXME(jon): not necessary if proj is round
+    const dx = Math.cos(angle);
+    const dy = Math.sin(angle);
+    this.body.setVelocity(dx * this.speed, dy * this.speed)
     this.damage = damage;
     this.range = range;
   }
 
   public update(time: number, delta: number): void {
     this.lifespan -= delta;
-
-    this.x += this.dx * (this.speed * delta);
-    this.y += this.dy * (this.speed * delta);
-
     if (this.lifespan <= 0) {
+      console.log('BULLET LIFESPAN EXPIRED')
       this.setActive(false);
       this.setVisible(false);
+      this.destroy();
     }
   }
-
-  // returns damage
-  // This is where a "chain" or "aoe" caluclation would take place if present on the projectile.
+/**
+ * Returns damage done by hit.
+ * 
+ * Retargets and refires projectile for certain modifiers (chain).
+ */
   public hit(enemy: Enemy): number | null {
     if (enemy === this.last_enemy_hit) return null;
 
     let still_alive = false;
     if (this.chains > 0) {
-      // target new enemy
-      // set chain range
-      // "fire" bullet in new direction
+      this.lifespan = this.original_lifespan;
       const e = this.findClosestEnemyInRange(this.range, enemy);
       if (e) {
         this.last_enemy_hit = enemy;
         still_alive = true
         this.chains--;
         const angle = Phaser.Math.Angle.Between(this.x, this.y, e.x, e.y)
-        this.fire(this.tower_id, this.x, this.y, angle, this.range, this.damage, this.mods)
+        const dx = Math.cos(angle);
+        const dy = Math.sin(angle);
+        this.body.setVelocity(dx * this.speed, dy * this.speed);
       } else {
+        console.log('NO ENEMY IN CHAIN RANGE')
         this.chains = 0;
+        this.lifespan = 0;
       }
     } 
     if (!still_alive) this.destroy();
@@ -91,10 +93,7 @@ export default class Bullet extends Phaser.GameObjects.Image {
     let closest_enemy: Enemy | undefined;
     let closest_distance = Number.MAX_VALUE;
     for (const e of enemies.getChildren()) {
-      if (e === current_target) continue;
-      if (e === this.last_enemy_hit) {
-        continue;
-      };
+      if (e === current_target || e === this.last_enemy_hit) continue;
       const d = Phaser.Math.Distance.Squared(this.x, this.y, e.x, e.y);
       if (d < range*range && d < closest_distance) {
         closest_distance = d;

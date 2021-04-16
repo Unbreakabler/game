@@ -26,26 +26,28 @@ type StatLibrary = {
 const ENEMY_BASE_STATS: StatLibrary = {
   [EnemyType.green_knight]: {
   health_points: 200,
-    speed: 1/10,
+    speed: Phaser.Math.GetSpeed(50, 1),
     experience: 2,
     money: 2,
     sprite_link: 'static/green_knight.png'
   }, 
   [EnemyType.bug]: {
     health_points: 100,
-    speed: 1/8,
+    speed: Phaser.Math.GetSpeed(75, 1),
     experience: 1,
     money: 1,
     sprite_link: 'static/bug.png'
   },
   [EnemyType.blue_dragon]: {
     health_points: 1000,
-    speed: 1/10,
+    speed: Phaser.Math.GetSpeed(50, 1),
     experience: 10,
     money: 10,
     sprite_link: 'static/blue_dragon.png'
   }
 }
+
+console.log('ENEMY_BASE_STATS', ENEMY_BASE_STATS)
 
 /**
  * Caluclate enemy mob difficulty based on base stats (speed and health).

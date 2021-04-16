@@ -24,11 +24,15 @@
   .resource-container {
     display: flex;
     justify-content: space-between;
-    padding: 5px;
+    padding: 0 10px;
+    background: rgba(63, 63, 63, 0.5);
+    border: 4px solid #ffffff;
+    border-radius: 8px;
+    max-width: 400px;
+    transform: skew(-25deg);
   }
   .money {
-    width: 400px;
-    padding: 10px;
+    transform: skew(25deg);
     display: flex;
     justify-content: flex-end;
     align-items: center;

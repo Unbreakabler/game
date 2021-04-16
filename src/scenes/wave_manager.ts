@@ -18,7 +18,7 @@ export class WaveManager {
   constructor(scene: TD, path: Path) {
     this.td_scene = scene;
     this.path = path;
-    this.enemies = this.td_scene.add.group({ classType: Enemy, runChildUpdate: true }) as BetterGroup<Enemy>;
+    this.enemies = this.td_scene.add.group({ classType: Enemy }) as BetterGroup<Enemy>;
     this.setupWaveSubscription()
   }
 
@@ -32,6 +32,9 @@ export class WaveManager {
   }
 
   public update(time: number, delta: number): void {
+    for (const enemy of this.enemies.getChildren()) {
+      enemy.update(time, delta);
+    }
     if (this.current_wave && (this.tower_defense_state.current_wave_info.spawned < this.tower_defense_state.current_wave_info.total)) {
       this.spawnEnemy(time, delta);
     } else {
