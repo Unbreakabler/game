@@ -68,9 +68,10 @@ export default class Bullet extends Phaser.GameObjects.Image {
         still_alive = true
         this.chains--;
         const angle = Phaser.Math.Angle.Between(this.x, this.y, e.x, e.y)
+        this.setRotation(angle - Math.PI / 2);
         const dx = Math.cos(angle);
         const dy = Math.sin(angle);
-        this.body.setVelocity(dx * this.speed, dy * this.speed);
+        (this.body as Phaser.Physics.Arcade.Body).setVelocity(dx * this.speed, dy * this.speed);
       } else {
         console.log('NO ENEMY IN CHAIN RANGE')
         this.chains = 0;
@@ -93,7 +94,7 @@ export default class Bullet extends Phaser.GameObjects.Image {
     let closest_enemy: Enemy | undefined;
     let closest_distance = Number.MAX_VALUE;
     for (const e of enemies.getChildren()) {
-      if (e === current_target || e === this.last_enemy_hit) continue;
+      if (e === current_target || e === this.last_enemy_hit || !e.active) continue;
       const d = Phaser.Math.Distance.Squared(this.x, this.y, e.x, e.y);
       if (d < range*range && d < closest_distance) {
         closest_distance = d;

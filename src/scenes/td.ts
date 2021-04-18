@@ -56,9 +56,12 @@ export default class TD extends Phaser.Scene {
       frameWidth: 24,
       frameHeight: 30,
     });
+    this.load.image('tiles', 'static/towerDefense_tilesheet@2.png')
+    this.load.tilemapTiledJSON('map', 'static/map.json')
   }
 
   public create(): void {
+
     this.generateAnimations();
     this.drawPath();
 
@@ -149,29 +152,27 @@ export default class TD extends Phaser.Scene {
 
   private drawPath(): void {
     const points: integer[][] = [
-      [96, -132],
-      [96, 264],
-      [500, 264],
-      [500, 114],
-      [300, 114],
-      [300, 514],
-      [96, 514],
-      [96, 380],
-      [850, 480],
-      [850, 1380],
+      [185, -132],
+      [185, 450],
+      [950, 450],
+      [950, 180],
+      [575, 180],
+      [575, 960],
+      [185, 960],
+      [185, 700],
+      [1670, 700],
+      [1670, 1080],
     ];
 
     this.path = new Path(this, points);
-    this.path_border = new Path(this, points, 34);
-
-    this.bg_sprite = this.add.tileSprite(0, 0, 1920, 1080, "grass0");
-    this.bg_sprite.setOrigin(0, 0);
-    this.path_border_sprite = this.add.tileSprite(0, 0, 1920, 1080, "sand0");
-    this.path_border_sprite.setOrigin(0, 0);
-    this.path_sprite = this.add.tileSprite(0, 0, 1920, 1080, "dirt0");
-    this.path_sprite.setOrigin(0, 0);
-    this.path_sprite.setMask(this.path.graphics.createGeometryMask());
-    this.path_border_sprite.setMask(this.path_border.graphics.createGeometryMask());
+    const map = this.add.tilemap('map');
+    const tileset = map.addTilesetImage('towerDefense_tilesheet@2', 'tiles');
+    const grass = map.createLayer('Grass', tileset)
+    const path = map.createLayer('Path', tileset)
+    const plants = map.createLayer('Plants', tileset)
+    grass.setScale(0.5, 0.5)
+    path.setScale(0.5, 0.5) 
+    plants.setScale(0.5, 0.5)
   }
 
   private setupTurrets(): void {
@@ -350,7 +351,7 @@ export default class TD extends Phaser.Scene {
 
   public damageEnemy(enemy: Enemy, bullet: Bullet): void {
     // only if both enemy and bullet are alive
-    if (enemy.active === true && bullet.active === true) {
+    if (enemy.active && bullet.active && enemy.targettable) {
       // debugger;
       // decrease the enemy hp with BULLET_DAMAGE
       const bullet_damage = bullet.hit(enemy); 

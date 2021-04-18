@@ -8,7 +8,7 @@ import { OutlinePipeline } from "../../../plugins/outline";
 const DEFAULT_RANGE = 200;
 const DEFAULT_ATTACK_SPEED = 1000;
 const DEFAULT_DAMAGE = 50;
-const PLACEABLE_MIN_DISTANCE_FROM_PATH = 35;
+const PLACEABLE_MIN_DISTANCE_FROM_PATH = 64;
 
 
 export default class Turret extends Phaser.GameObjects.Image {
@@ -225,6 +225,7 @@ export default class Turret extends Phaser.GameObjects.Image {
     let closest_enemy: Enemy | undefined;
     let closest_distance = Number.MAX_VALUE;
     for (const e of enemies.getChildren()) {
+      if (!e.targettable) continue;
       const d = Phaser.Math.Distance.Squared(this.x, this.y, e.x, e.y);
       if (d < (this.range + range_bonus) * (this.range + range_bonus)) {
         if (d < closest_distance) {
@@ -241,6 +242,7 @@ export default class Turret extends Phaser.GameObjects.Image {
     let first_enemy: Enemy | undefined;
     let first_distance = Number.MIN_VALUE;
     for (const e of enemies.getChildren()) {
+      if (!e.targettable) continue;
       const d = Phaser.Math.Distance.Between(this.x, this.y, e.x, e.y);
       if (d < this.range + range_bonus) {
         if (e.follower.t > first_distance) {
@@ -257,6 +259,7 @@ export default class Turret extends Phaser.GameObjects.Image {
     let furthest_enemy: Enemy | undefined;
     let furthest_distance = Number.MAX_VALUE;
     for (const e of enemies.getChildren()) {
+      if (!e.targettable) continue;
       const d = Phaser.Math.Distance.Between(this.x, this.y, e.x, e.y);
       if (d < this.range + range_bonus) {
         if (e.follower.t < furthest_distance) {
@@ -273,6 +276,7 @@ export default class Turret extends Phaser.GameObjects.Image {
     let strongest_enemy: Enemy | undefined;
     let heightest_hp = Number.MIN_VALUE;
     for (const e of enemies.getChildren()) {
+      if (!e.targettable) continue;
       const d = Phaser.Math.Distance.Between(this.x, this.y, e.x, e.y);
       if (d < this.range + range_bonus) {
         if (e.health_points > heightest_hp) {

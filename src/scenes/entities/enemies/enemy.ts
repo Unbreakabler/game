@@ -4,6 +4,7 @@ import { HealthBar } from '../health_bar';
 import { EnemyModifier, ENEMY_MODIFIERS, ModifierId } from '../../../gamelogic/td/enemy_wave_generator'
 import { EnemyType } from '../../../gamelogic/td/stats_base_enemies'
 import type { Wallet } from "../../../gamelogic/gamemodel";
+import type BasePostFxPipelinePlugin from "../../../plugins/utils/base-post-fx-plugin";
 
 const DEFAULT_ENEMY_SPEED = 1 / 10;
 const DEFAULT_ENEMY_HP = 100;
@@ -16,6 +17,7 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
   public follower: { t: number; vec: Phaser.Math.Vector2 };
   public health_points = DEFAULT_ENEMY_HP;
   public name: string;
+  public targettable: boolean = true;
 
   private path: Phaser.Curves.Path | null = null;
   private speed: number = DEFAULT_ENEMY_SPEED;
@@ -56,7 +58,9 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
   private resetEnemy(): void {
     if (!this.path) return;
     if (!this.speed) this.speed = DEFAULT_ENEMY_SPEED;
-    // this.setActive(true);
+    this.targettable = true;
+    this.resetPostPipeline(true);
+    this.setActive(true);
     this.setVisible(true);
     // set the t parameter at the start of the path
     this.follower.t = 0;
@@ -123,7 +127,7 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
 
   public update(time: number, delta: number): void {
     // move the t point along the path, 0 is the start and 0 is the end
-    if (!this.path) return; // skip updates if path has not be set by startOnPath
+    if (!this.path || !this.active || !this.targettable) return; // skip updates if path has not be set by startOnPath
     const path_length = this.path.getLength()
     const dist_from_start = path_length * this.follower.t;
     const new_dist_from_start = dist_from_start + this.speed * delta;
@@ -178,11 +182,28 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
     // Generates a new floating combat text instance for each instance of damage
     new CombatText(this.td_scene, this.x, this.y - this.height, `${damage}`);
     if (this.health_points > 0) return true;
-    this.setActive(false);
-    this.setVisible(false);
-    this.destroy();
     wallet.money += this.money * this.difficulty; //  TODO(jon): Should this add difficulty or money or some combo?
-    this.resetPostPipeline(true);
+    
+    // instead of immediately stopping rendering, we want to apply a "dissolve" shader first.
+    this.targettable = false;
+    this.health_bar.setVisible(false);
+
+    const dissolvePlugin: BasePostFxPipelinePlugin = this.td_scene.plugins.get('DissolvePostFX')
+    dissolvePlugin.add(this, {});
+    this.td_scene.tweens.add({
+      targets: dissolvePlugin,
+      progress: 1,
+      ease: 'Quad', // 'Cubic', 'Elastic', 'Bounce', 'Back'
+      duration: 3000,
+      repeat: 0, // -1: infinity
+      yoyo: false, 
+      onComplete: () => {
+        this.setVisible(false);
+        this.setActive(false);
+        this.destroy();
+      }
+    });
+    
     return false;
   }
 }

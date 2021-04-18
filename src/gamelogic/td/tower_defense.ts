@@ -1,4 +1,5 @@
 import { Exclude } from "class-transformer";
+import { v4 as uuidv4 } from 'uuid';
 
 import { EnemyWave, generateWave } from './enemy_wave_generator'
 import { getTowerAttributes, TowerCalculatedAttributes } from "./stats_base_towers";
@@ -19,11 +20,11 @@ export interface TowerInfo {
 export interface TowerStatus {
   id: TowerId,
   tier: integer,
-  exp_level?: integer,
-  current_exp?: integer,
   // do frames get exp? modifiers? hmm.
   // I think I would like towers to both "level" and be "upgraded", essentially having two levels.
   // should the exp levels carry between runs? What should carry between runs?
+  exp_level?: integer,
+  current_exp?: integer,
   exp_for_next_tier?: CallableFunction, 
   type: TowerType,
   x: number,
@@ -97,10 +98,19 @@ export class TowerDefense {
   public slots: Array<TowerId | null>
   public stats: Stats = {}
   public waves: EnemyWave[] = [];
-  public current_wave: number = 1;
+
   public current_wave_info: WaveInfo = { total: 0, spawned: 0, alive: 0, killed: 0, leaked: 0, lives: 0, level: 0 };
   public current_wave_difficulty: number = 100;
   public time_multiplier: number = 1;
+
+  public inventory = [
+    { type: 'tower', item_id: 'basic_1', id: uuidv4() },
+    { type: 'tower', item_id: 'machine_gun_1', id: uuidv4()},
+    { type: 'modifier', item_id: 'physical_1', id: uuidv4()},
+    { type: 'modifier', item_id: 'physical_1', id: uuidv4()},
+    { type: 'modifier', item_id: 'chain_1', id: uuidv4()},
+    { type: 'modifier', item_id: 'chain_1', id: uuidv4()},
+  ]
 
   public constructor() {
     this.tower_map = get_default_tower_map();
