@@ -6,7 +6,7 @@ export default class Bullet extends Phaser.GameObjects.Image {
   public dx: number = 0;
   public dy: number = 0;
   public lifespan: number = 1000;
-  public speed: number = 400;
+  public speed: number = 1000;
   public damage: number = 0;
   public range: number = 600;
   public tower_id!: string;

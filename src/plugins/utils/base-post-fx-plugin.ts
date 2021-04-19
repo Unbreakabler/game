@@ -20,7 +20,7 @@ class BasePostFxPipelinePlugin extends Phaser.Plugins.BasePlugin {
     (this.game.renderer as Phaser.Renderer.WebGL.WebGLRenderer).pipelines.addPostPipeline(this.postFxPipelineName, (this.PostFxPipelineClass as unknown) as Function);
   }
 
-  public add(gameObject: Phaser.GameObjects.Sprite, config: any | undefined) {
+  public add(gameObject: Phaser.GameObjects.Sprite, config?: any) {
     if (config === undefined) {
       config = {};
     }

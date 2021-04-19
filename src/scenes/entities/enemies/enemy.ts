@@ -166,7 +166,6 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
     if (this.follower.t >= 1) {
       this.setActive(false);
       this.setVisible(false);
-      this.destroy();
       this.td_scene.wave_manager.recordEnemyLeak();
     }
   }
@@ -185,24 +184,31 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
     wallet.money += this.money * this.difficulty; //  TODO(jon): Should this add difficulty or money or some combo?
     
     // instead of immediately stopping rendering, we want to apply a "dissolve" shader first.
-    this.targettable = false;
-    this.health_bar.setVisible(false);
 
-    const dissolvePlugin: BasePostFxPipelinePlugin = this.td_scene.plugins.get('DissolvePostFX')
-    dissolvePlugin.add(this, {});
-    this.td_scene.tweens.add({
-      targets: dissolvePlugin,
-      progress: 1,
-      ease: 'Quad', // 'Cubic', 'Elastic', 'Bounce', 'Back'
-      duration: 3000,
-      repeat: 0, // -1: infinity
-      yoyo: false, 
-      onComplete: () => {
-        this.setVisible(false);
-        this.setActive(false);
-        this.destroy();
-      }
-    });
+    this.health_bar.setVisible(false);
+    this.setVisible(false);
+    this.setActive(false);
+
+    /**
+     * Section below doesn't properly tween the "dissolve" effect, need to look into this more.
+     */
+    // this.targettable = false;
+
+    // const dissolvePlugin: BasePostFxPipelinePlugin = this.td_scene.plugins.get('DissolvePostFX')
+    // dissolvePlugin.add(this);
+    // this.td_scene.tweens.add({
+    //   targets: dissolvePlugin,
+    //   progress: 1,
+    //   ease: 'Quad', // 'Cubic', 'Elastic', 'Bounce', 'Back'
+    //   duration: 3000,
+    //   repeat: 0, // -1: infinity
+    //   yoyo: false, 
+    //   onComplete: () => {
+    //     console.log('TWEEN COMPLETED')
+    //     this.setVisible(false);
+    //     this.setActive(false);
+    //   }
+    // });
     
     return false;
   }
