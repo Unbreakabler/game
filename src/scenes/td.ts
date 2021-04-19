@@ -38,8 +38,19 @@ export default class TD extends Phaser.Scene {
   }
 
   public preload(): void {
-    this.load.image("basic", "static/shotgun.png");
-    this.load.image("machine_gun", "static/machine_gun.png");
+    this.load.image("basic", "static/tower/turrets/basic.png");
+    this.load.image("machine_gun", "static/tower/turrets/machine_gun.png");
+
+    this.load.image("tower_base_1", "static/tower/bases/base_1.png");
+    this.load.image("tower_base_2", "static/tower/bases/base_2.png");
+    this.load.image("tower_base_3", "static/tower/bases/base_3.png");
+    this.load.image("tower_base_4", "static/tower/bases/base_4.png");
+
+    this.load.image("tower_cover_1", "static/tower/covers/cover_1.png");
+    this.load.image("tower_cover_2", "static/tower/covers/cover_2.png");
+    this.load.image("tower_cover_3", "static/tower/covers/cover_3.png");
+    this.load.image("tower_cover_4", "static/tower/covers/cover_4.png");
+
     this.load.image("small_bullet", "static/small_bullet.png");
     this.load.image("dirt0", "static/dirt0.png");
     this.load.image("grass0", "static/grass0.png");
@@ -163,7 +174,7 @@ export default class TD extends Phaser.Scene {
       [1670, 700],
       [1670, 1080],
     ];
-
+    // TODO(jon): Would be nice to include the path points in the map json or a related file.
     this.path = new Path(this, points);
     const map = this.add.tilemap('map');
     const tileset = map.addTilesetImage('towerDefense_tilesheet@2', 'tiles');
@@ -171,7 +182,7 @@ export default class TD extends Phaser.Scene {
     const path = map.createLayer('Path', tileset)
     const plants = map.createLayer('Plants', tileset)
     grass.setScale(0.5, 0.5)
-    path.setScale(0.5, 0.5) 
+    path.setScale(0.5, 0.5)  
     plants.setScale(0.5, 0.5)
   }
 

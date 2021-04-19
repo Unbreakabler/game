@@ -166,7 +166,9 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
     if (this.follower.t >= 1) {
       this.setActive(false);
       this.setVisible(false);
+      this.health_bar.setVisible(false);
       this.td_scene.wave_manager.recordEnemyLeak();
+      this.targettable = false;
     }
   }
 
@@ -192,7 +194,7 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
     /**
      * Section below doesn't properly tween the "dissolve" effect, need to look into this more.
      */
-    // this.targettable = false;
+    this.targettable = false;
 
     // const dissolvePlugin: BasePostFxPipelinePlugin = this.td_scene.plugins.get('DissolvePostFX')
     // dissolvePlugin.add(this);

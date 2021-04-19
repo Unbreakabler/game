@@ -11,6 +11,8 @@ import ENEMY_BASE_STATS, { calculateEnemyDifficulty } from './stats_base_enemies
 
 import { EnemyType } from './stats_base_enemies'
 
+
+
 export type ModifierId = EnemyMovementModifierIds | EnemySizeModifierIds | EnemyGroupModifierIds
 
 export interface EnemyModifier {

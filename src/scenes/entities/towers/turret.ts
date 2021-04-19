@@ -31,6 +31,8 @@ export default class Turret extends Phaser.GameObjects.Image {
   private targeting_mode: TargetingMode = 'first'
   private current_time: number = 0;
 
+  private base_sprite: Phaser.GameObjects.Sprite;
+
   public constructor(
     td_scene: TD,
     tower_id: TowerId,
@@ -172,6 +174,10 @@ export default class Turret extends Phaser.GameObjects.Image {
     this.is_placed = true;
     this.select(false);
     this.enableBulletCollisions();
+    // draw base and cover.
+    const base = this.td_scene.add.sprite(this.x, this.y , 'tower_base_1')
+    base.depth = 0;
+    this.depth = 1;
     return true; 
   }
 
@@ -224,7 +230,7 @@ export default class Turret extends Phaser.GameObjects.Image {
     const enemies = this.td_scene.wave_manager.enemies;
     let closest_enemy: Enemy | undefined;
     let closest_distance = Number.MAX_VALUE;
-    for (const e of enemies.getChildren()) {
+    for (const e of enemies.getMatching('targettable', true)) {
       if (!e.targettable) continue;
       const d = Phaser.Math.Distance.Squared(this.x, this.y, e.x, e.y);
       if (d < (this.range + range_bonus) * (this.range + range_bonus)) {

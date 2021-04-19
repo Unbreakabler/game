@@ -37,6 +37,11 @@ export class WaveManager {
     }
     if (this.current_wave && (this.tower_defense_state.current_wave_info.spawned < this.tower_defense_state.current_wave_info.total)) {
       this.spawnEnemy(time, delta);
+    } else if (this.tower_defense_state.current_wave_info.leaked > 0) {
+      // Repeat failed waves. 
+      // TODO(jon): Should show an indicator that the wave is repeating.
+      this.tower_defense_state.current_wave_info.leaked = 0;
+      this.spawnWave(time, delta, false)
     } else {
       this.spawnWave(time, delta);
     }
@@ -69,10 +74,10 @@ export class WaveManager {
     this.delta_to_next_enemy = this.current_wave.enemy_spawn_delta;
   }
 
-  private spawnWave(time: number, delta: number) {
+  private spawnWave(time: number, delta: number, next: boolean = true) {
     if (this.current_wave && (this.tower_defense_state.current_wave_info.spawned < this.tower_defense_state.current_wave_info.total || this.tower_defense_state.current_wave_info.alive)) return
     
-    this.tower_defense_state.spawnNextWave();
+    if (next) this.tower_defense_state.spawnNextWave();
     this.current_wave = this.tower_defense_state.getCurrentWave();
     this.tower_defense_state.current_wave_info.total = this.current_wave.mob_count;
     this.tower_defense_state.current_wave_info.spawned = 0;
