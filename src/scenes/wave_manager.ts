@@ -32,6 +32,7 @@ export class WaveManager {
   }
 
   public update(time: number, delta: number): void {
+    if (!this.tower_defense_state.first_tower_is_placed) return
     for (const enemy of this.enemies.getChildren()) {
       enemy.update(time, delta);
     }

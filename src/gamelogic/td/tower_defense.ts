@@ -102,6 +102,7 @@ export class TowerDefense {
   public current_wave_info: WaveInfo = { total: 0, spawned: 0, alive: 0, killed: 0, leaked: 0, lives: 0, level: 0 };
   public current_wave_difficulty: number = 100;
   public time_multiplier: number = 1;
+  public first_tower_is_placed: boolean = false;
 
   public inventory = [
     { type: 'tower', item_id: 'basic_1', id: uuidv4() },
@@ -159,9 +160,9 @@ export class TowerDefense {
 
   public placeTower(id: TowerId, x: number, y: number) {
     const tower = this.tower_map[id]
-    console.log('placeTower', tower, id, x, y)
     if (!tower) return
 
+    this.first_tower_is_placed = true;
     tower.x = x;
     tower.y = y;
     tower.is_placed = true;
@@ -225,7 +226,7 @@ const get_default_tower_map = () => {
 
 const get_default_slot_tower_attribute_modifiers = (): { [id in TowerId]: {id: AttributeModifierIds, level: integer}[]} => {
   return {
-    'basic_1': [{ id: 'physical_1', level: 10 }, { id: 'chain_1', level: 100}],
+    'basic_1': [{ id: 'physical_1', level: 10 }, { id: 'chain_1', level: 10000 }],
     'machine_gun_1': [{ id: 'physical_1', level: 10 }, { id: 'chain_1', level: 20}],
   }
 }

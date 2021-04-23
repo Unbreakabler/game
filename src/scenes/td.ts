@@ -299,16 +299,11 @@ export default class TD extends Phaser.Scene {
   }
 
   public update(time: number, delta: number): void {
-    // delta = delta * gameModelInstance.tower_defense.time_multiplier;
-
-    this.physics.world.timeScale = 1 / gameModelInstance.tower_defense.time_multiplier;
-    this.tweens.timeScale = 1 / gameModelInstance.tower_defense.time_multiplier;
-    this.time.timeScale = 1 / gameModelInstance.tower_defense.time_multiplier;
-    this.anims.globalTimeScale = 1 / gameModelInstance.tower_defense.time_multiplier;
-
-    delta /= this.physics.world.timeScale;
-    this.tower_map.forEach((tower) => tower.update(time, delta));
-    this.wave_manager.update(time, delta)
+    for (let i = 0; i < gameModelInstance.tower_defense.time_multiplier; i++) {
+      this.physics.world.step(delta / 1000);
+      this.wave_manager.update(time, delta)
+      this.tower_map.forEach((tower) => tower.update(time, delta));
+    }
   }
 
   // TODO(jon): This should track when objects are hovered and not assume it's a tower.
