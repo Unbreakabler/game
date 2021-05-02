@@ -11,6 +11,11 @@ const DEFAULT_STYLE = {
   fixedWidth: 0,
   fixedHeight: 0,
   rtl: false,
+  metrics: {
+    ascent: 21,
+    descent: 5,
+    fontSize: 26
+  }
 }
 
 
@@ -18,6 +23,9 @@ const DEFAULT_STYLE = {
 // fire can be red, ice blue, etc
 // crits should be larger and "shake" or something for impact
 
+// TODO(jon): This needs to be switch to be BitmapText in order to stop constant
+// churn with rendering text to another canvas, creating texture, and uploading to GPU
+// currently takes ~20-30ms per combat text
 export class CombatText extends Phaser.GameObjects.Text {
   private starting_lifespan: number;
   private remaining_lifespan: number;
@@ -27,10 +35,10 @@ export class CombatText extends Phaser.GameObjects.Text {
               x: number, 
               y: number, 
               text: string, 
-              style: Phaser.GameObjects.TextStyle = DEFAULT_STYLE as Phaser.GameObjects.TextStyle, 
+              style: Phaser.GameObjects.TextStyle = {} as Phaser.GameObjects.TextStyle, 
               lifespan: number = 500
   ) {
-    super(scene, x, y, text, style);
+    super(scene, x, y, text, Object.assign(DEFAULT_STYLE, style));
     scene.add.existing(this);
     this.starting_lifespan = lifespan;
     this.remaining_lifespan = lifespan;

@@ -1,0 +1,56 @@
+ROUGELIKE GAMEPLAY MECHANIC:
+
+
+- monsters have monster type specific drop tables
+
+- players get to influence the moster types every run through choices that only reset on prestige
+	- Maybe every 10 levels there is a prompt to choose some type of enemy upgrade path.
+	- In order to ahve enough variety waves will need to be composed of multiple enemy types
+		- in order for this to work wave generation will have to change to be generated but a group of weights that corresponding to monster types, then each wave will pick an appropriate amount of monsters from each pool.
+	- In order for this to feel "good" I need to add a lot more monsters to the game of various types.
+
+- this gives players the ability to target farm certain resources/upgrades/items (not sure what the loot will be yet), on each run.
+
+
+TOWER SKILL MECHANIC:
+
+- A "tower" is a made of up of a set of components
+	- each component can hook into a "tower" life cycle method
+		- Lifecyles are : On fire, On hit, on kill, After X (time period (on hit + timeout))
+	- each component can hook "tower" attributes, the attributes will be passed through all component modifier functions.
+- Components can spawn new gameobjects in life cycle methods.
+	- exmaples:
+		- on fire, shoot multiple projectiles
+		- on fire, shoot projectiles in nova
+		- on fire, 
+		- on hit, generate a new circle collision enabled gameboject in order to do AOE damage.
+		- on kill, generate a new circle collision enabled gameobject that spreads a debuff.
+		- on hit, have a chance to shoot an additional projectile
+		- on hit, have a chance to chain
+		- on hit, have a chance to shoot lightning
+		- on hit, have a chance to debuff enemy
+			- fire - burning damage
+			- lightning - shock
+			- piercing - break armour
+			- cold - slow enemy
+	- exmaples that should be attribute mods:
+		- on hit, do additional damage - instead modify the damage attribute in the attribute modifier function
+		- on hit, increase aoe range -  modify range in attributes		
+	- attribute modifiers:
+		- range, speed, damage, proj speed, spread (maybe a component?), fire/ice/lightning/chaos/blood/etc damage,
+		- I haven't really defined all of the attribute modifiers yet
+
+ 
+ENEMY BUFF/DEBUFF:
+
+- Enemies need to be made of a set of a components, in the same veins as the tower components explained above:
+	- lifecylcles: on hit, on death
+	- Attribute modifier examples:
+		- speed, spawn occurance, health, size
+	- lifecycle component examples:
+		- on hit, take -X less damage (armour), also draw a armour icon above the health bar
+		- on hit, immunity to slows, draw a speed icon above health bar
+		- on hit, cause tower to attack slower for X (time period).
+		- on hit, only take damage from certain damage types
+		- on death, display different animation depending on killing damage type.
+		

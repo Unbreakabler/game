@@ -31,6 +31,8 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
   private experience: number = 0;
   private money: number = 0;
 
+  private metrics?: Phaser.Types.GameObjects.Text.TextMetrics;
+
   public constructor(
     td_scene: TD,
     x: number = 0,
@@ -163,7 +165,7 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
     // enemy isn't following an identical path
 
     // if we have reached the end of the path, remove the enemy
-    if (this.follower.t >= 1) {
+    if (this.follower.t >= 0.5) { //REVERT
       this.setActive(false);
       this.setVisible(false);
       this.health_bar.setVisible(false);
@@ -176,14 +178,17 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
     this.health_bar.destroy();
   }
 
-  public receiveDamage(damage: number, wallet: Wallet): boolean {
+  public receiveDamage(damage: number, wallet?: Wallet): boolean {
     this.health_points -= damage;
     this.health_bar.setCurrentHp(this.health_points)
     // combat text is self managed and destroys itself from the scene after it's lifespan (default 250ms) has expired.
     // Generates a new floating combat text instance for each instance of damage
-    new CombatText(this.td_scene, this.x, this.y - this.height, `${damage}`);
+
+    // TODO(jon): Reenable once we have BitmapText for combat text
+    // new CombatText(this.td_scene, this.x, this.y - this.height, `${damage}`);
+
     if (this.health_points > 0) return true;
-    wallet.money += this.money * this.difficulty; //  TODO(jon): Should this add difficulty or money or some combo?
+    if (wallet?.money) wallet.money += this.money * this.difficulty; //  TODO(jon): Should this add difficulty or money or some combo?
     
     // instead of immediately stopping rendering, we want to apply a "dissolve" shader first.
 

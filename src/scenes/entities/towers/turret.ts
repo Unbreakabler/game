@@ -31,7 +31,7 @@ export default class Turret extends Phaser.GameObjects.Image {
   private targeting_mode: TargetingMode = 'first'
   private current_time: number = 0;
 
-  private base!: Phaser.GameObjects.Sprite;
+  private base: Phaser.GameObjects.Sprite;
 
   public constructor(
     td_scene: TD,
@@ -52,6 +52,12 @@ export default class Turret extends Phaser.GameObjects.Image {
     this.scale = 0.5;
     this.width *= this.scale;
     this.height *= this.scale;
+    this.depth = 1;
+    this.base = this.td_scene.add.sprite(this.x, this.y , 'tower_base_1')
+    this.base.setVisible(false);
+    this.base.setInteractive();
+    this.base.scale = 0.7;
+    this.base.depth = 0;
   }
 
   private setupTowerSubscription(tower_id: string) {
@@ -91,10 +97,10 @@ export default class Turret extends Phaser.GameObjects.Image {
     // Have to manually update the projectiles to pass multiplied delta time from td.ts
     for (const proj of this.projectiles.getChildren()) proj.update(time, delta)
     if (this.is_selected || this.is_hovered) {
-      const already_applied = this.getPostPipeline(OutlinePipeline)
-      if (already_applied instanceof Array && !already_applied.length) this.setPostPipeline(OutlinePipeline)
+      const already_applied = this.base.getPostPipeline(OutlinePipeline)
+      if (already_applied instanceof Array && !already_applied.length) this.base.setPostPipeline(OutlinePipeline)
     } else {
-      this.removePostPipeline(OutlinePipeline);
+      this.base.removePostPipeline(OutlinePipeline);
     }
 
     if (!this.is_placed) return;
@@ -176,12 +182,9 @@ export default class Turret extends Phaser.GameObjects.Image {
     console.log(`placing turret @ x:${place_x}, y:${place_y}`);
     this.is_placed = true;
     this.select(false);
+    this.base.setVisible(true);
+    this.base.setPosition(this.x, this.y);
     this.enableBulletCollisions();
-    // draw base and cover. store on class?
-    this.base = this.td_scene.add.sprite(this.x, this.y , 'tower_base_1')
-    this.base.scale = 0.7;
-    this.base.depth = 0;
-    this.depth = 1;
     return true; 
   }
 
@@ -203,7 +206,7 @@ export default class Turret extends Phaser.GameObjects.Image {
           this.display_range.setFillStyle(red, 0.3);
           outline_color = new Phaser.Display.Color(255, 0, 0);
         }
-        const outline = this.getPostPipeline(OutlinePipeline)
+        const outline = this.base.getPostPipeline(OutlinePipeline)
         if (outline) {
           (outline as OutlinePipeline).outlineColor = outline_color;
         }
@@ -325,12 +328,12 @@ export default class Turret extends Phaser.GameObjects.Image {
   public fireBullet(x: number, y: number, angle: number): void {
     const b = this.projectiles.get();
     //TODO - Make bullets smart so they follow units
-    const dx = Math.cos(angle);
-    const dy = Math.sin(angle);
+    // const dx = Math.cos(angle);
+    // const dy = Math.sin(angle);
     // position the bullet in front of the tower "cannon". If the tower is not a cannon this will cause the projectile to
     // spawn in front of the turret. Another approach here is to have all projectiles spawn at the turret center, but render
     // under the tower sprite.
-    b.fire(this.tower_id, x + (dx * (this.width - 10)), y + (dy * (this.height - 10)), angle, this.range, this.damage, this.tower_info?.attributes.projectile_modifiers);
+    b.fire(this.tower_id, x, y, angle, this.range, this.damage, this.tower_info?.attributes.projectile_modifiers);
 
     // We also want to create an invis "trail" between the new position, and the previous position on each bullet update. If the bullet OR trail collides with an enemy, its a hit.
   }

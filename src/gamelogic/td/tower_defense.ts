@@ -9,6 +9,7 @@ type BASIC_TOWER_IDS = 'basic_1'
 type MACHINE_GUN_IDS = 'machine_gun_1'
 
 export type TowerId = BASIC_TOWER_IDS | MACHINE_GUN_IDS
+export type TowerBaseType = 'tower_base_1' | 'tower_base_2' | 'tower_base_3' | 'tower_base_4'
 export type TargetingMode = 'first' | 'last' | 'strongest' | 'closest'
 
 
@@ -102,7 +103,7 @@ export class TowerDefense {
   public current_wave_info: WaveInfo = { total: 0, spawned: 0, alive: 0, killed: 0, leaked: 0, lives: 0, level: 0 };
   public current_wave_difficulty: number = 100;
   public time_multiplier: number = 1;
-  public first_tower_is_placed: boolean = false;
+  public first_tower_is_placed: boolean = true;
 
   public inventory = [
     { type: 'tower', item_id: 'basic_1', id: uuidv4() },
@@ -127,7 +128,8 @@ export class TowerDefense {
     }
   }
 
-  public getTower(id: TowerId): TowerInfo | null {
+  public getTower(id: TowerId | undefined): TowerInfo | null {
+    if (!id) return null;
     const status = this.tower_map[id]
     if (!status) return null;
     const attributes = getTowerAttributes(status)

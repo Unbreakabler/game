@@ -15,9 +15,9 @@ export default class Bullet extends Phaser.GameObjects.Image {
   public body!: Phaser.Physics.Arcade.Body;
 
   private td_scene: TD;
-  private mods!: SlotProjectileModifier[];
+  private mods?: SlotProjectileModifier[];
   private chains: number = 0;
-  private last_enemy_hit!: Enemy;
+  public last_enemy_hit!: Enemy;
   private original_lifespan: number = DEFAULT_LIFESPAN;
 
   public constructor(scene: Phaser.Scene) {
@@ -35,7 +35,7 @@ export default class Bullet extends Phaser.GameObjects.Image {
     this.tower_id = tower_id;
     this.setPosition(x, y);
     this.body.reset(x, y);
-    if (!this.mods) this.initialize_mods(projectile_modifiers)
+    this.initialize_mods(projectile_modifiers)
     this.setRotation(angle - Math.PI / 2); // FIXME(jon): not necessary if proj is round
     const dx = Math.cos(angle);
     const dy = Math.sin(angle);
@@ -44,6 +44,7 @@ export default class Bullet extends Phaser.GameObjects.Image {
     this.range = range;
     this.setActive(true);
     this.setVisible(true);
+    this.lifespan = this.original_lifespan;
   }
 
   public update(time: number, delta: number): void {
@@ -66,10 +67,11 @@ export default class Bullet extends Phaser.GameObjects.Image {
     // attempt to only use swept AABB on projectiles and see how it performs.
 
     if (this.lifespan <= 0) {
-      console.log('BULLET LIFESPAN EXPIRED', this.chains)
+      // console.log('BULLET LIFESPAN EXPIRED', this.chains)
       this.setActive(false);
       this.setVisible(false);
-      this.destroy(); // TODO(jon): Seed the bullet group and stop destroying bullets
+      // this.mods = undefined;
+      // this.destroy(); // TODO(jon): Seed the bullet group and stop destroying bullets
     }
   }
 /**
@@ -85,10 +87,10 @@ export default class Bullet extends Phaser.GameObjects.Image {
 
     let still_alive = false;
     if (this.chains > 0) {
-      this.lifespan = this.original_lifespan;
       const e = this.findClosestEnemyInRange(this.range / 2, enemy);
       if (e) {
-        // console.log('ATTEMPTED CHAIN')
+        this.lifespan = this.original_lifespan;
+        console.log('ATTEMPTED CHAIN')
         still_alive = true
         this.chains--;
         const angle = Phaser.Math.Angle.Between(this.x, this.y, e.x, e.y)
@@ -97,7 +99,7 @@ export default class Bullet extends Phaser.GameObjects.Image {
         const dy = Math.sin(angle);
         this.body.setVelocity(dx * this.speed, dy * this.speed);
       } else {
-        // console.log('NO CHAIN')
+        console.log('NO CHAIN')
         // const angle = Phaser.Math.Angle.RandomDegrees();
         // this.setRotation(angle - Math.PI / 2);
         // const dx = Math.cos(angle);
@@ -123,8 +125,8 @@ export default class Bullet extends Phaser.GameObjects.Image {
     const enemies = this.td_scene.wave_manager.enemies;
     let closest_enemy: Enemy | undefined;
     let closest_distance = Number.MAX_VALUE;
-    for (const e of enemies.getChildren()) {
-      if (e === current_target || e === this.last_enemy_hit || !e.active) continue;
+    for (const e of enemies.getMatching('active', true)) {
+      if (e === current_target || e === this.last_enemy_hit) continue;
       const d = Phaser.Math.Distance.Squared(this.x, this.y, e.x, e.y);
       if (d < range*range && d < closest_distance) {
         closest_distance = d;
