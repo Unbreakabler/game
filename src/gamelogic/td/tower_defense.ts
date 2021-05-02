@@ -157,7 +157,6 @@ export class TowerDefense {
   public setSelection(id: TowerId | null, cursor: SelectionCursor = 'selected') {
     if (!id) {
       this.selection = null; 
-      console.log("SELECTION", this.selection)
       return;
     }
     for (const [name, tower] of Object.entries(this.tower_map)) {
@@ -169,7 +168,6 @@ export class TowerDefense {
         this.selection = { type, id, cursor }
       }
     }
-    console.log("SELECTION", this.selection)
   }
 
   public placeTower(id: TowerId, x: number, y: number) {

@@ -76,7 +76,6 @@ export default class Tower extends Phaser.GameObjects.GameObject {
     // calculate attributes with modifiers
     this.tower_id = tower.status.id;
     this.tower_info = tower;
-    console.log("INITIALIZING TOWER", this.tower_info)
     
     // fetch linked components? For now components are hardcoded in td.ts
     this.components = components(this.tower_info);
@@ -98,7 +97,6 @@ export default class Tower extends Phaser.GameObjects.GameObject {
     })
 
     this.placement_components.forEach(c => {
-      console.log('INIT PLACEMENT COMP')
       if (c.onInit) c.onInit(this, td_scene, this.x, this.y)
     })
 
@@ -114,7 +112,6 @@ export default class Tower extends Phaser.GameObjects.GameObject {
     this.is_placeable = false;
     this.setActive(true);
     this.setVisible(true);
-    console.log('TOWER WAS PLACED AT', x, y, this.td_scene.game.input.activePointer)
   }
 
   public setVisible(flag: boolean = true) { 
@@ -130,21 +127,12 @@ export default class Tower extends Phaser.GameObjects.GameObject {
   }
 
   public update(time: number, delta: number) {
-    // console.log("tower_info", this.tower_info.status.is_selected)
-    // if (this.tower_info.status.is_selected) {
-    //   this.selection = 'selected';
-    // } else {
-    //   this.selection = undefined;
-    // }
-
-
     this.placement_components.forEach(c => {
-      // console.log('calling placement components')
       if (typeof c?.onUpdate == 'function') c.onUpdate(this, time, delta)
     })
 
     if (!this.is_placed) return;
-    // call update methods in components;
+
     this.components.forEach(c => {
       if (typeof c?.onUpdate == 'function') c.onUpdate(this, time, delta)
     })
@@ -158,13 +146,4 @@ export default class Tower extends Phaser.GameObjects.GameObject {
     })
 
   }
-  // public add_component(component: any) {
-  //   // if component is not already present, add component, and initialize.
-  //   // If there is already a matching component, return an error code.
-  // }
-
-  // public remove_component(component: any) {
-  //   // if component is present, uninitialize, and remove.
-  //   // if there is no matching component, return an error code.
-  // }
 }

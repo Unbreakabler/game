@@ -48,7 +48,6 @@ export default () => {
             }
           } 
           if (selected) {
-            console.log(1, parent.selection);
             gameModelInstance.tower_defense.setSelection(parent.tower_id); 
           }
         } else {

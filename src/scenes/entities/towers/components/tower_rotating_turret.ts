@@ -25,7 +25,6 @@ export default (
       if (!parent.active) return
 
       if (parent.target && parent.rotating_sprites ) {
-        // console.log('target pos', parent.x, parent.y, parent.target.x, parent.target.y)
         parent.rotating_sprites.rotation = Phaser.Math.Angle.Between(parent.x, parent.y, parent.target.x, parent.target.y) + Math.PI / 2; 
       }
     }

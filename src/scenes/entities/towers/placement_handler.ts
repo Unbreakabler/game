@@ -47,15 +47,12 @@ export default (blocked_by: any[] = []) => {
       }
       parent.is_placeable = true;
 
-      // console.log('placeable?', parent.is_placeable, parent.is_placed, parent.selection)
-
       if (parent.td_scene.game.input.activePointer.isDown 
           && parent.td_scene.game.input.activePointer.downElement.id === 'game-container'
           && parent.is_placeable 
           && !parent.is_placed
           && parent.selection === 'selected'
       ) {
-        // console.log('placed?')
         parent.place(parent.td_scene.game.input.activePointer.x, parent.td_scene.game.input.activePointer.y);
         gameModelInstance.tower_defense.placeTower(parent.tower_id, parent.td_scene.game.input.activePointer.x, parent.td_scene.game.input.activePointer.y)
       }

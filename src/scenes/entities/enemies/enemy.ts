@@ -31,8 +31,6 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
   private experience: number = 0;
   private money: number = 0;
 
-  private metrics?: Phaser.Types.GameObjects.Text.TextMetrics;
-
   public constructor(
     td_scene: TD,
     x: number = 0,

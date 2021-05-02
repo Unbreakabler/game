@@ -67,7 +67,6 @@ export class Mine extends Achievable {
  
   public requestLevelUp(wallet: Wallet, level: number = 1): void {
     const cost = this.getTotalMoneyToLevel(level)
-    console.log('requestLevelUp', wallet, cost)
     if (wallet.money >= cost) {
       wallet.money -= cost;
       this.level += level;
