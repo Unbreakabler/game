@@ -165,7 +165,7 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
     // enemy isn't following an identical path
 
     // if we have reached the end of the path, remove the enemy
-    if (this.follower.t >= 0.5) { //REVERT
+    if (this.follower.t >= 1.0) { //REVERT
       this.setActive(false);
       this.setVisible(false);
       this.health_bar.setVisible(false);

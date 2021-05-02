@@ -25,11 +25,15 @@ export default () => {
           if (game_objects_under_pointer.length) {
             for (const obj of game_objects_under_pointer) {
               if (obj.name === parent.static_sprites?.name || obj.name === parent.rotating_sprites?.name) {
-                if (!parent.selection) parent.selection = 'hovered';
+                if (!parent.selection) {
+                  parent.selection = 'hovered';
+                  document.body.style.cursor = 'pointer';
+                }
               }
             }
           } else {
             parent.selection = parent.selection === 'hovered' ? undefined : parent.selection;
+            document.body.style.cursor = 'auto';
           }
         }
       )

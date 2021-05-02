@@ -54,3 +54,7 @@ ENEMY BUFF/DEBUFF:
 		- on hit, only take damage from certain damage types
 		- on death, display different animation depending on killing damage type.
 		
+
+NOTES:
+
+- Massive/turbo/nimble blue dragons are too hard - > level 236 spawned 2 of them that were unkillable

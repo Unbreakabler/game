@@ -2,14 +2,13 @@ import "phaser";
 
 import { GameModel, gameModel } from "../gamelogic/gamemodel";
 
-import type Turret from "./entities/towers/turret";
 import type { SelectionCursor, TowerId, TowerType } from "../gamelogic/td/tower_defense";
 import { Path } from "./entities/path";
 import { WaveManager } from "./wave_manager";
 
 import Tower from "./entities/towers/tower";
-import generate_animations from "./entities/setup_animations";
-import setup_image_assets from "./entities/setup_image_assets";
+import generate_animations from "./setup/setup_animations";
+import setup_image_assets from "./setup/setup_image_assets";
 
 type Selection = {
   type: TowerType;
@@ -27,12 +26,10 @@ export default class TD extends Phaser.Scene {
 
   public selection: Selection = null;
   public prev_selection: Selection = null;
-  public selected_turret: Turret | null = null;
-
-  private slots: Array<string | null> = [];
-  public tower_map: Map<string, Turret> = new Map<string, Turret>();
 
   public new_tower_map: Map<string, Tower> = new Map<string, Tower>();
+
+  private slots: Array<string | null> = [];
 
   public constructor() {
     super({ key: "td", active: true });
@@ -46,11 +43,12 @@ export default class TD extends Phaser.Scene {
     generate_animations(this);
 
     this.drawPath();
-    this.setupWaveManager();
-    this.initializeTowers();
+    this.wave_manager = new WaveManager(this, this.path);
+
+    this.bindTowerModels();
   }
 
-  private initializeTowers() {
+  private bindTowerModels() {
     gameModelInstance.tower_defense.slots.forEach(slot_id => {
       if (slot_id) {
         const tower = gameModelInstance.tower_defense.getTower(slot_id);
@@ -91,10 +89,6 @@ export default class TD extends Phaser.Scene {
     plants.setScale(0.5, 0.5)
   }
 
-  private setupWaveManager(): void {
-    this.wave_manager = new WaveManager(this, this.path);
-  }
-
   public update(time: number, delta: number): void {
     if (gameModelInstance.tower_defense.time_multiplier === 0) {
       this.physics.pause();
@@ -105,10 +99,13 @@ export default class TD extends Phaser.Scene {
     for (let i = 0; i < gameModelInstance.tower_defense.time_multiplier; i++) {
       this.physics.world.step(delta / 1000);
       this.wave_manager.update(time, delta)
-      this.tower_map.forEach((tower) => tower.update(time, delta));
       this.new_tower_map.forEach(t => t.update(time, delta));
     }
-    
+
+    this.updateSelectionHandling();
+  }
+
+  private updateSelectionHandling() {
     // Selection handling - Should be moved into the tower class
     this.selection = gameModelInstance.tower_defense.selection;
     let tower, prev_tower

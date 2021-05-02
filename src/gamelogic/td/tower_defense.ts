@@ -217,7 +217,7 @@ export class TowerDefense {
     this.waves.push(generateWave(this.current_wave_difficulty));
     // TODO(jon): Figure out how to increase difficulty over time, 
     // a linear increase wont match item/drop/upgrade power spikes.
-    this.current_wave_difficulty++;
+    this.current_wave_difficulty += 10;
   }
   
   public spawnNextWave() {

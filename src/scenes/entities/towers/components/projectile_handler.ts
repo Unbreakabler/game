@@ -1,9 +1,7 @@
-import { toggle_class } from "svelte/internal";
 import { gameModel, GameModel } from "../../../../gamelogic/gamemodel";
 import type { TowerInfo } from "../../../../gamelogic/td/tower_defense";
 import type TD from "../../../td"
 import type Enemy from "../../enemies/enemy";
-import type Bullet from "../../tower_bullet";
 import type Tower from "../tower"
 import Projectile from "./projectile";
 
@@ -38,6 +36,7 @@ export default (tower_info: TowerInfo) => {
         visible: false, 
         key: 'small_bullet',
         setXY: { x: -100, y: -100 },
+        runChildUpdate: false,
       })
 
       td_scene.physics.add.overlap(td_scene.wave_manager.enemies, parent.projectiles, damageEnemy as ArcadePhysicsCallback);

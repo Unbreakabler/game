@@ -23,13 +23,13 @@ export default (blocked_by: any[] = []) => {
         return 
       }
   
-      for (const t of parent.td_scene.tower_map.values()) {
-        if (t == parent.td_scene.selected_turret) continue; // current turret on cursor
+      for (const t of parent.td_scene.new_tower_map.values()) {
+        if (t.tower_info.status.id === parent.td_scene.selection?.id) continue; // current turret on cursor
   
-        const min_x = t.x - t.width/2
-        const max_x = t.x + t.width/2
-        const min_y = t.y - t.height/2
-        const max_y = t.y + t.height/2
+        const min_x = t.x - (t.width || 0)/2
+        const max_x = t.x + (t.width || 0)/2
+        const min_y = t.y - (t.height || 0)/2
+        const max_y = t.y + (t.height || 0)/2
     
         const new_min_x = place_x;
         const new_max_x = place_x;

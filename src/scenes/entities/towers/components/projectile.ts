@@ -80,8 +80,10 @@ export default class Projectile extends Phaser.GameObjects.Image {
     this.setVisible(true);
   }
 
-  public preUpdate(time: number, delta: number) {
+  public update(time: number, delta: number) {
     this.lifespan -= delta;
+
+    console.log('proj', this.lifespan)
 
     if (this.lifespan <= 0) {
       this.setActive(false);
