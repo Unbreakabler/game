@@ -1,7 +1,12 @@
+import { gameModel, GameModel } from "../../../../gamelogic/gamemodel";
 import { OutlinePipeline } from "../../../../plugins/outline";
 import type TD from "../../../td";
 import type Tower from "../tower";
 import type { TowerComponent } from "./component_interface";
+
+// Should this be passed down from td.ts instead?
+let gameModelInstance: GameModel;
+gameModel.subscribe((m) => (gameModelInstance = m));
 
 export default () => {
   const tower_component: TowerComponent = {
@@ -29,18 +34,21 @@ export default () => {
         }
       )
 
-      parent.scene.input.on('pointerdown', 
+      parent.scene.input.on('pointerup', 
       (pointer: Phaser.Input.Pointer, game_objects_under_pointer: Tower[]) => {
+        let selected = false;
         if (game_objects_under_pointer.length) {
           for (const obj of game_objects_under_pointer) {
             if (obj.name === parent.static_sprites?.name || obj.name === parent.rotating_sprites?.name) {
-              parent.selection = 'selected';
-            } else {
-              parent.selection = undefined;
+              selected = true;
             }
+          } 
+          if (selected) {
+            console.log(1, parent.selection);
+            gameModelInstance.tower_defense.setSelection(parent.tower_id); 
           }
         } else {
-          parent.selection = undefined;
+          gameModelInstance.tower_defense.setSelection(null);
         }
       })
     },

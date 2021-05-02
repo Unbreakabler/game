@@ -3,7 +3,7 @@
  * I also want an easier way to manage multiple sprites related to a single tower, and manage post processing effects on any set of those sprites.
  */
 
-import type { TargetingMode, TowerId } from "../../../gamelogic/td/tower_defense";
+import type { TargetingMode, TowerId, TowerInfo } from "../../../gamelogic/td/tower_defense";
 import type TD from "../../td";
 import rotating_turret from "./components/tower_rotating_turret";
 import tower_base from "./components/tower_base";
@@ -20,6 +20,7 @@ type TowerSelection = 'selected' | 'hovered' | undefined;
 
 export default class Tower extends Phaser.GameObjects.GameObject {
   public tower_id: TowerId;
+  public tower_info: TowerInfo;
   public td_scene: TD;
 
   public is_placed: boolean = false;
@@ -56,47 +57,49 @@ export default class Tower extends Phaser.GameObjects.GameObject {
 
   public constructor(
     td_scene: TD,
-    x: number = 0,
-    y: number = 0,
-    tower_id: TowerId,
-    components: TowerComponent[] = [ tower_base(), rotating_turret('basic') ],
-    targeting_components = [target_handler(), target_indicator()],
-    projectile_components = [projectile_handler()],
-    placement_components = [placement_handler(), range_indicator(), selection_handler()],
+    tower: TowerInfo,
+    components = (tower: TowerInfo) => ([ tower_base(), rotating_turret(tower.status.type) ]),
+    targeting_components = (tower: TowerInfo) => ([target_handler(tower), target_indicator()]),
+    projectile_components = (tower: TowerInfo) => ([projectile_handler(tower)]),
+    placement_components = (tower: TowerInfo) => ([placement_handler(), range_indicator(), selection_handler()]),
     range: number = 300,
   ) {
     super(td_scene, 'tower');
     td_scene.add.existing(this)
     this.td_scene = td_scene;
-    this.x = x;
-    this.y = y;
+    this.x = tower.status.x;
+    this.y = tower.status.y;
     this.range = range;
 
+    
     // use tower_id to fetch attributes
     // calculate attributes with modifiers
-    this.tower_id = tower_id;
+    this.tower_id = tower.status.id;
+    this.tower_info = tower;
+    console.log("INITIALIZING TOWER", this.tower_info)
     
     // fetch linked components? For now components are hardcoded in td.ts
-    this.components = components;
-    this.targeting_components = targeting_components;
-    this.projectile_components = projectile_components;
-    this.placement_components = placement_components;
+    this.components = components(this.tower_info);
+    this.targeting_components = targeting_components(this.tower_info);
+    this.projectile_components = projectile_components(this.tower_info);
+    this.placement_components = placement_components(this.tower_info);
 
     // call component initializers
     this.components.forEach(c => {
-      if (typeof c?.onInit == 'function') c.onInit(this, td_scene, x, y)
+      if (c.onInit) c.onInit(this, td_scene, this.x, this.y)
     })
 
     this.targeting_components.forEach(c => {
-      if (typeof c?.onInit == 'function') c.onInit(this, td_scene, x, y)
+      if (c.onInit) c.onInit(this, td_scene, this.x, this.y)
     })
 
     this.projectile_components.forEach(c => {
-      if (typeof c?.onInit == 'function') c.onInit(this, td_scene, x, y)
+      if (c.onInit) c.onInit(this, td_scene, this.x, this.y)
     })
 
     this.placement_components.forEach(c => {
-      if (typeof c?.onInit == 'function') c.onInit(this, td_scene, x, y)
+      console.log('INIT PLACEMENT COMP')
+      if (c.onInit) c.onInit(this, td_scene, this.x, this.y)
     })
 
     this.setVisible(false);
@@ -111,6 +114,7 @@ export default class Tower extends Phaser.GameObjects.GameObject {
     this.is_placeable = false;
     this.setActive(true);
     this.setVisible(true);
+    console.log('TOWER WAS PLACED AT', x, y, this.td_scene.game.input.activePointer)
   }
 
   public setVisible(flag: boolean = true) { 
@@ -126,6 +130,14 @@ export default class Tower extends Phaser.GameObjects.GameObject {
   }
 
   public update(time: number, delta: number) {
+    // console.log("tower_info", this.tower_info.status.is_selected)
+    // if (this.tower_info.status.is_selected) {
+    //   this.selection = 'selected';
+    // } else {
+    //   this.selection = undefined;
+    // }
+
+
     this.placement_components.forEach(c => {
       // console.log('calling placement components')
       if (typeof c?.onUpdate == 'function') c.onUpdate(this, time, delta)

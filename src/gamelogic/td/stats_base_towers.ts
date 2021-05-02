@@ -33,7 +33,7 @@ const BASE_TOWER_ATTRIBUTES: BaseTowerAttributes = {
     damage: (tier: number) => 50 + tier*55,
     attack_speed: (tier: number) => Math.max(1000 - tier*10, 25),
     projectiles: (tier: number) => 1 + Math.floor(tier/10),
-    projectile_speed: 100,
+    projectile_speed: 400,
     spread_angle: 0,
     area_of_effect_radius: 0,
   },
@@ -42,7 +42,7 @@ const BASE_TOWER_ATTRIBUTES: BaseTowerAttributes = {
     damage: (tier: number) => 3 + tier*3, 
     attack_speed: 100,
     projectiles: 1,
-    projectile_speed: 100,
+    projectile_speed: 400,
     spread_angle: Math.PI/12, // 15 degree spread (not currently used)
     area_of_effect_radius: 0,
   }

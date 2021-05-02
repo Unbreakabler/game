@@ -1,4 +1,4 @@
-import type { TowerId } from "../../../../gamelogic/td/tower_defense";
+import type { TowerId, TowerInfo } from "../../../../gamelogic/td/tower_defense";
 import type TD from "../../../td";
 import type Enemy from "../../enemies/enemy";
 import type Tower from "../tower";
@@ -46,22 +46,22 @@ export default class Projectile extends Phaser.GameObjects.Image {
   public fire(
     tower: Tower, 
     bullet_type: string, 
-    speed: number = 400,
-    damage: number = 100,
-    range: number = 1000, 
-    lifespan: number = 1000, 
-    chains: number = 10,
+    lifespan: number = 1000, // Idk if this always been 1 second is fine? probably wont work for range
   ) {
     this.target = tower.target;
     this.target_angle = tower.target_angle;
 
     this.tower_id = tower.tower_id;
 
-    this.speed = speed;
-    this.damage = damage;
-    this.range = range;
-    this.chains = chains; 
     this.lifespan = lifespan;
+    this.speed = tower.tower_info.attributes.projectile_speed;
+    this.damage = tower.tower_info.attributes.damage;
+    this.range = tower.tower_info.attributes.range;
+
+    tower.tower_info.attributes.projectile_modifiers?.forEach(mod => {
+      if (mod.chains) this.chains += mod.chains
+    })
+
     this.initial_lifespan = this.lifespan;
     this.last_enemy_hit = undefined;
 

@@ -1,4 +1,4 @@
-import type { TargetingMode } from "../../../../gamelogic/td/tower_defense";
+import type {TowerInfo } from "../../../../gamelogic/td/tower_defense";
 import type TD from "../../../td"
 import type Enemy from "../../enemies/enemy";
 import type Tower from "../tower"
@@ -71,15 +71,15 @@ export function findStrongestEnemyInRange(parent: Tower, td_scene: TD, range: nu
   return strongest_enemy;
 }
 
-export default (target_types: TargetingMode[] = ['first', 'last', 'closest', 'strongest']) => {
+export default (tower: TowerInfo) => {
   return {
     type: 'target_handler',
     onUpdate: (parent: Tower, time: number, delta: number) => {
       let e;
-      if (parent.targeting_mode === 'first') e = findFirstEnemyInRange(parent, parent.td_scene, parent.range);
-      if (parent.targeting_mode === 'closest') e = findClosestEnemyInRange(parent, parent.td_scene, parent.range);
-      if (parent.targeting_mode === 'last') e = findLastEnemyInRange(parent, parent.td_scene, parent.range);
-      if (parent.targeting_mode === 'strongest') e = findStrongestEnemyInRange(parent, parent.td_scene, parent.range);
+      if (tower.status.targeting_mode === 'first') e = findFirstEnemyInRange(parent, parent.td_scene, tower.attributes.range);
+      if (tower.status.targeting_mode === 'closest') e = findClosestEnemyInRange(parent, parent.td_scene, tower.attributes.range);
+      if (tower.status.targeting_mode === 'last') e = findLastEnemyInRange(parent, parent.td_scene, tower.attributes.range);
+      if (tower.status.targeting_mode === 'strongest') e = findStrongestEnemyInRange(parent, parent.td_scene, tower.attributes.range);
       parent.target_angle = Phaser.Math.Angle.Between(parent.x, parent.y, e?.x || parent.target?.x || 0, e?.y || parent.target?.y || 0);
       parent.target = e;
     }

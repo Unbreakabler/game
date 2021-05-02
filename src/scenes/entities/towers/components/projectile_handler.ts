@@ -1,5 +1,6 @@
 import { toggle_class } from "svelte/internal";
 import { gameModel, GameModel } from "../../../../gamelogic/gamemodel";
+import type { TowerInfo } from "../../../../gamelogic/td/tower_defense";
 import type TD from "../../../td"
 import type Enemy from "../../enemies/enemy";
 import type Bullet from "../../tower_bullet";
@@ -26,7 +27,7 @@ function damageEnemy(enemy: Enemy, bullet: Projectile): void {
   }
 }
 
-export default (bullet_type: string = 'small_bullet') => {
+export default (tower_info: TowerInfo) => {
   return {
     type: 'projectile_handler',
     onInit: (parent: Tower, td_scene: TD, x: number, y:number) => {
@@ -46,10 +47,10 @@ export default (bullet_type: string = 'small_bullet') => {
       parent.time_elapsed += delta;
       if (parent.time_elapsed > parent.time_to_fire_next_shot) {
         if (parent.target) {
-          const b: Projectile = parent.projectiles?.get(parent.x, parent.y, 'small_bullet', bullet_type);
+          const b: Projectile = parent.projectiles?.get(parent.x, parent.y, 'small_bullet', parent.tower_info.status.projectile_type);
           // Extra properties read back from bullet
-          b.fire(parent, bullet_type);
-          parent.time_to_fire_next_shot = parent.time_elapsed + parent.attack_speed;
+          b.fire(parent, parent.tower_info.status.projectile_type);
+          parent.time_to_fire_next_shot = parent.time_elapsed + parent.tower_info.attributes.attack_speed;
         }
       }
     },

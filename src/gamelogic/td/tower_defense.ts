@@ -11,12 +11,14 @@ type MACHINE_GUN_IDS = 'machine_gun_1'
 export type TowerId = BASIC_TOWER_IDS | MACHINE_GUN_IDS
 export type TowerBaseType = 'tower_base_1' | 'tower_base_2' | 'tower_base_3' | 'tower_base_4'
 export type TargetingMode = 'first' | 'last' | 'strongest' | 'closest'
+export type ProjectileType = 'small_bullet'
 
 
 export interface TowerInfo {
   status: TowerStatus,
   attributes: TowerCalculatedAttributes,
 }
+
 
 export interface TowerStatus {
   id: TowerId,
@@ -28,6 +30,7 @@ export interface TowerStatus {
   current_exp?: integer,
   exp_for_next_tier?: CallableFunction, 
   type: TowerType,
+  projectile_type: ProjectileType,
   x: number,
   y: number,
   is_placed: boolean,
@@ -39,6 +42,7 @@ const BasicTowerStatusDefaults: TowerStatus = {
   id: 'basic_1',
   tier: 0,
   type: 'basic',
+  projectile_type: 'small_bullet',
   x: 0,
   y: 0,
   is_placed: false,
@@ -50,6 +54,7 @@ const MachineGunTowerStatusDefaults: TowerStatus = {
   id: 'machine_gun_1',
   tier: 1,
   type: 'machine_gun',
+  projectile_type: 'small_bullet',
   x: 0,
   y: 0,
   is_placed: false,
@@ -86,7 +91,7 @@ interface WaveInfo {
 
 export type TowerType = 'basic' | 'machine_gun'
 
-export type SelectionCursor = 'placement' | 'selected'
+export type SelectionCursor = 'hovered' | 'selected'
 
 export class TowerDefense {
   @Exclude() public selection: { type: TowerType, id: TowerId, cursor: SelectionCursor } | null = null;
@@ -103,7 +108,7 @@ export class TowerDefense {
   public current_wave_info: WaveInfo = { total: 0, spawned: 0, alive: 0, killed: 0, leaked: 0, lives: 0, level: 0 };
   public current_wave_difficulty: number = 100;
   public time_multiplier: number = 1;
-  public first_tower_is_placed: boolean = true;
+  public first_tower_is_placed: boolean = false;
 
   public inventory = [
     { type: 'tower', item_id: 'basic_1', id: uuidv4() },
@@ -152,12 +157,19 @@ export class TowerDefense {
   public setSelection(id: TowerId | null, cursor: SelectionCursor = 'selected') {
     if (!id) {
       this.selection = null; 
+      console.log("SELECTION", this.selection)
       return;
     }
-    if (id in this.tower_map) {
-      const type = this.tower_map[id].type
-      this.selection = { type, id, cursor }
+    for (const [name, tower] of Object.entries(this.tower_map)) {
+      if (tower.id !== id) {
+        tower.is_selected = false;
+      } else {
+        const type = tower.type
+        tower.is_selected = true;
+        this.selection = { type, id, cursor }
+      }
     }
+    console.log("SELECTION", this.selection)
   }
 
   public placeTower(id: TowerId, x: number, y: number) {

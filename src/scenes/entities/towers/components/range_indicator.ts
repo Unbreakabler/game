@@ -12,7 +12,7 @@ export default () => {
   return {
     type: 'range_indicator',
     onInit: (parent: Tower, td_scene: TD, x: number, y:number) => {
-      parent.range_indicator = parent.td_scene.add.circle(parent.x, parent.y, parent.range, 0xff0000, 0.5);
+      parent.range_indicator = parent.td_scene.add.circle(parent.x, parent.y, parent.tower_info.attributes.range, 0xff0000, 0.5);
       parent.range_indicator.setStrokeStyle(2, 0xffffff);
       parent.range_indicator.setVisible(false);
     },
@@ -26,7 +26,6 @@ export default () => {
         parent.range_indicator?.setFillStyle(blue, 0.15);
       } else {
         let outline_color: Phaser.Display.Color;
-        console.log('parent.is_placeable?', parent.is_placeable)
         if (parent.is_placeable) {
           parent.range_indicator?.setFillStyle(green, 0.3);
           outline_color = new Phaser.Display.Color(0, 255, 0);
