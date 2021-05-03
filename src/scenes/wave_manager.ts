@@ -1,6 +1,6 @@
 import { gameModel } from "../gamelogic/gamemodel";
 import ENEMY_BASE_STATS, { applyEnemyModifiers } from "../gamelogic/td/stats_base_enemies";
-import type { EnemyWave, ModifierId } from "../gamelogic/td/enemy_wave_generator";
+import type { EnemyWave } from "../gamelogic/td/enemy_wave_generator";
 import type { TowerDefense } from "../gamelogic/td/tower_defense";
 import Enemy from "./entities/enemies/enemy";
 import type { Path } from "./entities/path";

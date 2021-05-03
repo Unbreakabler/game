@@ -41,7 +41,7 @@ export function svelte_game_loop(current_time: number, ms_delta_t: number): void
   const seconds_delta_t = ms_delta_t / 1_000;
   time_since_last_update_ms += ms_delta_t
   if (time_since_last_update_ms > 16) {
-    game_update(seconds_delta_t);
+    // game_update(seconds_delta_t); 
     time_since_last_update_ms = 0;
   }
 }
