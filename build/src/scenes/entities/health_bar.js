@@ -11,6 +11,13 @@ class HealthBar extends Phaser.GameObjects.Rectangle {
         this.setDepth(2);
         this.setVisible(false);
         this.background_bar.setVisible(false);
+        this.depth = 2;
+        this.background_bar.depth = 1;
+    }
+    setVisible(value) {
+        super.setVisible(value);
+        this.background_bar.setVisible(value);
+        return this;
     }
     preDestroy() {
         this.background_bar.destroy();

@@ -20,11 +20,19 @@ class WaveManager {
         });
     }
     update(time, delta) {
+        if (!this.tower_defense_state.first_tower_is_placed)
+            return;
         for (const enemy of this.enemies.getChildren()) {
             enemy.update(time, delta);
         }
         if (this.current_wave && (this.tower_defense_state.current_wave_info.spawned < this.tower_defense_state.current_wave_info.total)) {
             this.spawnEnemy(time, delta);
+        }
+        else if (this.tower_defense_state.current_wave_info.leaked > 0) {
+            // Repeat failed waves. 
+            // TODO(jon): Should show an indicator that the wave is repeating.
+            this.tower_defense_state.current_wave_info.leaked = 0;
+            this.spawnWave(time, delta, false);
         }
         else {
             this.spawnWave(time, delta);
@@ -52,10 +60,11 @@ class WaveManager {
         this.tower_defense_state.current_wave_info.alive++;
         this.delta_to_next_enemy = this.current_wave.enemy_spawn_delta;
     }
-    spawnWave(time, delta) {
+    spawnWave(time, delta, next = true) {
         if (this.current_wave && (this.tower_defense_state.current_wave_info.spawned < this.tower_defense_state.current_wave_info.total || this.tower_defense_state.current_wave_info.alive))
             return;
-        this.tower_defense_state.spawnNextWave();
+        if (next)
+            this.tower_defense_state.spawnNextWave();
         this.current_wave = this.tower_defense_state.getCurrentWave();
         this.tower_defense_state.current_wave_info.total = this.current_wave.mob_count;
         this.tower_defense_state.current_wave_info.spawned = 0;

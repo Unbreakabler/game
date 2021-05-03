@@ -11,7 +11,7 @@ function add_css() {
 }
 
 function create_fragment(ctx) {
-	let div6;
+	let div5;
 	let div0;
 	let t0;
 	let t1;
@@ -33,14 +33,10 @@ function create_fragment(ctx) {
 	let div4;
 	let t14;
 	let t15;
-	let t16;
-	let div5;
-	let t17;
-	let t18;
 
 	return {
 		c() {
-			div6 = element("div");
+			div5 = element("div");
 			div0 = element("div");
 			t0 = text("S: ");
 			t1 = text(/*spawned*/ ctx[1]);
@@ -60,47 +56,38 @@ function create_fragment(ctx) {
 			t12 = text(/*leaked*/ ctx[4]);
 			t13 = space();
 			div4 = element("div");
-			t14 = text("lives: ");
-			t15 = text(/*lives*/ ctx[5]);
-			t16 = space();
-			div5 = element("div");
-			t17 = text("wave: ");
-			t18 = text(/*wave*/ ctx[6]);
+			t14 = text("wave: ");
+			t15 = text(/*wave*/ ctx[5]);
 			attr(div0, "class", "svelte-1kaiwp6");
 			attr(div1, "class", "svelte-1kaiwp6");
 			attr(div2, "class", "svelte-1kaiwp6");
 			attr(div3, "class", "svelte-1kaiwp6");
 			attr(div4, "class", "svelte-1kaiwp6");
-			attr(div5, "class", "svelte-1kaiwp6");
-			attr(div6, "class", "main svelte-1kaiwp6");
+			attr(div5, "class", "main svelte-1kaiwp6");
 		},
 		m(target, anchor) {
-			insert(target, div6, anchor);
-			append(div6, div0);
+			insert(target, div5, anchor);
+			append(div5, div0);
 			append(div0, t0);
 			append(div0, t1);
 			append(div0, t2);
 			append(div0, t3);
-			append(div6, t4);
-			append(div6, div1);
+			append(div5, t4);
+			append(div5, div1);
 			append(div1, t5);
 			append(div1, t6);
-			append(div6, t7);
-			append(div6, div2);
+			append(div5, t7);
+			append(div5, div2);
 			append(div2, t8);
 			append(div2, t9);
-			append(div6, t10);
-			append(div6, div3);
+			append(div5, t10);
+			append(div5, div3);
 			append(div3, t11);
 			append(div3, t12);
-			append(div6, t13);
-			append(div6, div4);
+			append(div5, t13);
+			append(div5, div4);
 			append(div4, t14);
 			append(div4, t15);
-			append(div6, t16);
-			append(div6, div5);
-			append(div5, t17);
-			append(div5, t18);
 		},
 		p(ctx, [dirty]) {
 			if (dirty & /*spawned*/ 2) set_data(t1, /*spawned*/ ctx[1]);
@@ -108,13 +95,12 @@ function create_fragment(ctx) {
 			if (dirty & /*alive*/ 4) set_data(t6, /*alive*/ ctx[2]);
 			if (dirty & /*killed*/ 8) set_data(t9, /*killed*/ ctx[3]);
 			if (dirty & /*leaked*/ 16) set_data(t12, /*leaked*/ ctx[4]);
-			if (dirty & /*lives*/ 32) set_data(t15, /*lives*/ ctx[5]);
-			if (dirty & /*wave*/ 64) set_data(t18, /*wave*/ ctx[6]);
+			if (dirty & /*wave*/ 32) set_data(t15, /*wave*/ ctx[5]);
 		},
 		i: noop,
 		o: noop,
 		d(detaching) {
-			if (detaching) detach(div6);
+			if (detaching) detach(div5);
 		}
 	};
 }
@@ -125,42 +111,37 @@ function instance($$self, $$props, $$invalidate) {
 	let alive;
 	let killed;
 	let leaked;
-	let lives;
 	let wave;
 	let gameModelInstance;
-	gameModel.subscribe(m => $$invalidate(7, gameModelInstance = m));
+	gameModel.subscribe(m => $$invalidate(6, gameModelInstance = m));
 
 	$$self.$$.update = () => {
-		if ($$self.$$.dirty & /*gameModelInstance*/ 128) {
+		if ($$self.$$.dirty & /*gameModelInstance*/ 64) {
 			 $$invalidate(0, total = gameModelInstance.tower_defense.current_wave_info.total);
 		}
 
-		if ($$self.$$.dirty & /*gameModelInstance*/ 128) {
+		if ($$self.$$.dirty & /*gameModelInstance*/ 64) {
 			 $$invalidate(1, spawned = gameModelInstance.tower_defense.current_wave_info.spawned);
 		}
 
-		if ($$self.$$.dirty & /*gameModelInstance*/ 128) {
+		if ($$self.$$.dirty & /*gameModelInstance*/ 64) {
 			 $$invalidate(2, alive = gameModelInstance.tower_defense.current_wave_info.alive);
 		}
 
-		if ($$self.$$.dirty & /*gameModelInstance*/ 128) {
+		if ($$self.$$.dirty & /*gameModelInstance*/ 64) {
 			 $$invalidate(3, killed = gameModelInstance.tower_defense.current_wave_info.killed);
 		}
 
-		if ($$self.$$.dirty & /*gameModelInstance*/ 128) {
+		if ($$self.$$.dirty & /*gameModelInstance*/ 64) {
 			 $$invalidate(4, leaked = gameModelInstance.tower_defense.current_wave_info.leaked);
 		}
 
-		if ($$self.$$.dirty & /*gameModelInstance*/ 128) {
-			 $$invalidate(5, lives = gameModelInstance.tower_defense.current_wave_info.lives);
-		}
-
-		if ($$self.$$.dirty & /*gameModelInstance*/ 128) {
-			 $$invalidate(6, wave = gameModelInstance.tower_defense.current_wave_info.level);
+		if ($$self.$$.dirty & /*gameModelInstance*/ 64) {
+			 $$invalidate(5, wave = gameModelInstance.tower_defense.current_wave_info.level);
 		}
 	};
 
-	return [total, spawned, alive, killed, leaked, lives, wave, gameModelInstance];
+	return [total, spawned, alive, killed, leaked, wave, gameModelInstance];
 }
 
 class Wave_status extends SvelteComponent {

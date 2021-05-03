@@ -11,13 +11,21 @@ const DEFAULT_STYLE = {
     fixedWidth: 0,
     fixedHeight: 0,
     rtl: false,
+    metrics: {
+        ascent: 21,
+        descent: 5,
+        fontSize: 26
+    }
 };
 // TODO(jon): Add more styles for different types of hits
 // fire can be red, ice blue, etc
 // crits should be larger and "shake" or something for impact
+// TODO(jon): This needs to be switch to be BitmapText in order to stop constant
+// churn with rendering text to another canvas, creating texture, and uploading to GPU
+// currently takes ~20-30ms per combat text
 class CombatText extends Phaser.GameObjects.Text {
-    constructor(scene, x, y, text, style = DEFAULT_STYLE, lifespan = 500) {
-        super(scene, x, y, text, style);
+    constructor(scene, x, y, text, style = {}, lifespan = 500) {
+        super(scene, x, y, text, Object.assign(DEFAULT_STYLE, style));
         this.float_increase = 0;
         scene.add.existing(this);
         this.starting_lifespan = lifespan;

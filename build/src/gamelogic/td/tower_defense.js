@@ -2,12 +2,14 @@ import { __decorate } from '../../../node_modules/tslib/tslib.es6.js';
 import { generateWave } from './enemy_wave_generator.js';
 import { getTowerAttributes } from './stats_base_towers.js';
 import { applyTowerAttributeModifiers } from './stats_tower_modifiers.js';
+import v4 from '../../../node_modules/uuid/dist/esm-browser/v4.js';
 import { Exclude } from '../../../node_modules/class-transformer/esm5/decorators/exclude.decorator.js';
 
 const BasicTowerStatusDefaults = {
     id: 'basic_1',
     tier: 0,
     type: 'basic',
+    projectile_type: 'small_bullet',
     x: 0,
     y: 0,
     is_placed: false,
@@ -18,6 +20,7 @@ const MachineGunTowerStatusDefaults = {
     id: 'machine_gun_1',
     tier: 1,
     type: 'machine_gun',
+    projectile_type: 'small_bullet',
     x: 0,
     y: 0,
     is_placed: false,
@@ -29,10 +32,18 @@ class TowerDefense {
         this.selection = null;
         this.stats = {};
         this.waves = [];
-        this.current_wave = 1;
         this.current_wave_info = { total: 0, spawned: 0, alive: 0, killed: 0, leaked: 0, lives: 0, level: 0 };
         this.current_wave_difficulty = 100;
         this.time_multiplier = 1;
+        this.first_tower_is_placed = false;
+        this.inventory = [
+            { type: 'tower', item_id: 'basic_1', id: v4() },
+            { type: 'tower', item_id: 'machine_gun_1', id: v4() },
+            { type: 'modifier', item_id: 'physical_1', id: v4() },
+            { type: 'modifier', item_id: 'physical_1', id: v4() },
+            { type: 'modifier', item_id: 'chain_1', id: v4() },
+            { type: 'modifier', item_id: 'chain_1', id: v4() },
+        ];
         this.tower_map = get_default_tower_map();
         this.slot_tower_attribute_modifier_map = get_default_slot_tower_attribute_modifiers();
         this.slots = ['basic_1', 'machine_gun_1', null, null, null];
@@ -46,6 +57,8 @@ class TowerDefense {
         }
     }
     getTower(id) {
+        if (!id)
+            return null;
         const status = this.tower_map[id];
         if (!status)
             return null;
@@ -68,16 +81,22 @@ class TowerDefense {
             this.selection = null;
             return;
         }
-        if (id in this.tower_map) {
-            const type = this.tower_map[id].type;
-            this.selection = { type, id, cursor };
+        for (const [name, tower] of Object.entries(this.tower_map)) {
+            if (tower.id !== id) {
+                tower.is_selected = false;
+            }
+            else {
+                const type = tower.type;
+                tower.is_selected = true;
+                this.selection = { type, id, cursor };
+            }
         }
     }
     placeTower(id, x, y) {
         const tower = this.tower_map[id];
-        console.log('placeTower', tower, id, x, y);
         if (!tower)
             return;
+        this.first_tower_is_placed = true;
         tower.x = x;
         tower.y = y;
         tower.is_placed = true;
@@ -115,7 +134,7 @@ class TowerDefense {
         this.waves.push(generateWave(this.current_wave_difficulty));
         // TODO(jon): Figure out how to increase difficulty over time, 
         // a linear increase wont match item/drop/upgrade power spikes.
-        this.current_wave_difficulty++;
+        this.current_wave_difficulty += 10;
     }
     spawnNextWave() {
         this.generateEnemyWave();
@@ -137,7 +156,7 @@ const get_default_tower_map = () => {
 };
 const get_default_slot_tower_attribute_modifiers = () => {
     return {
-        'basic_1': [{ id: 'physical_1', level: 10 }, { id: 'chain_1', level: 100 }],
+        'basic_1': [{ id: 'physical_1', level: 10 }, { id: 'chain_1', level: 10000 }],
         'machine_gun_1': [{ id: 'physical_1', level: 10 }, { id: 'chain_1', level: 20 }],
     };
 };

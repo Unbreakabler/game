@@ -5,12 +5,12 @@ import { gameModel } from '../gamelogic/gamemodel.js';
 
 function add_css() {
 	var style = element("style");
-	style.id = "svelte-cr49gj-style";
-	style.textContent = ".details.svelte-cr49gj{background:#ffffff;height:100%;padding:10px;filter:drop-shadow(0 0 0.75rem crimson);animation:svelte-cr49gj-slide 100ms;transform:translateX(0)}@keyframes svelte-cr49gj-slide{0%{transform:translateX(200px)}100%{transform:translateX(0px)}}";
+	style.id = "svelte-1s3gau1-style";
+	style.textContent = ".details.svelte-1s3gau1{background:#ffffff;height:100%;padding:10px;filter:drop-shadow(0 0 0.75rem black);animation:svelte-1s3gau1-slide 100ms;transform:translateX(0)}@keyframes svelte-1s3gau1-slide{0%{transform:translateX(200px)}100%{transform:translateX(0px)}}";
 	append(document.head, style);
 }
 
-// (37:0) {#if tower_info}
+// (40:0) {#if tower_info}
 function create_if_block(ctx) {
 	let div10;
 	let div0;
@@ -118,7 +118,7 @@ function create_if_block(ctx) {
 			div9 = element("div");
 			t31 = text("proj mods: ");
 			t32 = text(t32_value);
-			attr(div10, "class", "details svelte-cr49gj");
+			attr(div10, "class", "details svelte-1s3gau1");
 		},
 		m(target, anchor) {
 			insert(target, div10, anchor);
@@ -241,6 +241,10 @@ function instance($$self, $$props, $$invalidate) {
 	let tower_stats = undefined;
 	let dps = 0;
 
+	const mod = (n, m) => {
+		return (n % m + m) % m;
+	};
+
 	// TODO(jon): Once there are tower types with unique targeting modes this should be pulled from tower info
 	const targeting_modes = ["first", "last", "strongest", "closest"];
 
@@ -249,7 +253,7 @@ function instance($$self, $$props, $$invalidate) {
 		// select next/prev item in list, or roll back to start (modulo)
 		const cur_index = targeting_modes.findIndex(v => v === tower_info?.status.targeting_mode);
 
-		const new_index = (cur_index + x) % targeting_modes.length;
+		const new_index = mod(cur_index + x, targeting_modes.length);
 		const new_targeting_mode = targeting_modes[new_index];
 		if (tower_info) $$invalidate(0, tower_info.status.targeting_mode = new_targeting_mode, tower_info);
 	};
@@ -300,7 +304,7 @@ function instance($$self, $$props, $$invalidate) {
 class Tower_details extends SvelteComponent {
 	constructor(options) {
 		super();
-		if (!document.getElementById("svelte-cr49gj-style")) add_css();
+		if (!document.getElementById("svelte-1s3gau1-style")) add_css();
 		init(this, options, instance, create_fragment, safe_not_equal, {});
 	}
 }

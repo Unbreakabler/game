@@ -14,7 +14,7 @@ function add_css() {
 	append(document.head, style);
 }
 
-// (26:4) <Button on:click={() => showModal = 'mine'}>
+// (27:4) <Button on:click={() => showModal = 'mine'}>
 function create_default_slot_8(ctx) {
 	let t;
 
@@ -31,7 +31,7 @@ function create_default_slot_8(ctx) {
 	};
 }
 
-// (27:4) <Button on:click={() => showModal = 'inventory'}>
+// (28:4) <Button on:click={() => showModal = 'inventory'}>
 function create_default_slot_7(ctx) {
 	let t;
 
@@ -48,7 +48,7 @@ function create_default_slot_7(ctx) {
 	};
 }
 
-// (28:4) <Button>
+// (29:4) <Button>
 function create_default_slot_6(ctx) {
 	let t;
 
@@ -65,7 +65,7 @@ function create_default_slot_6(ctx) {
 	};
 }
 
-// (29:4) <Button color="secondary" on:click={() => showModal = 'settings'}>
+// (30:4) <Button color="secondary" on:click={() => showModal = 'settings'}>
 function create_default_slot_5(ctx) {
 	let t;
 
@@ -82,7 +82,7 @@ function create_default_slot_5(ctx) {
 	};
 }
 
-// (32:4) <Button on:click={() => updateTimestep(-1)} >
+// (33:4) <Button on:click={() => updateTimestep(-1)} >
 function create_default_slot_4(ctx) {
 	let t;
 
@@ -99,7 +99,7 @@ function create_default_slot_4(ctx) {
 	};
 }
 
-// (34:4) <Button on:click={() => updateTimestep(1)}>
+// (35:4) <Button on:click={() => updateTimestep(1)}>
 function create_default_slot_3(ctx) {
 	let t;
 
@@ -116,7 +116,7 @@ function create_default_slot_3(ctx) {
 	};
 }
 
-// (37:0) {#if showModal}
+// (38:0) {#if showModal}
 function create_if_block(ctx) {
 	let modal;
 	let current;
@@ -162,7 +162,7 @@ function create_if_block(ctx) {
 	};
 }
 
-// (44:39) 
+// (45:39) 
 function create_if_block_3(ctx) {
 	let div;
 	let h4;
@@ -247,7 +247,7 @@ function create_if_block_3(ctx) {
 	};
 }
 
-// (41:40) 
+// (42:40) 
 function create_if_block_2(ctx) {
 	let t;
 
@@ -267,7 +267,7 @@ function create_if_block_2(ctx) {
 	};
 }
 
-// (39:4) {#if showModal === 'mine'}
+// (40:4) {#if showModal === 'mine'}
 function create_if_block_1(ctx) {
 	let mines;
 	let current;
@@ -297,7 +297,7 @@ function create_if_block_1(ctx) {
 	};
 }
 
-// (47:8) <Button color="secondary" on:click={saveGame}>
+// (48:8) <Button color="secondary" on:click={saveGame}>
 function create_default_slot_2(ctx) {
 	let t;
 
@@ -314,7 +314,7 @@ function create_default_slot_2(ctx) {
 	};
 }
 
-// (48:8) <Button color="secondary" on:click={hardReset}>
+// (49:8) <Button color="secondary" on:click={hardReset}>
 function create_default_slot_1(ctx) {
 	let t;
 
@@ -331,7 +331,7 @@ function create_default_slot_1(ctx) {
 	};
 }
 
-// (38:2) <Modal on:close={() => showModal = null}>
+// (39:2) <Modal on:close={() => showModal = null}>
 function create_default_slot(ctx) {
 	let current_block_type_index;
 	let if_block;
@@ -671,6 +671,7 @@ function instance($$self, $$props, $$invalidate) {
 		if (window.confirm("You will lose all progress. Are you sure?")) {
 			resetSaveGame();
 			saveGame();
+			location.reload();
 		}
 	};
 

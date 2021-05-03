@@ -1,4 +1,4 @@
-import { CombatText } from '../combat_text.js';
+import '../combat_text.js';
 import { HealthBar } from '../health_bar.js';
 import { ENEMY_MODIFIERS } from '../../../gamelogic/td/enemy_wave_generator.js';
 import { EnemyType } from '../../../gamelogic/td/stats_base_enemies.js';
@@ -12,6 +12,7 @@ class Enemy extends Phaser.GameObjects.Sprite {
     constructor(td_scene, x = 0, y = 0, sprite_name, speed = DEFAULT_ENEMY_SPEED, health_points = DEFAULT_ENEMY_HP) {
         super(td_scene, x, y, sprite_name);
         this.health_points = DEFAULT_ENEMY_HP;
+        this.targettable = true;
         this.path = null;
         this.speed = DEFAULT_ENEMY_SPEED;
         this.prev_ang = 0;
@@ -36,7 +37,9 @@ class Enemy extends Phaser.GameObjects.Sprite {
             return;
         if (!this.speed)
             this.speed = DEFAULT_ENEMY_SPEED;
-        // this.setActive(true);
+        this.targettable = true;
+        this.resetPostPipeline(true);
+        this.setActive(true);
         this.setVisible(true);
         // set the t parameter at the start of the path
         this.follower.t = 0;
@@ -92,7 +95,7 @@ class Enemy extends Phaser.GameObjects.Sprite {
     }
     update(time, delta) {
         // move the t point along the path, 0 is the start and 0 is the end
-        if (!this.path)
+        if (!this.path || !this.active || !this.targettable)
             return; // skip updates if path has not be set by startOnPath
         const path_length = this.path.getLength();
         const dist_from_start = path_length * this.follower.t;
@@ -127,11 +130,12 @@ class Enemy extends Phaser.GameObjects.Sprite {
         // We should probably add a small amount of left/right movement based on the forward vector so that every
         // enemy isn't following an identical path
         // if we have reached the end of the path, remove the enemy
-        if (this.follower.t >= 1) {
+        if (this.follower.t >= 1.0) { //REVERT
             this.setActive(false);
             this.setVisible(false);
-            this.destroy();
+            this.health_bar.setVisible(false);
             this.td_scene.wave_manager.recordEnemyLeak();
+            this.targettable = false;
         }
     }
     preDestroy() {
@@ -142,14 +146,35 @@ class Enemy extends Phaser.GameObjects.Sprite {
         this.health_bar.setCurrentHp(this.health_points);
         // combat text is self managed and destroys itself from the scene after it's lifespan (default 250ms) has expired.
         // Generates a new floating combat text instance for each instance of damage
-        new CombatText(this.td_scene, this.x, this.y - this.height, `${damage}`);
+        // TODO(jon): Reenable once we have BitmapText for combat text
+        // new CombatText(this.td_scene, this.x, this.y - this.height, `${damage}`);
         if (this.health_points > 0)
             return true;
-        this.setActive(false);
+        if (wallet?.money)
+            wallet.money += this.money * this.difficulty; //  TODO(jon): Should this add difficulty or money or some combo?
+        // instead of immediately stopping rendering, we want to apply a "dissolve" shader first.
+        this.health_bar.setVisible(false);
         this.setVisible(false);
-        this.destroy();
-        wallet.money += this.money * this.difficulty; //  TODO(jon): Should this add difficulty or money or some combo?
-        this.resetPostPipeline(true);
+        this.setActive(false);
+        /**
+         * Section below doesn't properly tween the "dissolve" effect, need to look into this more.
+         */
+        this.targettable = false;
+        // const dissolvePlugin: BasePostFxPipelinePlugin = this.td_scene.plugins.get('DissolvePostFX')
+        // dissolvePlugin.add(this);
+        // this.td_scene.tweens.add({
+        //   targets: dissolvePlugin,
+        //   progress: 1,
+        //   ease: 'Quad', // 'Cubic', 'Elastic', 'Bounce', 'Back'
+        //   duration: 3000,
+        //   repeat: 0, // -1: infinity
+        //   yoyo: false, 
+        //   onComplete: () => {
+        //     console.log('TWEEN COMPLETED')
+        //     this.setVisible(false);
+        //     this.setActive(false);
+        //   }
+        // });
         return false;
     }
 }

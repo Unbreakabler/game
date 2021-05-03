@@ -25,7 +25,7 @@ const ENEMY_BASE_STATS = {
         sprite_link: 'static/bug.png'
     },
     [EnemyType.blue_dragon]: {
-        health_points: 1000,
+        health_points: 500,
         speed: Phaser.Math.GetSpeed(50, 1),
         experience: 10,
         money: 10,
