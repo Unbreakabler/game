@@ -24,88 +24,43 @@
   $: selection_id = gameModelInstance.tower_defense.selection?.id || null;
 </script>
 
-<div class:bb={tower_id && selection_id === tower_id} class="item" on:click={() => toggleTowerSelection(tower_id)}>
+<div class:selected={tower_id && selection_id === tower_id} class:selectable={tower_info} class="item" on:click={() => toggleTowerSelection(tower_id)}>
   {#if isTower(tower_info)}
-    <span>Tier: {tower_info.status.tier}</span>
-    <button class={tower_info.status.type}></button>
+    <button style="background-image: url(static/tower/turrets/{tower_info.status.type}.png)"></button>
   {:else if tower_info === null}
     X <!-- Empty slot - TODO(jon): use a "lock" icon -->
   {/if}
 </div>
 
 <style lang='scss'>
+  $box-size: 75px;
+  $unselected-colour: #fff;
+  $selected-colour: lightblue;
+
   div {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+  }
+  .selectable {
     cursor: pointer;
   }
   button {
     border: none;
-    height: 32px;
-    width: 32px;
-  }
-  .basic {
-    background-image: url('static/shotgun.png');
-  }
-  .machine_gun {
-    background-image: url('static/machine_gun.png');
-  }
-  .active {
-		background-color: green;
-	}
-
-  %full-fill {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    height: $box-size;
+    width: $box-size;
+    background-repeat: no-repeat;
+    background-size: contain;
   }
 
-  $anime-time: 8s;
-
-  $box-size: 75px;
-  $clip-distance: .05;
-  $clip-size: $box-size * (1 + $clip-distance * 2);
-  $path-width: 2px;
-
-  $selected-colour: #50bd48;
-  $unselected-colour: #353535;
+  .selected {
+    background-color: $selected-colour;
+  }
 
   .item {
     position: relative;
     width: $box-size;
     height: $box-size;
-    margin: 5px;
-    color: $unselected-colour;
-    box-shadow: inset 0 0 0 1px rgba($unselected-colour, .5);
-  }
-
-  .bb {
-    color: $selected-colour;
-    box-shadow: inset 0 0 0 1px rgba($selected-colour, .5);
-
-    &::before,
-    &::after {
-      @extend %full-fill;
-      content: '';
-      z-index: 1;
-      margin: -1 * $clip-distance * 100%;
-      box-shadow: inset 0 0 0 $path-width; 
-      animation: clipMe $anime-time linear infinite;
-    }
-
-    &::before {
-      animation-delay: $anime-time * -.5;
-    }
-  }
-
-  @keyframes clipMe {
-    0%, 100% {clip: rect(0px, $clip-size, $path-width, 0px); }
-    25% {clip: rect(0px, $path-width, $clip-size, 0px); }
-    50% {clip: rect($clip-size - $path-width, $clip-size, $clip-size, 0px); }
-    75% {clip: rect(0px, $clip-size, $clip-size, $clip-size - $path-width); }
   }
 </style>

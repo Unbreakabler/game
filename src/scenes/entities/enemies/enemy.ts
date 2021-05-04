@@ -1,9 +1,10 @@
 import type TD from "../../td";
 import { CombatText } from '../combat_text';
 import { HealthBar } from '../health_bar';
-import { EnemyModifier, ENEMY_MODIFIERS, ModifierId } from '../../../gamelogic/td/enemy_wave_generator'
-import { EnemyType } from '../../../gamelogic/td/stats_base_enemies'
+import { EnemyType, ENEMY_MODIFIERS } from '../../../gamelogic/td/stats_enemy_modifiers'
+import type { ModifierId } from "../../../gamelogic/td/stats_enemy_modifiers";
 import type { Wallet } from "../../../gamelogic/gamemodel";
+import type BasePostFxPipelinePlugin from "../../../plugins/utils/base-post-fx-plugin";
 
 const DEFAULT_ENEMY_SPEED = 1 / 10;
 const DEFAULT_ENEMY_HP = 100;
@@ -16,6 +17,7 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
   public follower: { t: number; vec: Phaser.Math.Vector2 };
   public health_points = DEFAULT_ENEMY_HP;
   public name: string;
+  public targettable: boolean = true;
 
   private path: Phaser.Curves.Path | null = null;
   private speed: number = DEFAULT_ENEMY_SPEED;
@@ -56,7 +58,9 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
   private resetEnemy(): void {
     if (!this.path) return;
     if (!this.speed) this.speed = DEFAULT_ENEMY_SPEED;
-    // this.setActive(true);
+    this.targettable = true;
+    this.resetPostPipeline(true);
+    this.setActive(true);
     this.setVisible(true);
     // set the t parameter at the start of the path
     this.follower.t = 0;
@@ -123,7 +127,7 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
 
   public update(time: number, delta: number): void {
     // move the t point along the path, 0 is the start and 0 is the end
-    if (!this.path) return; // skip updates if path has not be set by startOnPath
+    if (!this.path || !this.active || !this.targettable) return; // skip updates if path has not be set by startOnPath
     const path_length = this.path.getLength()
     const dist_from_start = path_length * this.follower.t;
     const new_dist_from_start = dist_from_start + this.speed * delta;
@@ -159,11 +163,12 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
     // enemy isn't following an identical path
 
     // if we have reached the end of the path, remove the enemy
-    if (this.follower.t >= 1) {
+    if (this.follower.t >= 1.0) { //REVERT
       this.setActive(false);
       this.setVisible(false);
-      this.destroy();
+      this.health_bar.setVisible(false);
       this.td_scene.wave_manager.recordEnemyLeak();
+      this.targettable = false;
     }
   }
 
@@ -171,18 +176,45 @@ export default class Enemy extends Phaser.GameObjects.Sprite {
     this.health_bar.destroy();
   }
 
-  public receiveDamage(damage: number, wallet: Wallet): boolean {
+  public receiveDamage(damage: number, wallet?: Wallet): boolean {
     this.health_points -= damage;
     this.health_bar.setCurrentHp(this.health_points)
     // combat text is self managed and destroys itself from the scene after it's lifespan (default 250ms) has expired.
     // Generates a new floating combat text instance for each instance of damage
-    new CombatText(this.td_scene, this.x, this.y - this.height, `${damage}`);
+
+    // TODO(jon): Reenable once we have BitmapText for combat text
+    // new CombatText(this.td_scene, this.x, this.y - this.height, `${damage}`);
+
     if (this.health_points > 0) return true;
-    this.setActive(false);
+    if (wallet?.money) wallet.money += this.money * this.difficulty; //  TODO(jon): Should this add difficulty or money or some combo?
+    
+    // instead of immediately stopping rendering, we want to apply a "dissolve" shader first.
+
+    this.health_bar.setVisible(false);
     this.setVisible(false);
-    this.destroy();
-    wallet.money += this.money * this.difficulty; //  TODO(jon): Should this add difficulty or money or some combo?
-    this.resetPostPipeline(true);
+    this.setActive(false);
+
+    /**
+     * Section below doesn't properly tween the "dissolve" effect, need to look into this more.
+     */
+    this.targettable = false;
+
+    // const dissolvePlugin: BasePostFxPipelinePlugin = this.td_scene.plugins.get('DissolvePostFX')
+    // dissolvePlugin.add(this);
+    // this.td_scene.tweens.add({
+    //   targets: dissolvePlugin,
+    //   progress: 1,
+    //   ease: 'Quad', // 'Cubic', 'Elastic', 'Bounce', 'Back'
+    //   duration: 3000,
+    //   repeat: 0, // -1: infinity
+    //   yoyo: false, 
+    //   onComplete: () => {
+    //     console.log('TWEEN COMPLETED')
+    //     this.setVisible(false);
+    //     this.setActive(false);
+    //   }
+    // });
+    
     return false;
   }
 }

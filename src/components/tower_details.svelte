@@ -25,6 +25,10 @@
     dps = tower_info.attributes.damage * (1000 / tower_info.attributes.attack_speed)
   }
 
+  const mod = (n: number, m: number) => {
+    return ((n % m) + m) % m;
+  }
+
   // TODO(jon): Once there are tower types with unique targeting modes this should be pulled from tower info
   const targeting_modes: TargetingMode[] = ['first', 'last', 'strongest', 'closest'];
 
@@ -32,7 +36,7 @@
     // find index of targeting_mode
     // select next/prev item in list, or roll back to start (modulo)
     const cur_index = targeting_modes.findIndex(v => v === tower_info?.status.targeting_mode)
-    const new_index = (cur_index + x) % targeting_modes.length;
+    const new_index = mod((cur_index + x), targeting_modes.length);
     const new_targeting_mode = targeting_modes[new_index]
     if (tower_info) tower_info.status.targeting_mode = new_targeting_mode;
   }
@@ -63,7 +67,7 @@
     background: #ffffff;
     height: 100%;
     padding: 10px;
-    filter: drop-shadow(0 0 0.75rem crimson);
+    filter: drop-shadow(0 0 0.75rem black);
     animation: slide 100ms;
     transform: translateX(0);
   }

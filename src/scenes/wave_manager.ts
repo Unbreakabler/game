@@ -1,6 +1,6 @@
 import { gameModel } from "../gamelogic/gamemodel";
 import ENEMY_BASE_STATS, { applyEnemyModifiers } from "../gamelogic/td/stats_base_enemies";
-import type { EnemyWave, ModifierId } from "../gamelogic/td/enemy_wave_generator";
+import type { EnemyWave } from "../gamelogic/td/enemy_wave_generator";
 import type { TowerDefense } from "../gamelogic/td/tower_defense";
 import Enemy from "./entities/enemies/enemy";
 import type { Path } from "./entities/path";
@@ -32,11 +32,17 @@ export class WaveManager {
   }
 
   public update(time: number, delta: number): void {
+    if (!this.tower_defense_state.first_tower_is_placed) return
     for (const enemy of this.enemies.getChildren()) {
       enemy.update(time, delta);
     }
     if (this.current_wave && (this.tower_defense_state.current_wave_info.spawned < this.tower_defense_state.current_wave_info.total)) {
       this.spawnEnemy(time, delta);
+    } else if (this.tower_defense_state.current_wave_info.leaked > 0) {
+      // Repeat failed waves. 
+      // TODO(jon): Should show an indicator that the wave is repeating.
+      this.tower_defense_state.current_wave_info.leaked = 0;
+      this.spawnWave(time, delta, false)
     } else {
       this.spawnWave(time, delta);
     }
@@ -69,10 +75,10 @@ export class WaveManager {
     this.delta_to_next_enemy = this.current_wave.enemy_spawn_delta;
   }
 
-  private spawnWave(time: number, delta: number) {
+  private spawnWave(time: number, delta: number, next: boolean = true) {
     if (this.current_wave && (this.tower_defense_state.current_wave_info.spawned < this.tower_defense_state.current_wave_info.total || this.tower_defense_state.current_wave_info.alive)) return
     
-    this.tower_defense_state.spawnNextWave();
+    if (next) this.tower_defense_state.spawnNextWave();
     this.current_wave = this.tower_defense_state.getCurrentWave();
     this.tower_defense_state.current_wave_info.total = this.current_wave.mob_count;
     this.tower_defense_state.current_wave_info.spawned = 0;

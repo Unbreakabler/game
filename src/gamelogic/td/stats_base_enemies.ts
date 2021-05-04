@@ -1,12 +1,9 @@
 // import { EnemyType } from './enemy_wave_generator'
 
-import { ENEMY_MODIFIERS, ModifierId } from "./enemy_wave_generator";
+import type { ModifierId } from "./stats_enemy_modifiers";
+import { ENEMY_MODIFIERS} from "./stats_enemy_modifiers";
+import { EnemyType } from "./stats_enemy_modifiers";
 
-export enum EnemyType {
-  green_knight,
-  bug,
-  blue_dragon,
-}
 
 const SPEED_FACTOR = 10;
 const HEALTH_POINT_FACTOR = 100;
@@ -39,7 +36,7 @@ const ENEMY_BASE_STATS: StatLibrary = {
     sprite_link: 'static/bug.png'
   },
   [EnemyType.blue_dragon]: {
-    health_points: 1000,
+    health_points: 500,
     speed: Phaser.Math.GetSpeed(50, 1),
     experience: 10,
     money: 10,

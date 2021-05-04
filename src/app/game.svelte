@@ -11,6 +11,7 @@
   import { OutlinePipeline } from '../plugins/outline'
   import Resources from "../components/resources.svelte";
   import WaveStatus from "../components/wave_status.svelte";
+import DissolvePipelinePlugin from "../plugins/dissolve-plugin";
 
   let canvas: HTMLCanvasElement, game: any;
 
@@ -36,6 +37,15 @@
       canvas: canvas,
       scene: [TD, Main],
       pipeline: [OutlinePipeline],
+      plugins: {
+        global: [
+          { 
+            key: 'DissolvePostFX',
+            plugin: DissolvePipelinePlugin,
+            start: true,
+          }
+        ]
+      }
     };
 
     game = new Phaser.Game(config);

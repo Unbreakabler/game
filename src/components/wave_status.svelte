@@ -9,7 +9,6 @@
   $: alive = gameModelInstance.tower_defense.current_wave_info.alive
   $: killed = gameModelInstance.tower_defense.current_wave_info.killed
   $: leaked = gameModelInstance.tower_defense.current_wave_info.leaked
-  $: lives = gameModelInstance.tower_defense.current_wave_info.lives
   $: wave = gameModelInstance.tower_defense.current_wave_info.level;
 </script>
 
@@ -18,7 +17,6 @@
   <div>A: {alive}</div> 
   <div>K: {killed}</div> 
   <div>L: {leaked}</div>
-  <div>lives: {lives}</div> 
   <div>wave: {wave}</div>
 </div>
 

@@ -1,4 +1,4 @@
-const DEFAULT_PATH_WIDTH = 50;
+const DEFAULT_PATH_WIDTH = 64;
 
 export class Path extends Phaser.Curves.Path {
   public road_width: number;
@@ -14,7 +14,7 @@ export class Path extends Phaser.Curves.Path {
     for (const point of points) {
       p.push(new Phaser.Math.Vector2(point[0], point[1]));
     }
-    this.splineTo(p);
+    p.forEach(vec2 => this.lineTo(vec2))
     this.graphics = this.td_scene.add.graphics();
     this.drawPathInvisible();
   }
