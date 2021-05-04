@@ -24,23 +24,23 @@ export default (blocked_by: any[] = []) => {
       }
   
       for (const t of parent.td_scene.new_tower_map.values()) {
-        if (t.tower_info.status.id === parent.td_scene.selection?.id) continue; // current turret on cursor
+        if (t.tower_info.status.id === parent.td_scene.selection?.id || !t.tower_info.status.is_placed) continue; // current turret on cursor
   
-        const min_x = t.x - (t.width || 0)/2
-        const max_x = t.x + (t.width || 0)/2
-        const min_y = t.y - (t.height || 0)/2
-        const max_y = t.y + (t.height || 0)/2
+        const min_x = t.x - t.width/2;
+        const max_x = t.x + t.width/2;
+        const min_y = t.y - t.height/2;
+        const max_y = t.y + t.height/2;
     
-        const new_min_x = place_x;
-        const new_max_x = place_x;
-        const new_min_y = place_y;
-        const new_max_y = place_y;
+        const new_min_x = place_x - parent.width/2;
+        const new_max_x = place_x + parent.width/2;
+        const new_min_y = place_y - parent.height/2;
+        const new_max_y = place_y + parent.height/2;
     
         const x_overlap = Math.max(0, Math.min(max_x, new_max_x) - Math.max(min_x, new_min_x));
         const y_overlap = Math.max(0, Math.min(max_y, new_max_y) - Math.max(min_y, new_min_y));
-  
+
         if (x_overlap * y_overlap > 0) {
-          // console.error('Can not place a turret overlapping another turret')
+          // console.error('Can not place a turret overlapping another turret') 
           parent.is_placeable = false;
           return
         }

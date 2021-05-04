@@ -34,7 +34,7 @@ export default (tower_info: TowerInfo) => {
         frameQuantity: 100,
         active: false,
         visible: false, 
-        key: 'small_bullet',
+        key: parent.tower_info.status.projectile_type,
         setXY: { x: -100, y: -100 },
         runChildUpdate: false,
       })
@@ -46,10 +46,15 @@ export default (tower_info: TowerInfo) => {
       parent.time_elapsed += delta;
       if (parent.time_elapsed > parent.time_to_fire_next_shot) {
         if (parent.target) {
-          const b: Projectile = parent.projectiles?.get(parent.x, parent.y, 'small_bullet', parent.tower_info.status.projectile_type);
+          const b: Projectile = parent.projectiles?.get(parent.x, parent.y, parent.tower_info.status.projectile_type, parent.tower_info.status.projectile_type);
           // Extra properties read back from bullet
           b.fire(parent, parent.tower_info.status.projectile_type);
           parent.time_to_fire_next_shot = parent.time_elapsed + parent.tower_info.attributes.attack_speed;
+        }
+      }
+      if (parent.projectiles) {
+        for (const proj of parent.projectiles.getMatching('active', true)) {
+          proj.update(time, delta)
         }
       }
     },

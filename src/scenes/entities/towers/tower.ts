@@ -32,8 +32,8 @@ export default class Tower extends Phaser.GameObjects.GameObject {
   public range: number;
   public range_indicator?: Phaser.GameObjects.Arc;
   
-  public width?: number;
-  public height?: number;
+  public width: number = 32;
+  public height: number = 32;
 
   public rotating_sprites?: Phaser.GameObjects.Container;
   public static_sprites?: Phaser.GameObjects.Container;
@@ -46,7 +46,7 @@ export default class Tower extends Phaser.GameObjects.GameObject {
   public targeting_indicator?: Phaser.GameObjects.Arc;
   private targeting_components: TowerComponent[];
 
-  public projectiles?: BetterGroup<any>;
+  public projectiles?: Phaser.Physics.Arcade.Group;
 
   public attack_speed: number = 100;
 

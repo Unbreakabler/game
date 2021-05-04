@@ -29,8 +29,6 @@ export default class TD extends Phaser.Scene {
 
   public new_tower_map: Map<string, Tower> = new Map<string, Tower>();
 
-  private slots: Array<string | null> = [];
-
   public constructor() {
     super({ key: "td", active: true });
   }

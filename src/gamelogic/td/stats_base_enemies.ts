@@ -1,8 +1,8 @@
 // import { EnemyType } from './enemy_wave_generator'
 
-import type { ModifierId } from "./enemy_modifiers";
-import { ENEMY_MODIFIERS} from "./enemy_modifiers";
-import { EnemyType } from "./enemy_modifiers";
+import type { ModifierId } from "./stats_enemy_modifiers";
+import { ENEMY_MODIFIERS} from "./stats_enemy_modifiers";
+import { EnemyType } from "./stats_enemy_modifiers";
 
 
 const SPEED_FACTOR = 10;

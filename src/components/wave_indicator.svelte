@@ -1,7 +1,7 @@
 <script lang='ts'>
   import { GameModel, gameModel } from "../gamelogic/gamemodel";
-  import { ENEMY_MODIFIERS, EnemyType } from "../gamelogic/td/enemy_modifiers";
-  import type { ModifierId } from "../gamelogic/td/enemy_modifiers";
+  import { ENEMY_MODIFIERS, EnemyType } from "../gamelogic/td/stats_enemy_modifiers";
+  import type { ModifierId } from "../gamelogic/td/stats_enemy_modifiers";
 
   let gameModelInstance: GameModel;
   gameModel.subscribe((m) => (gameModelInstance = m));

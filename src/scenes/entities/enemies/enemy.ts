@@ -1,8 +1,8 @@
 import type TD from "../../td";
 import { CombatText } from '../combat_text';
 import { HealthBar } from '../health_bar';
-import { EnemyType, ENEMY_MODIFIERS } from '../../../gamelogic/td/enemy_modifiers'
-import type { ModifierId } from "../../../gamelogic/td/enemy_modifiers";
+import { EnemyType, ENEMY_MODIFIERS } from '../../../gamelogic/td/stats_enemy_modifiers'
+import type { ModifierId } from "../../../gamelogic/td/stats_enemy_modifiers";
 import type { Wallet } from "../../../gamelogic/gamemodel";
 import type BasePostFxPipelinePlugin from "../../../plugins/utils/base-post-fx-plugin";
 

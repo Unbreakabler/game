@@ -6,23 +6,23 @@ import type { TowerComponent } from "./component_interface";
 const BASE_DIMENSIONS: { [id in TowerBaseType]: { scale: number, width: number, height: number }} = {
   'tower_base_1': {
     scale: 0.7,
-    width: 128,
-    height: 128,
+    width: 64,
+    height: 64,
   },
   'tower_base_2': {
     scale: 0.7,
-    width: 128,
-    height: 128,
+    width: 64,
+    height: 64,
   },
   'tower_base_3': {
     scale: 0.7,
-    width: 128,
-    height: 128,
+    width: 64,
+    height: 64,
   },
   'tower_base_4': {
     scale: 0.7,
-    width: 128,
-    height: 128,
+    width: 64,
+    height: 64,
   }
 }
 

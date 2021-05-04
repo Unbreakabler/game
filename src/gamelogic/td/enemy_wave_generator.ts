@@ -7,8 +7,8 @@
 // const DEFAULT_SEED = 'babies'
 // // set `Math.random()` to be a PRNG seeded with DEFAULT_SEED
 // seedrandom(DEFAULT_SEED, {global: true });
-import type { EnemyModifier, ModifierId } from './enemy_modifiers';
-import { EnemyType, TIER_MODIFIER_WEIGHTS, ModTier, ENEMY_MODIFIERS, WeightedMod } from './enemy_modifiers';
+import type { EnemyModifier, ModifierId } from './stats_enemy_modifiers';
+import { EnemyType, TIER_MODIFIER_WEIGHTS, ModTier, ENEMY_MODIFIERS, WeightedMod } from './stats_enemy_modifiers';
 
 import ENEMY_BASE_STATS, { calculateEnemyDifficulty } from './stats_base_enemies';
 
