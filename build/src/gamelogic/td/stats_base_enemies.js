@@ -1,12 +1,6 @@
-import { ENEMY_MODIFIERS } from './enemy_wave_generator.js';
+import { EnemyType, ENEMY_MODIFIERS } from './stats_enemy_modifiers.js';
 
 // import { EnemyType } from './enemy_wave_generator'
-var EnemyType;
-(function (EnemyType) {
-    EnemyType[EnemyType["green_knight"] = 0] = "green_knight";
-    EnemyType[EnemyType["bug"] = 1] = "bug";
-    EnemyType[EnemyType["blue_dragon"] = 2] = "blue_dragon";
-})(EnemyType || (EnemyType = {}));
 const SPEED_FACTOR = 10;
 const HEALTH_POINT_FACTOR = 100;
 const ENEMY_BASE_STATS = {
@@ -64,5 +58,5 @@ const applyEnemyModifiers = (enemy_stats, modifier_ids) => {
 };
 
 export default ENEMY_BASE_STATS;
-export { EnemyType, applyEnemyModifiers, calculateEnemyDifficulty };
+export { applyEnemyModifiers, calculateEnemyDifficulty };
 //# sourceMappingURL=stats_base_enemies.js.map

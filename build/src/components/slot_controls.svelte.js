@@ -1,4 +1,4 @@
-import { SvelteComponent, init, safe_not_equal, element, append, create_component, mount_component, transition_in, transition_out, destroy_component, attr, insert, group_outros, check_outros, detach, destroy_each } from '../../node_modules/svelte/internal/index.mjs.js';
+import { SvelteComponent, init, safe_not_equal, element, append, text, attr, insert, set_data, detach, create_component, space, mount_component, transition_in, transition_out, destroy_component, group_outros, check_outros, destroy_each } from '../../node_modules/svelte/internal/index.mjs.js';
 import { gameModel } from '../gamelogic/gamemodel.js';
 import Tower_slot from './tower_slot.svelte.js';
 
@@ -6,42 +6,74 @@ import Tower_slot from './tower_slot.svelte.js';
 
 function add_css() {
 	var style = element("style");
-	style.id = "svelte-s4r4ty-style";
-	style.textContent = "div.svelte-s4r4ty{display:flex;flex-direction:column;justify-content:center}.towers.svelte-s4r4ty{margin-top:10px;display:flex;flex-direction:row;justify-content:left;background:#ffffff}";
+	style.id = "svelte-1mqnym2-style";
+	style.textContent = ".container.svelte-1mqnym2{display:flex;flex-direction:column;justify-content:center}.tower-container.svelte-1mqnym2{display:flex;flex-direction:row;justify-content:center}.towers.svelte-1mqnym2{display:flex;flex-direction:row;justify-content:left;background:#ffffff}.details.svelte-1mqnym2{background-color:lightblue}";
 	append(document.head, style);
 }
 
 function get_each_context(ctx, list, i) {
 	const child_ctx = ctx.slice();
-	child_ctx[4] = list[i];
-	child_ctx[6] = i;
+	child_ctx[5] = list[i];
+	child_ctx[7] = i;
 	return child_ctx;
 }
 
-// (14:2) {#each slots as tower_id, index}
+// (15:2) {#if selected_tower_info}
+function create_if_block(ctx) {
+	let div;
+	let t_value = /*selected_tower_info*/ ctx[2].status.id + "";
+	let t;
+
+	return {
+		c() {
+			div = element("div");
+			t = text(t_value);
+			attr(div, "class", "details svelte-1mqnym2");
+		},
+		m(target, anchor) {
+			insert(target, div, anchor);
+			append(div, t);
+		},
+		p(ctx, dirty) {
+			if (dirty & /*selected_tower_info*/ 4 && t_value !== (t_value = /*selected_tower_info*/ ctx[2].status.id + "")) set_data(t, t_value);
+		},
+		d(detaching) {
+			if (detaching) detach(div);
+		}
+	};
+}
+
+// (21:4) {#each slots as tower_id, index}
 function create_each_block(ctx) {
+	let div;
 	let towerslot;
+	let t;
 	let current;
 
 	towerslot = new Tower_slot({
 			props: {
-				tower_id: /*tower_id*/ ctx[4],
-				tower_info: /*slot_tower_info*/ ctx[1][/*index*/ ctx[6]]
+				tower_id: /*tower_id*/ ctx[5],
+				tower_info: /*slot_tower_info*/ ctx[1][/*index*/ ctx[7]]
 			}
 		});
 
 	return {
 		c() {
+			div = element("div");
 			create_component(towerslot.$$.fragment);
+			t = space();
+			attr(div, "class", "towers svelte-1mqnym2");
 		},
 		m(target, anchor) {
-			mount_component(towerslot, target, anchor);
+			insert(target, div, anchor);
+			mount_component(towerslot, div, null);
+			append(div, t);
 			current = true;
 		},
 		p(ctx, dirty) {
 			const towerslot_changes = {};
-			if (dirty & /*slots*/ 1) towerslot_changes.tower_id = /*tower_id*/ ctx[4];
-			if (dirty & /*slot_tower_info*/ 2) towerslot_changes.tower_info = /*slot_tower_info*/ ctx[1][/*index*/ ctx[6]];
+			if (dirty & /*slots*/ 1) towerslot_changes.tower_id = /*tower_id*/ ctx[5];
+			if (dirty & /*slot_tower_info*/ 2) towerslot_changes.tower_info = /*slot_tower_info*/ ctx[1][/*index*/ ctx[7]];
 			towerslot.$set(towerslot_changes);
 		},
 		i(local) {
@@ -54,14 +86,18 @@ function create_each_block(ctx) {
 			current = false;
 		},
 		d(detaching) {
-			destroy_component(towerslot, detaching);
+			if (detaching) detach(div);
+			destroy_component(towerslot);
 		}
 	};
 }
 
 function create_fragment(ctx) {
-	let div;
+	let div1;
+	let t;
+	let div0;
 	let current;
+	let if_block = /*selected_tower_info*/ ctx[2] && create_if_block(ctx);
 	let each_value = /*slots*/ ctx[0];
 	let each_blocks = [];
 
@@ -75,24 +111,44 @@ function create_fragment(ctx) {
 
 	return {
 		c() {
-			div = element("div");
+			div1 = element("div");
+			if (if_block) if_block.c();
+			t = space();
+			div0 = element("div");
 
 			for (let i = 0; i < each_blocks.length; i += 1) {
 				each_blocks[i].c();
 			}
 
-			attr(div, "class", "towers svelte-s4r4ty");
+			attr(div0, "class", "tower-container svelte-1mqnym2");
+			attr(div1, "class", "container svelte-1mqnym2");
 		},
 		m(target, anchor) {
-			insert(target, div, anchor);
+			insert(target, div1, anchor);
+			if (if_block) if_block.m(div1, null);
+			append(div1, t);
+			append(div1, div0);
 
 			for (let i = 0; i < each_blocks.length; i += 1) {
-				each_blocks[i].m(div, null);
+				each_blocks[i].m(div0, null);
 			}
 
 			current = true;
 		},
 		p(ctx, [dirty]) {
+			if (/*selected_tower_info*/ ctx[2]) {
+				if (if_block) {
+					if_block.p(ctx, dirty);
+				} else {
+					if_block = create_if_block(ctx);
+					if_block.c();
+					if_block.m(div1, t);
+				}
+			} else if (if_block) {
+				if_block.d(1);
+				if_block = null;
+			}
+
 			if (dirty & /*slots, slot_tower_info*/ 3) {
 				each_value = /*slots*/ ctx[0];
 				let i;
@@ -107,7 +163,7 @@ function create_fragment(ctx) {
 						each_blocks[i] = create_each_block(child_ctx);
 						each_blocks[i].c();
 						transition_in(each_blocks[i], 1);
-						each_blocks[i].m(div, null);
+						each_blocks[i].m(div0, null);
 					}
 				}
 
@@ -139,7 +195,8 @@ function create_fragment(ctx) {
 			current = false;
 		},
 		d(detaching) {
-			if (detaching) detach(div);
+			if (detaching) detach(div1);
+			if (if_block) if_block.d();
 			destroy_each(each_blocks, detaching);
 		}
 	};
@@ -148,31 +205,38 @@ function create_fragment(ctx) {
 function instance($$self, $$props, $$invalidate) {
 	let slots;
 	let slot_tower_info;
+	let selected_tower_info;
 	
 	let gameModelInstance;
-	gameModel.subscribe(m => $$invalidate(2, gameModelInstance = m));
+	gameModel.subscribe(m => $$invalidate(3, gameModelInstance = m));
 
 	const towerInfo = tower_id => {
 		return gameModelInstance.tower_defense.getTower(tower_id);
 	};
 
 	$$self.$$.update = () => {
-		if ($$self.$$.dirty & /*gameModelInstance*/ 4) {
+		if ($$self.$$.dirty & /*gameModelInstance*/ 8) {
 			 $$invalidate(0, slots = gameModelInstance.tower_defense.slots);
 		}
 
 		if ($$self.$$.dirty & /*slots*/ 1) {
 			 $$invalidate(1, slot_tower_info = slots.map(slot_id => slot_id ? towerInfo(slot_id) : null));
 		}
+
+		if ($$self.$$.dirty & /*gameModelInstance*/ 8) {
+			 $$invalidate(2, selected_tower_info = (gameModelInstance.tower_defense.selection?.id)
+			? towerInfo(gameModelInstance.tower_defense.selection?.id)
+			: null);
+		}
 	};
 
-	return [slots, slot_tower_info, gameModelInstance];
+	return [slots, slot_tower_info, selected_tower_info, gameModelInstance];
 }
 
 class Slot_controls extends SvelteComponent {
 	constructor(options) {
 		super();
-		if (!document.getElementById("svelte-s4r4ty-style")) add_css();
+		if (!document.getElementById("svelte-1mqnym2-style")) add_css();
 		init(this, options, instance, create_fragment, safe_not_equal, {});
 	}
 }

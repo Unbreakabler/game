@@ -14,7 +14,6 @@ class TD extends Phaser.Scene {
         this.selection = null;
         this.prev_selection = null;
         this.new_tower_map = new Map();
-        this.slots = [];
     }
     preload() {
         setup_image_assets(this);

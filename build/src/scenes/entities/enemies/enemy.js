@@ -1,7 +1,6 @@
 import '../combat_text.js';
 import { HealthBar } from '../health_bar.js';
-import { ENEMY_MODIFIERS } from '../../../gamelogic/td/enemy_wave_generator.js';
-import { EnemyType } from '../../../gamelogic/td/stats_base_enemies.js';
+import { EnemyType, ENEMY_MODIFIERS } from '../../../gamelogic/td/stats_enemy_modifiers.js';
 
 const DEFAULT_ENEMY_SPEED = 1 / 10;
 const DEFAULT_ENEMY_HP = 100;

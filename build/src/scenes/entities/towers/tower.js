@@ -16,6 +16,8 @@ class Tower extends Phaser.GameObjects.GameObject {
         super(td_scene, 'tower');
         this.is_placed = false;
         this.is_placeable = true;
+        this.width = 32;
+        this.height = 32;
         this.targeting_mode = 'first';
         this.target_angle = 0;
         this.attack_speed = 100;

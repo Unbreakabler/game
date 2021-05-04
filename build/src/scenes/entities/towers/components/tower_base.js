@@ -1,23 +1,23 @@
 const BASE_DIMENSIONS = {
     'tower_base_1': {
         scale: 0.7,
-        width: 128,
-        height: 128,
+        width: 64,
+        height: 64,
     },
     'tower_base_2': {
         scale: 0.7,
-        width: 128,
-        height: 128,
+        width: 64,
+        height: 64,
     },
     'tower_base_3': {
         scale: 0.7,
-        width: 128,
-        height: 128,
+        width: 64,
+        height: 64,
     },
     'tower_base_4': {
         scale: 0.7,
-        width: 128,
-        height: 128,
+        width: 64,
+        height: 64,
     }
 };
 var tower_base = (base_type = 'tower_base_1') => {
